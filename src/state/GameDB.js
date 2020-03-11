@@ -1,4 +1,3 @@
-import MicroEmitter from 'micro-emitter';
 import * as Constants from "../constants";
 
 class GameDB {
@@ -6,7 +5,7 @@ class GameDB {
         this.initNewGame();
     }
 
-    initNewGame() {
+    async initNewGame() {
         this.words = [];
         this.score = 0;
         this.letters = [];
@@ -14,6 +13,8 @@ class GameDB {
         for (let i = 0; i < Constants.TILES; i++) {
             this.letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
         }
+
+        return this.letters;
     }
 
     getLetters() {

@@ -22,9 +22,9 @@ class GameStore {
     }
 
     startNewGame() {
-        GameDB.initNewGame();
-
-        this.event_emitter.emit('START_GAME');
+        GameDB.initNewGame().then(letters => {
+            this.event_emitter.emit('START_GAME', letters)
+        });
     }
 
     onStartNewGame(handler) {

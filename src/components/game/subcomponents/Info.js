@@ -27,8 +27,8 @@ export default class Info extends Component {
 
         GameStore.onStartNewGame(_ => {
             this.setState({
-                score: GameDB.getScore(),
-                target_score: GameDB.getScore()
+                score: 0,
+                target_score: 0,
             });
 
             setTimeout(this.countScoreUp, 5);

@@ -24,8 +24,8 @@ export default class Stage extends Component {
     }
 
     componentDidMount() {
-        GameStore.onStartNewGame(_ => {
-            const options = GameDB.getLetters().map((letter, idx) => letter + idx);
+        GameStore.onStartNewGame(letters => {
+            const options = letters.map((letter, idx) => letter + idx);
 
             this.state = {
                 picks: options.map(_ => Constants.DESELECTOR),
