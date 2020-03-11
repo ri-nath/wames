@@ -4,6 +4,8 @@ import { View } from 'react-native';
 import Tile from './Tile';
 
 import GameStore from '../../../state/GameStore';
+import GameDB from '../../../state/GameDB';
+
 import * as Constants from '../../../constants';
 
 export default class Stage extends Component {
@@ -25,7 +27,6 @@ export default class Stage extends Component {
         this.state = {
             picks: options.map(_ => Constants.DESELECTOR),
             options: options,
-            words: [],
         };
 
         this.handleAddTile = this.handleAddTile.bind(this);
@@ -49,13 +50,13 @@ export default class Stage extends Component {
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        if (!this.state.words.includes(current_word) && Constants.WORDS.includes(current_word)) {
-            this.state.words.push(current_word);
-            this.resetTiles(current_word.length * 10);
+        if (!GameDB.isWordScored(current_word) && Constants.WORDS.includes(current_word)) {
+            GameStore.scoreWord(current_word);
+            this.resetTiles();
         }
 
         if (!this.state.picks.some(letter => letter.includes(Constants.DESELECTOR))) {
-            this.resetTiles(0);
+            this.resetTiles();
         }
     }
 
@@ -73,7 +74,7 @@ export default class Stage extends Component {
         })
     }
 
-    resetTiles(points) {
+    resetTiles() {
         const options = this.state.options.map(letter => letter.replace(Constants.DESELECTOR,''));
         const picks = this.state.picks.map(_ => Constants.DESELECTOR);
 
@@ -81,8 +82,6 @@ export default class Stage extends Component {
             options: options,
             picks: picks
         });
-
-        GameStore.addPoints(points);
     }
 
     render() {

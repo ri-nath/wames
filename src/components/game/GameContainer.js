@@ -16,7 +16,7 @@ export default class GameContainer extends Component {
     render() {
         return (
             <View>
-                <View style={styles.score}>
+                <View style={styles.info}>
                     <Info/>
                 </View>
                 <View style={styles.stage}>
@@ -28,7 +28,7 @@ export default class GameContainer extends Component {
 }
 
 const styles = StyleSheet.create({
-    score: {
+    info: {
         flex: 2,
         alignItems: 'center',
         justifyContent: 'center',

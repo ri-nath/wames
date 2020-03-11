@@ -5,14 +5,14 @@ import GameContainer from './game/GameContainer';
 
 export default function App() {
     return (
-        <View style={styles.score}>
+        <View style={styles.container}>
             <GameContainer/>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    score: {
+    container: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
