@@ -11,12 +11,8 @@ class GameDB {
         this.score = 0;
         this.letters = [];
 
-        for (let i = 0; i < Constants.MIN_VOWELS; i++) {
-            this.letters[i] = Constants.VOWELS.charAt(Math.floor(Math.random() * Constants.VOWELS.length)).toString();
-        }
-
-        for (let i = Constants.MIN_VOWELS; i < Constants.TILES; i++) {
-            this.letters[i] = Constants.ALPHABET.charAt(Math.floor(Math.random() * Constants.ALPHABET.length)).toString();
+        for (let i = 0; i < Constants.TILES; i++) {
+            this.letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
         }
     }
 

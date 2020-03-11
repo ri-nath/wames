@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Button, View} from 'react-native';
 
 import Stage from "./subcomponents/Stage";
 import Info from "./subcomponents/Info";
 
-import GameDB from '../../state/GameDB';
+import GameStore from '../../state/GameStore';
 
 export default class GameContainer extends Component {
     constructor(props) {
@@ -14,12 +14,15 @@ export default class GameContainer extends Component {
             points: 0,
         };
 
-        GameDB.initNewGame();
+        GameStore.startNewGame();
     }
 
     render() {
         return (
             <View>
+                <View style={styles.debug}>
+                    <Button onPress={_ => GameStore.startNewGame()} title='DEBUG'/>
+                </View>
                 <View style={styles.info}>
                     <Info/>
                 </View>
@@ -32,13 +35,19 @@ export default class GameContainer extends Component {
 }
 
 const styles = StyleSheet.create({
+    debug: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
     info: {
-        flex: 2,
+        flex: 3,
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     stage: {
-        flex: 1,
+        flex: 2,
     }
 });

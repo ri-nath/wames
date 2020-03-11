@@ -24,6 +24,20 @@ export default class Info extends Component {
 
             setTimeout(this.countScoreUp, 5);
         });
+
+        GameStore.onStartNewGame(_ => {
+            this.setState({
+                score: GameDB.getScore(),
+                target_score: GameDB.getScore()
+            });
+
+            setTimeout(this.countScoreUp, 5);
+        })
+    }
+
+    componentWillUnmount() {
+        GameStore.stopListeningForWords();
+        GameStore.stopListeningForNewGame();
     }
 
     countScoreUp() {
@@ -34,10 +48,6 @@ export default class Info extends Component {
 
             setTimeout(this.countScoreUp, 5);
         }
-    }
-
-    componentWillUnmount() {
-        GameStore.stopListeningForWords();
     }
 
     render() {
@@ -64,14 +74,13 @@ const styles = StyleSheet.create({
     },
 
     score: {
-        flex: 2,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     words: {
-        flex: 1,
+        flex: 4,
         alignItems: 'center',
-        justifyContent: 'center',
     }
 });

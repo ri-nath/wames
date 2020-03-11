@@ -12,8 +12,6 @@ export default class Stage extends Component {
     constructor(props) {
         super(props);
 
-
-
         const options = GameDB.getLetters().map((letter, idx) => letter + idx);
 
         this.state = {
@@ -23,6 +21,23 @@ export default class Stage extends Component {
 
         this.handleAddTile = this.handleAddTile.bind(this);
         this.handleRemoveTile = this.handleRemoveTile.bind(this);
+    }
+
+    componentDidMount() {
+        GameStore.onStartNewGame(_ => {
+            const options = GameDB.getLetters().map((letter, idx) => letter + idx);
+
+            this.state = {
+                picks: options.map(_ => Constants.DESELECTOR),
+                options: options,
+            };
+
+            this.resetTiles();
+        });
+    }
+
+    componentWillUnmount() {
+        GameStore.stopListeningForNewGame();
     }
 
     handleAddTile(value) {
