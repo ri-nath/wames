@@ -4,6 +4,8 @@ import {StyleSheet, View} from 'react-native';
 import Stage from "./subcomponents/Stage";
 import Info from "./subcomponents/Info";
 
+import GameDB from '../../state/GameDB';
+
 export default class GameContainer extends Component {
     constructor(props) {
         super(props);
@@ -11,6 +13,8 @@ export default class GameContainer extends Component {
         this.state = {
             points: 0,
         };
+
+        GameDB.initNewGame();
     }
 
     render() {

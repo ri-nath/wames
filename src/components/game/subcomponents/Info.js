@@ -9,18 +9,31 @@ export default class Info extends Component {
         super(props);
 
         this.state = {
-            score: 0
-        }
+            score: 0,
+            target_score: 0,
+        };
+
+        this.countScoreUp = this.countScoreUp.bind(this);
     }
 
     componentDidMount() {
-        GameStore.onScoreWord((word) => {
-            const points = word.length * 10;
-
+        GameStore.onScoreWord(_ => {
             this.setState({
-                score: this.state.score + points,
-            })
+                target_score: GameDB.getScore()
+            });
+
+            setTimeout(this.countScoreUp, 5);
         });
+    }
+
+    countScoreUp() {
+        if (this.state.score < this.state.target_score) {
+            this.setState({
+                score: this.state.score + 1
+            });
+
+            setTimeout(this.countScoreUp, 5);
+        }
     }
 
     componentWillUnmount() {

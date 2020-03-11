@@ -12,17 +12,9 @@ export default class Stage extends Component {
     constructor(props) {
         super(props);
 
-        let letters = [];
 
-        for (let i = 0; i < Constants.MIN_VOWELS; i++ ) {
-            letters[i] = Constants.VOWELS.charAt(Math.floor(Math.random() * Constants.VOWELS.length)).toString();
-        }
 
-        for (let i = Constants.MIN_VOWELS; i < Constants.TILES; i++ ) {
-            letters[i] = Constants.ALPHABET.charAt(Math.floor(Math.random() * Constants.ALPHABET.length)).toString();
-        }
-
-        const options = letters.map((letter, idx) => letter + idx);
+        const options = GameDB.getLetters().map((letter, idx) => letter + idx);
 
         this.state = {
             picks: options.map(_ => Constants.DESELECTOR),
