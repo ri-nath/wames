@@ -2,18 +2,20 @@ import React from 'react';
 
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
+import { NON } from './Game';
+
 export default function CharacterContainer(props) {
     return (
         <TouchableOpacity
-            style={[styles.button, props.name.includes("!") && styles.active]}
+            style={[styles.button, props.name.includes(NON) && styles.active]}
             onPress={props.onPress}
             activeOpacity={ 0 }
-            disabled={ props.name.includes("!") }
+            disabled={ props.name.includes(NON) }
         >
             <Text
                 style={styles.text}
             >
-                { props.name.includes("!") ? " " : props.name }
+                { props.name.includes(NON) ? " " : props.name.charAt(0) }
             </Text>
         </TouchableOpacity>
     )

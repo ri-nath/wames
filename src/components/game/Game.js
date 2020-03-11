@@ -6,21 +6,23 @@ import CharacterContainer from './CharacterContainer';
 const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const LENGTH = 8;
 
-
+export const NON = '!';
 
 export default class Game extends Component {
     constructor(props) {
         super(props);
 
-        let letters = Math.random().toString(36).substring(7).split('');
+        let letters = [];
 
         for (let i = 0; i < LENGTH; i++ ) {
             letters[i] = CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length)).toString();
         }
 
+        const options = letters.map((letter, idx) => letter + idx);
+
         this.state = {
-            word: letters.map(_ => "!"),
-            letters: letters,
+            picks: options.map(_ => NON),
+            options: options,
         };
 
         this.handleAddLetter = this.handleAddLetter.bind(this);
@@ -28,51 +30,43 @@ export default class Game extends Component {
     }
 
     handleAddLetter(letter) {
-        let word = this.state.word;
+        let picks = this.state.picks;
+        picks[picks.indexOf(NON)] = letter;
 
-        word[word.indexOf("!")] = letter;
-
-        let letters = this.state.letters;
-        const index = letters.indexOf(letter);
-        if (index > -1) {
-            letters[index] = "!" + letter;
-        }
+        let options = this.state.options;
+        options[options.indexOf(letter)] = NON + letter;
 
         this.setState({
-            word: word,
-            letters: letters
+            picks: picks,
+            options: options
         });
 
-        if (!this.state.word.some(letter => letter.includes("!"))) {
+        if (!this.state.picks.some(letter => letter.includes(NON))) {
             this.resetLetterLists();
         }
     }
 
     handleRemoveLetter(letter) {
-        let letters = this.state.letters;
+        let options = this.state.options;
+        options[options.indexOf(NON + letter)] = letter;
 
-        letters[letters.indexOf("!" + letter)] = letter;
-
-        let word = this.state.word;
-        const index = word.indexOf(letter);
-        if (index > -1) {
-            word.splice(index, 1);
-            word.push("!");
-        }
+        let picks = this.state.picks;
+        picks.splice(picks.indexOf(letter), 1);
+        picks.push(NON);
 
         this.setState({
-            word: word,
-            letters: letters
+            picks: picks,
+            options: options
         })
     }
 
     resetLetterLists() {
-        const letters = this.state.letters.map(letter => letter.replace('!',''));
-        const word = this.state.word.map(_ => '!');
+        const options = this.state.options.map(letter => letter.replace(NON,''));
+        const picks = this.state.picks.map(_ => NON);
 
         this.setState({
-            letters: letters,
-            word: word
+            options: options,
+            picks: picks
         })
     }
 
@@ -81,7 +75,7 @@ export default class Game extends Component {
             <View>
                 <View flexDirection='row' justifyContent='flex-start'>
                     {
-                        this.state.letters.map((letter, idx) =>
+                        this.state.options.map((letter, idx) =>
                             <CharacterContainer
                                 key={ idx }
                                 name={ letter }
@@ -92,9 +86,9 @@ export default class Game extends Component {
                 </View>
                 <View flexDirection='row'>
                     {
-                        this.state.word.map((letter, idx) =>
+                        this.state.picks.map((letter, idx) =>
                             <CharacterContainer
-                                key={ idx + this.state.letters.length }
+                                key={ idx + this.state.options.length }
                                 name={ letter }
                                 onPress= { _ => {this.handleRemoveLetter(letter)} }
                             />
