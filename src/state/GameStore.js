@@ -12,6 +12,10 @@ class GameStore {
     onAddPoints(handler) {
         this.event_emitter.on('ADD_POINTS', handler);
     }
+
+    stopListeningForPoints() {
+        this.event_emitter.off('ADD_POINTS');
+    }
 }
 
 export default new GameStore();

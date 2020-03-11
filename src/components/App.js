@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import Game from './game/Game';
+import GameContainer from './game/GameContainer';
 
 export default function App() {
     return (
         <View style={styles.score}>
-            <Game/>
+            <GameContainer/>
         </View>
     );
 }

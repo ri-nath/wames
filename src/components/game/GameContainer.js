@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
-import Stage from "./Stage";
+import Stage from "./subcomponents/Stage";
+import Info from "./subcomponents/Info";
 
-import GameStore from '../state/GameStore';
-
-export default class Game extends Component {
+export default class GameContainer extends Component {
     constructor(props) {
         super(props);
 
@@ -14,19 +13,11 @@ export default class Game extends Component {
         };
     }
 
-    componentDidMount() {
-        GameStore.onAddPoints(points => {
-            this.setState({
-                points: this.state.points + points,
-            });
-        });
-    }
-
     render() {
         return (
             <View>
                 <View style={styles.score}>
-                    <Text style={styles.score_text}> { this.state.points } </Text>
+                    <Info/>
                 </View>
                 <View style={styles.stage}>
                     <Stage/>
@@ -41,10 +32,6 @@ const styles = StyleSheet.create({
         flex: 2,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-
-    score_text: {
-        fontSize: 40,
     },
 
     stage: {

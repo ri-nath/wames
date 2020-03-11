@@ -1,21 +1,20 @@
 import React from 'react';
-
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { NON } from './Stage';
+import * as Constants from '../../../constants';
 
-export default function CharacterContainer(props) {
+export default function Tile(props) {
     return (
         <TouchableOpacity
-            style={[styles.button, props.name.includes(NON) && styles.active]}
+            style={[styles.button, props.name.includes(Constants.DESELECTOR) && styles.active]}
             onPress={props.onPress}
             activeOpacity={ 0 }
-            disabled={ props.name.includes(NON) }
+            disabled={ props.name.includes(Constants.DESELECTOR) }
         >
             <Text
                 style={styles.text}
             >
-                { props.name.includes(NON) ? " " : props.name.charAt(0) }
+                { props.name.includes(Constants.DESELECTOR) ? " " : props.name.charAt(0) }
             </Text>
         </TouchableOpacity>
     )
