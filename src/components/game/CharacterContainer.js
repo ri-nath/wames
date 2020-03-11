@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { NON } from './Game';
+import { NON } from './Stage';
 
 export default function CharacterContainer(props) {
     return (
