@@ -1,20 +1,41 @@
 import * as Constants from "../constants";
 
+import SuperStore from './SuperStore';
+import AnagramStore from './AnagramStore';
+
+/*
+ * Game Object:
+ * {
+ *   letters: ["E", "T", "C"... ],
+ *   time: 30 (Seconds)
+ *   score: 0 (Points)
+ *   words: ["lorem", "ipsum"...]
+ * }
+ *
+ */
+
 class GameDB {
     constructor() {
-        this.initNewGame();
+        SuperStore.onStartAnagramGame(letters => {
+            this.initNewGame(letters);
+            AnagramStore.startNewGame(letters);
+
+            console.log(letters);
+        });
+
+        AnagramStore.onScoreWord(word => {
+            this.addWord(word);
+        });
+
+        this.words = [];
+        this.letters = [];
+        this.score = 0;
     }
 
-    async initNewGame() {
+    initNewGame(letters) {
         this.words = [];
+        this.letters = letters;
         this.score = 0;
-        this.letters = [];
-
-        for (let i = 0; i < Constants.TILES; i++) {
-            this.letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
-        }
-
-        return this.letters;
     }
 
     getLetters() {

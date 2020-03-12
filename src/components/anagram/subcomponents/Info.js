@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     },
 
     words: {
-        flex: 4,
+        flex: 3,
         alignItems: 'center',
     }
 });
