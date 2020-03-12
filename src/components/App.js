@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import AnagramContainer from './game/AnagramContainer';
+import AnagramContainer from './anagram/AnagramContainer';
 
 export default function App() {
     return (
