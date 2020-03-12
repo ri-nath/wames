@@ -17,8 +17,8 @@ class AnagramStore {
         this.emitter.off('SCORE_WORD');
     }
 
-    startNewGame(letters) {
-        this.emitter.emit('START_GAME', letters);
+    startNewGame(game_obj) {
+        this.emitter.emit('START_GAME', game_obj);
     }
 
     onStartNewGame(handler) {

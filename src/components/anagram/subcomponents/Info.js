@@ -11,6 +11,7 @@ export default class Info extends Component {
         this.state = {
             score: 0,
             target_score: 0,
+            words: []
         };
 
         this.countScoreUp = this.countScoreUp.bind(this);
@@ -19,16 +20,17 @@ export default class Info extends Component {
     componentDidMount() {
         AnagramStore.onScoreWord(_ => {
             this.setState({
-                target_score: AnagramDB.getScore()
+                target_score: AnagramDB.getScore(),
+                words: AnagramDB.getWords()
             });
 
             setTimeout(this.countScoreUp, 5);
         });
 
-        AnagramStore.onStartNewGame(_ => {
+        AnagramStore.onStartNewGame(game_obj => {
             this.setState({
-                score: 0,
-                target_score: 0,
+                score: game_obj.score,
+                target_score: game_obj.score,
             });
 
             setTimeout(this.countScoreUp, 5);
@@ -58,7 +60,7 @@ export default class Info extends Component {
                 </View>
                 <View style={styles.words}>
                     {
-                        AnagramDB.words.map((word, idx) =>
+                        this.state.words.map((word, idx) =>
                             <Text key={idx}>{ word.toUpperCase() }</Text>
                         )
                     }

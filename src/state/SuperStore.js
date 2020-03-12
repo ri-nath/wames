@@ -10,13 +10,23 @@ class SuperStore {
     }
 
     startAnagramGame() {
+        // TODO: server-side
         let letters = [];
 
         for (let i = 0; i < Constants.TILES; i++) {
             letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
         }
 
-        this.emitter.emit('START_ANAGRAM_GAME', letters);
+        let game_obj = {
+            letters: letters,
+            time: Constants.GAME_TIME,
+            score: 0,
+            words: []
+        };
+
+        // End TODO
+
+        this.emitter.emit('START_ANAGRAM_GAME', game_obj);
     }
 
     onStartAnagramGame(handler) {

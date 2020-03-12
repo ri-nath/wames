@@ -16,48 +16,47 @@ import AnagramStore from './AnagramStore';
 
 class GameDB {
     constructor() {
-        SuperStore.onStartAnagramGame(letters => {
-            this.initNewGame(letters);
-            AnagramStore.startNewGame(letters);
-
-            console.log(letters);
+        SuperStore.onStartAnagramGame(game_obj => {
+            this.initNewGame(game_obj);
+            AnagramStore.startNewGame(game_obj);
         });
 
         AnagramStore.onScoreWord(word => {
             this.addWord(word);
         });
 
-        this.words = [];
-        this.letters = [];
-        this.score = 0;
+        this.game_obj = {
+            letters: [],
+            time: 30,
+            score: 0,
+            words: [],
+        };
     }
 
-    initNewGame(letters) {
-        this.words = [];
-        this.letters = letters;
-        this.score = 0;
+    initNewGame(game_obj) {
+        this.game_obj = game_obj;
     }
 
     getLetters() {
-        return this.letters;
+        return this.game_obj.letters;
     }
 
     getScore() {
-        return this.score;
+        return this.game_obj.score;
     }
 
     addWord(word) {
-        this.words.push(word);
+        this.game_obj.words.push(word);
 
-        this.score += 10 * word.length;
+        this.game_obj.score += 10 * word.length;
     }
 
     isWordScored(word) {
-        return this.words.includes(word);
+        return this.game_obj.words.includes(word);
     }
 
     getWords() {
-        return this.words;
+        return this.game_obj.words;
     }
 }
 
