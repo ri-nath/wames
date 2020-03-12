@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import GameContainer from './game/GameContainer';
+import AnagramContainer from './game/AnagramContainer';
 
 export default function App() {
     return (
         <View style={styles.container}>
-            <GameContainer/>
+            <AnagramContainer/>
         </View>
     );
 }

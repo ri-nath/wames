@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
-import GameStore from '../../../state/GameStore';
-import GameDB from '../../../state/GameDB';
+import AnagramStore from '../../../state/AnagramStore';
+import AnagramDB from '../../../state/AnagramDB';
 
 export default class Info extends Component {
     constructor(props) {
@@ -17,15 +17,15 @@ export default class Info extends Component {
     }
 
     componentDidMount() {
-        GameStore.onScoreWord(_ => {
+        AnagramStore.onScoreWord(_ => {
             this.setState({
-                target_score: GameDB.getScore()
+                target_score: AnagramDB.getScore()
             });
 
             setTimeout(this.countScoreUp, 5);
         });
 
-        GameStore.onStartNewGame(_ => {
+        AnagramStore.onStartNewGame(_ => {
             this.setState({
                 score: 0,
                 target_score: 0,
@@ -36,8 +36,8 @@ export default class Info extends Component {
     }
 
     componentWillUnmount() {
-        GameStore.stopListeningForWords();
-        GameStore.stopListeningForNewGame();
+        AnagramStore.stopListeningForWords();
+        AnagramStore.stopListeningForNewGame();
     }
 
     countScoreUp() {
@@ -58,7 +58,7 @@ export default class Info extends Component {
                 </View>
                 <View style={styles.words}>
                     {
-                        GameDB.words.map((word, idx) =>
+                        AnagramDB.words.map((word, idx) =>
                             <Text key={idx}>{ word.toUpperCase() }</Text>
                         )
                     }

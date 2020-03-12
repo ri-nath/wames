@@ -4,9 +4,9 @@ import {StyleSheet, Button, View} from 'react-native';
 import Stage from "./subcomponents/Stage";
 import Info from "./subcomponents/Info";
 
-import GameStore from '../../state/GameStore';
+import AnagramStore from '../../state/AnagramStore';
 
-export default class GameContainer extends Component {
+export default class AnagramContainer extends Component {
     constructor(props) {
         super(props);
 
@@ -14,14 +14,14 @@ export default class GameContainer extends Component {
             points: 0,
         };
 
-        GameStore.startNewGame();
+        AnagramStore.startNewGame();
     }
 
     render() {
         return (
             <View>
                 <View style={styles.debug}>
-                    <Button onPress={_ => GameStore.startNewGame()} title='DEBUG'/>
+                    <Button onPress={_ => AnagramStore.startNewGame()} title='DEBUG'/>
                 </View>
                 <View style={styles.info}>
                     <Info/>

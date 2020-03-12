@@ -1,14 +1,14 @@
 import MicroEmitter from 'micro-emitter';
 
-import GameDB from './GameDB';
+import AnagramDB from './AnagramDB';
 
-class GameStore {
+class AnagramStore {
     constructor() {
         this.event_emitter = new MicroEmitter();
     }
 
     scoreWord(word) {
-        GameDB.addWord(word);
+        AnagramDB.addWord(word);
 
         this.event_emitter.emit('SCORE_WORD', word);
     }
@@ -22,7 +22,7 @@ class GameStore {
     }
 
     startNewGame() {
-        GameDB.initNewGame().then(letters => {
+        AnagramDB.initNewGame().then(letters => {
             this.event_emitter.emit('START_GAME', letters)
         });
     }
@@ -36,4 +36,4 @@ class GameStore {
     }
 }
 
-export default new GameStore();
+export default new AnagramStore();
