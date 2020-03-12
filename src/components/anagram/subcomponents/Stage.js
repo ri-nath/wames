@@ -24,8 +24,8 @@ export default class Stage extends Component {
     }
 
     componentDidMount() {
-        AnagramStore.onStartNewGame(letters => {
-            const options = letters.map((letter, idx) => letter + idx);
+        AnagramStore.onStartNewGame(game_obj => {
+            const options = game_obj.letters.map((letter, idx) => letter + idx);
 
             this.state = {
                 picks: options.map(_ => Constants.DESELECTOR),
@@ -34,10 +34,6 @@ export default class Stage extends Component {
 
             this.resetTiles();
         });
-    }
-
-    componentWillUnmount() {
-        AnagramStore.stopListeningForNewGame();
     }
 
     handleAddTile(value) {

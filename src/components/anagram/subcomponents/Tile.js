@@ -11,9 +11,7 @@ export default function Tile(props) {
             activeOpacity={ 0 }
             disabled={ props.name.includes(Constants.DESELECTOR) }
         >
-            <Text
-                style={ styles.text }
-            >
+            <Text style={ styles.text }>
                 { props.name.includes(Constants.DESELECTOR) ? " " : props.name.charAt(0) }
             </Text>
         </TouchableOpacity>

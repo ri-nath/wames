@@ -11,10 +11,33 @@ export default class Info extends Component {
         this.state = {
             score: 0,
             target_score: 0,
+            timer: 0,
             words: []
         };
 
         this.countScoreUp = this.countScoreUp.bind(this);
+        this.countTimerDown = this.countTimerDown.bind(this);
+
+        this.resetIntervals = this.resetIntervals.bind(this);
+        this.removeIntervals = this.removeIntervals.bind(this);
+
+        this.intervals = [];
+
+        this.resetIntervals();
+    }
+
+    resetIntervals() {
+        this.removeIntervals();
+
+        this.intervals.push(setInterval(this.countScoreUp, 5), setInterval(this.countTimerDown, 1000));
+    }
+
+    removeIntervals() {
+        for (let interval of this.intervals) {
+            clearInterval(interval);
+        }
+
+        this.intervals = [];
     }
 
     componentDidMount() {
@@ -23,38 +46,45 @@ export default class Info extends Component {
                 target_score: AnagramDB.getScore(),
                 words: AnagramDB.getWords()
             });
-
-            setTimeout(this.countScoreUp, 5);
         });
 
         AnagramStore.onStartNewGame(game_obj => {
             this.setState({
                 score: game_obj.score,
                 target_score: game_obj.score,
+                timer: game_obj.time
             });
 
-            setTimeout(this.countScoreUp, 5);
-        })
+            this.resetIntervals();
+        });
     }
 
     componentWillUnmount() {
-        AnagramStore.stopListeningForWords();
-        AnagramStore.stopListeningForNewGame();
+        this.removeIntervals();
     }
 
     countScoreUp() {
-        if (this.state.score < this.state.target_score) {
+        if (this.state.score !== this.state.target_score) {
             this.setState({
-                score: this.state.score + 1
+                score: this.state.score > this.state.target_score ? this.state.score - 1 : this.state.score + 1
             });
+        }
+    }
 
-            setTimeout(this.countScoreUp, 5);
+    countTimerDown() {
+        if (this.state.timer > 0) {
+            this.setState({
+                timer: this.state.timer - 1
+            });
         }
     }
 
     render() {
         return (
             <Fragment>
+                <View style={styles.timer}>
+                    <Text style={styles.timer_text}> { this.state.timer + 's' } </Text>
+                </View>
                 <View style={styles.score}>
                     <Text style={styles.score_text}> { this.state.score } </Text>
                 </View>
@@ -71,6 +101,16 @@ export default class Info extends Component {
 }
 
 const styles = StyleSheet.create({
+    timer_text: {
+        fontSize: 30,
+    },
+
+    timer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
     score_text: {
         fontSize: 60,
     },

@@ -17,7 +17,7 @@ class SuperStore {
             letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
         }
 
-        let game_obj = {
+        const game_obj = {
             letters: letters,
             time: Constants.GAME_TIME,
             score: 0,

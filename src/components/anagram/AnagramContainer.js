@@ -13,8 +13,10 @@ export default class AnagramContainer extends Component {
         this.state = {
             points: 0,
         };
+    }
 
-        SuperStore.startAnagramGame();
+    componentDidMount() {
+        SuperStore.startAnagramGame()
     }
 
     render() {
