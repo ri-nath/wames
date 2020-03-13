@@ -29,6 +29,8 @@ class AnagramStore {
     endGame(game_obj) {
         if (!this.ref) clearTimeout(this.ref);
 
+        game_obj.running = false;
+
         this.emitter.emit('END_GAME', game_obj);
     }
 

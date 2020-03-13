@@ -51,11 +51,21 @@ export default class Info extends Component {
         const game_obj = AnagramDB.getGameState();
         this.setInfoFromGameState(game_obj);
 
+        console.log('woop');
+
         AnagramStore.onScoreWord(_ => {
             this.setState({
                 target_score: AnagramDB.getScore(),
                 words: AnagramDB.getWords()
             });
+
+            console.log('word scored');
+
+            console.log(AnagramDB.getWords());
+        });
+
+        AnagramStore.onEndGame(game_obj => {
+            this.setInfoFromGameState(game_obj);
         });
     }
 
@@ -64,6 +74,8 @@ export default class Info extends Component {
             score: game_obj.score,
             target_score: game_obj.score,
             timer: game_obj.time,
+            words: game_obj.words,
+            show_timer: game_obj.running,
         });
     }
 
@@ -90,9 +102,12 @@ export default class Info extends Component {
     render() {
         return (
             <Fragment>
-                <View style={styles.timer}>
-                    <Text style={styles.timer_text}> { this.state.timer + 's' } </Text>
-                </View>
+                {
+                    this.state.show_timer &&
+                    <View style={styles.timer}>
+                        <Text style={styles.timer_text}> { this.state.timer + 's' } </Text>
+                    </View>
+                }
                 <View style={styles.score}>
                     <Text style={styles.score_text}> { this.state.score } </Text>
                 </View>

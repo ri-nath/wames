@@ -7,7 +7,7 @@ class SuperStore {
         this.emitter = new MicroEmitter();
     }
 
-    startAnagramGame() {
+    stateToAnagramGame() {
         // TODO: server-side
         let letters = [];
 
@@ -16,6 +16,7 @@ class SuperStore {
         }
 
         const game_obj = {
+            running: true,
             letters: letters,
             time: Constants.GAME_TIME,
             score: 0,
@@ -27,12 +28,21 @@ class SuperStore {
         this.emitter.emit('START_ANAGRAM_GAME', game_obj);
     }
 
-    onStartAnagramGame(handler) {
+    onStateToAnagramGame(handler) {
         this.emitter.on('START_ANAGRAM_GAME', handler);
+    }
+
+    stateToMenu() {
+        this.emitter.emit('START_MENU');
+    }
+
+    onStateToMenu(handler) {
+        this.emitter.on('START_MENU', handler);
     }
 
     closeAllListeners() {
         this.emitter.off('START_ANAGRAM_GAME');
+        this.emitter.off('START_MENU');
     }
 }
 

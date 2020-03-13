@@ -6,18 +6,19 @@ import AnagramStore from './AnagramStore';
 /*
  * Game Object:
  * {
- *   letters: ["E", "T", "C"... ],
- *   time: 30 (Seconds)
- *   score: 0 (Points)
- *   words: ["lorem", "ipsum"...]
+ *   running: boolean
+ *   letters: String arr ex. ["E", "T", "C"... ],
+ *   time: int un. seconds
+ *   score: int un. Points
+ *   words: String arr ex. ["lorem", "ipsum"...]
  * }
  *
  */
 
 class GameDB {
     constructor() {
-        SuperStore.onStartAnagramGame(game_obj => {
-            this.initNewGame(game_obj);
+        SuperStore.onStateToAnagramGame(game_obj => {
+            this.setGameState(game_obj);
 
             AnagramStore.startNewGame(game_obj);
         });
@@ -26,7 +27,12 @@ class GameDB {
             this.addWord(word);
         });
 
+        AnagramStore.onEndGame(game_obj => {
+            this.setGameState(game_obj);
+        });
+
         this.game_obj = {
+            running: true,
             letters: [],
             time: 0,
             score: 0,
@@ -34,9 +40,8 @@ class GameDB {
         };
     }
 
-    initNewGame(game_obj) {
+    setGameState(game_obj) {
         this.game_obj = game_obj;
-
     }
 
     getLetters() {

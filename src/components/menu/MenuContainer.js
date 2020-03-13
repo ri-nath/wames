@@ -15,7 +15,7 @@ export default class MenuContainer extends Component {
     render() {
         return (
             <View>
-                <Button title='play' onPress={_ => SuperStore.startAnagramGame()}/>
+                <Button title='play' onPress={_ => SuperStore.stateToAnagramGame()}/>
             </View>
         )
     }

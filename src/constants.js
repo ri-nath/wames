@@ -9,5 +9,5 @@ export const WEIGHTED_LETTERS =  ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', '
 
 export const TILES = 8;
 
-export const GAME_TIME = 30;
+export const GAME_TIME = 5;
 

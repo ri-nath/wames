@@ -17,11 +17,17 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-        SuperStore.onStartAnagramGame(_ => {
+        SuperStore.onStateToAnagramGame(_ => {
            this.setState({
                panel: 'ANAGRAM'
            });
         });
+
+        SuperStore.onStateToMenu(_ => {
+            this.setState({
+                panel: 'MENU'
+            })
+        })
     }
 
     componentWillUnmount() {
