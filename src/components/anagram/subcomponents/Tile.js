@@ -4,15 +4,17 @@ import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Constants from '../../../constants';
 
 export default function Tile(props) {
+    const disabled = props.name.includes(Constants.DESELECTOR);
+
     return (
         <TouchableOpacity
-            style={ [styles.button, props.name.includes(Constants.DESELECTOR) && styles.active] }
+            style={ [styles.button, disabled && styles.active] }
             onPress={ props.onPress }
             activeOpacity={ 0 }
-            disabled={ props.name.includes(Constants.DESELECTOR) }
+            disabled={ disabled }
         >
             <Text style={ styles.text }>
-                { props.name.includes(Constants.DESELECTOR) ? " " : props.name.charAt(0) }
+                { disabled ? " " : props.name.charAt(0) }
             </Text>
         </TouchableOpacity>
     )

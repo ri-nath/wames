@@ -21,6 +21,8 @@ export default class Info extends Component {
         this.resetIntervals = this.resetIntervals.bind(this);
         this.removeIntervals = this.removeIntervals.bind(this);
 
+        this.setInfoFromGameState = this.setInfoFromGameState.bind(this);
+
         this.intervals = [];
 
         this.resetIntervals();
@@ -29,7 +31,10 @@ export default class Info extends Component {
     resetIntervals() {
         this.removeIntervals();
 
-        this.intervals.push(setInterval(this.countScoreUp, 5), setInterval(this.countTimerDown, 1000));
+        this.intervals.push(
+            setInterval(this.countScoreUp, 5), // 5 ms
+            setInterval(this.countTimerDown, 1000) // 1 second
+        );
     }
 
     removeIntervals() {
@@ -41,21 +46,24 @@ export default class Info extends Component {
     }
 
     componentDidMount() {
+        this.resetIntervals();
+
+        const game_obj = AnagramDB.getGameState();
+        this.setInfoFromGameState(game_obj);
+
         AnagramStore.onScoreWord(_ => {
             this.setState({
                 target_score: AnagramDB.getScore(),
                 words: AnagramDB.getWords()
             });
         });
+    }
 
-        AnagramStore.onStartNewGame(game_obj => {
-            this.setState({
-                score: game_obj.score,
-                target_score: game_obj.score,
-                timer: game_obj.time
-            });
-
-            this.resetIntervals();
+    setInfoFromGameState(game_obj) {
+        this.setState({
+            score: game_obj.score,
+            target_score: game_obj.score,
+            timer: game_obj.time,
         });
     }
 
@@ -66,7 +74,7 @@ export default class Info extends Component {
     countScoreUp() {
         if (this.state.score !== this.state.target_score) {
             this.setState({
-                score: this.state.score > this.state.target_score ? this.state.score - 1 : this.state.score + 1
+                score: this.state.score > this.state.target_score ? this.state.score - 10 : this.state.score + 10
             });
         }
     }

@@ -1,14 +1,41 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import AnagramContainer from './anagram/AnagramContainer';
+import MenuContainer from "./menu/MenuContainer";
+import AnagramContainer from "./anagram/AnagramContainer";
 
-export default function App() {
-    return (
-        <View style={styles.container}>
-            <AnagramContainer/>
-        </View>
-    );
+import SuperStore from "../state/SuperStore";
+import AnagramStore from "../state/AnagramStore";
+
+export default class App extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            panel: 'MENU',
+        }
+    }
+
+    componentDidMount() {
+        SuperStore.onStartAnagramGame(_ => {
+           this.setState({
+               panel: 'ANAGRAM'
+           });
+        });
+    }
+
+    componentWillUnmount() {
+        SuperStore.closeAllListeners();
+    }
+
+    render() {
+        return (
+            <View style={styles.container}>
+                { this.state.panel === 'MENU' && <MenuContainer/> }
+                { this.state.panel === 'ANAGRAM' && <AnagramContainer/> }
+            </View>
+        )
+    }
 }
 
 const styles = StyleSheet.create({

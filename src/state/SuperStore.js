@@ -2,8 +2,6 @@ import MicroEmitter from 'micro-emitter';
 
 import * as Constants from '../constants';
 
-import AnagramStore from './AnagramStore';
-
 class SuperStore {
     constructor() {
         this.emitter = new MicroEmitter();
@@ -31,6 +29,10 @@ class SuperStore {
 
     onStartAnagramGame(handler) {
         this.emitter.on('START_ANAGRAM_GAME', handler);
+    }
+
+    closeAllListeners() {
+        this.emitter.off('START_ANAGRAM_GAME');
     }
 }
 

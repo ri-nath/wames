@@ -4,19 +4,15 @@ import {StyleSheet, Button, View} from 'react-native';
 import Stage from "./subcomponents/Stage";
 import Info from "./subcomponents/Info";
 
-import SuperStore from '../../state/SuperStore';
+import AnagramStore from "../../state/AnagramStore";
 
 export default class AnagramContainer extends Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            points: 0,
-        };
     }
 
-    componentDidMount() {
-        SuperStore.startAnagramGame()
+    componentWillUnmount() {
+        AnagramStore.closeAllListeners();
     }
 
     render() {

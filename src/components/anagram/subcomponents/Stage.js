@@ -12,28 +12,35 @@ export default class Stage extends Component {
     constructor(props) {
         super(props);
 
-        const options = AnagramDB.getLetters().map((letter, idx) => letter + idx);
+        this.state = {
+            picks: [],
+            options: []
+        };
+
+        this.handleAddTile = this.handleAddTile.bind(this);
+        this.handleRemoveTile = this.handleRemoveTile.bind(this);
+
+        this.setLettersFromGameState = this.setLettersFromGameState.bind(this);
+    }
+
+    componentDidMount() {
+        const game_obj = AnagramDB.getGameState();
+        this.setLettersFromGameState(game_obj);
+
+        AnagramStore.onStartNewGame(game_obj => {
+            this.setLettersFromGameState(game_obj)
+        });
+    }
+
+    setLettersFromGameState(game_obj) {
+        const options = game_obj.letters.map((letter, idx) => letter + idx);
 
         this.state = {
             picks: options.map(_ => Constants.DESELECTOR),
             options: options,
         };
 
-        this.handleAddTile = this.handleAddTile.bind(this);
-        this.handleRemoveTile = this.handleRemoveTile.bind(this);
-    }
-
-    componentDidMount() {
-        AnagramStore.onStartNewGame(game_obj => {
-            const options = game_obj.letters.map((letter, idx) => letter + idx);
-
-            this.state = {
-                picks: options.map(_ => Constants.DESELECTOR),
-                options: options,
-            };
-
-            this.resetTiles();
-        });
+        this.resetTiles();
     }
 
     handleAddTile(value) {

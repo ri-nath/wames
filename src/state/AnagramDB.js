@@ -18,6 +18,7 @@ class GameDB {
     constructor() {
         SuperStore.onStartAnagramGame(game_obj => {
             this.initNewGame(game_obj);
+
             AnagramStore.startNewGame(game_obj);
         });
 
@@ -27,7 +28,7 @@ class GameDB {
 
         this.game_obj = {
             letters: [],
-            time: 30,
+            time: 0,
             score: 0,
             words: [],
         };
@@ -35,6 +36,7 @@ class GameDB {
 
     initNewGame(game_obj) {
         this.game_obj = game_obj;
+
     }
 
     getLetters() {
@@ -48,7 +50,7 @@ class GameDB {
     addWord(word) {
         this.game_obj.words.push(word);
 
-        this.game_obj.score += 10 * word.length;
+        this.game_obj.score += 100 * word.length;
     }
 
     isWordScored(word) {
@@ -57,6 +59,10 @@ class GameDB {
 
     getWords() {
         return this.game_obj.words;
+    }
+
+    getGameState() {
+        return this.game_obj;
     }
 }
 
