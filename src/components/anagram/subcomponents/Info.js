@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
-import AnagramDB from '../../../state/AnagramDB';
+import AnagramInstance from '../../../state/AnagramInstance';
 
 export default class Info extends Component {
     constructor(props) {
@@ -12,7 +12,8 @@ export default class Info extends Component {
             score: 0,
             target_score: 0,
             timer: 0,
-            words: []
+            show_timer: true,
+            words: [],
         };
 
         this.countScoreUp = this.countScoreUp.bind(this);
@@ -48,34 +49,24 @@ export default class Info extends Component {
     componentDidMount() {
         this.resetIntervals();
 
-        const game_obj = AnagramDB.getGameState();
-        this.setInfoFromGameState(game_obj);
+        const game_obj = AnagramStore.active_game;
+        this.setInfoFromGameState(game_obj.state);
 
-        console.log('woop');
-
-        AnagramStore.onScoreWord(_ => {
-            this.setState({
-                target_score: AnagramDB.getScore(),
-                words: AnagramDB.getWords()
-            });
-
-            console.log('word scored');
-
-            console.log(AnagramDB.getWords());
+        AnagramStore.onScoreWord(game_obj => {
+            this.setInfoFromGameState(game_obj.state);
         });
 
         AnagramStore.onEndGame(game_obj => {
-            this.setInfoFromGameState(game_obj);
+            this.setInfoFromGameState(game_obj.state);
         });
     }
 
-    setInfoFromGameState(game_obj) {
+    setInfoFromGameState(state) {
         this.setState({
-            score: game_obj.score,
-            target_score: game_obj.score,
-            timer: game_obj.time,
-            words: game_obj.words,
-            show_timer: game_obj.running,
+            target_score: state.score,
+            timer: state.time,
+            show_timer: state.running,
+            words: state.words,
         });
     }
 

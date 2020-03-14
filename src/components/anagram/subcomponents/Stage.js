@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import Tile from './Tile';
 
 import AnagramStore from '../../../state/AnagramStore';
-import AnagramDB from '../../../state/AnagramDB';
+import AnagramInstance from '../../../state/AnagramInstance';
 
 import * as Constants from '../../../constants';
 
@@ -24,16 +24,16 @@ export default class Stage extends Component {
     }
 
     componentDidMount() {
-        const game_obj = AnagramDB.getGameState();
-        this.setLettersFromGameState(game_obj);
+        const game_obj = AnagramStore.active_game;
+        this.setLettersFromGameState(game_obj.state);
 
         AnagramStore.onStartNewGame(game_obj => {
-            this.setLettersFromGameState(game_obj)
+            this.setLettersFromGameState(game_obj.state)
         });
     }
 
-    setLettersFromGameState(game_obj) {
-        const options = game_obj.letters.map((letter, idx) => letter + idx);
+    setLettersFromGameState(state) {
+        const options = state.letters.map((letter, idx) => letter + idx);
 
         this.state = {
             picks: options.map(_ => Constants.DESELECTOR),
@@ -60,7 +60,9 @@ export default class Stage extends Component {
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        if (!AnagramDB.isWordScored(current_word) && Constants.WORDS.includes(current_word)) {
+        const words = AnagramStore.active_game.state.words;
+
+        if (!words.includes(current_word) && Constants.WORDS.includes(current_word)) {
             AnagramStore.scoreWord(current_word);
             this.resetTiles();
         }

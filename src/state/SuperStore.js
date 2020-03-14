@@ -2,6 +2,8 @@ import MicroEmitter from 'micro-emitter';
 
 import * as Constants from '../constants';
 
+import AnagramInstance from './AnagramInstance';
+
 class SuperStore {
     constructor() {
         this.emitter = new MicroEmitter();
@@ -15,13 +17,15 @@ class SuperStore {
             letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
         }
 
-        const game_obj = {
+        const game_obj = new AnagramInstance();
+
+        game_obj.setState({
             running: true,
             letters: letters,
             time: Constants.GAME_TIME,
             score: 0,
             words: []
-        };
+        });
 
         // End TODO
 

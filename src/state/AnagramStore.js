@@ -1,14 +1,24 @@
 import MicroEmitter from 'micro-emitter';
 
+import SuperStore from './SuperStore'
+
 class AnagramStore {
     constructor() {
         this.emitter = new MicroEmitter();
 
-        this.ref = null;
+        this.game_instances = [];
+        this.active_game = null;
+        this.timeout = null;
+
+        SuperStore.onStateToAnagramGame(game_obj => {
+            this.startNewGame(game_obj);
+        })
     }
 
     scoreWord(word) {
-        this.emitter.emit('SCORE_WORD', word);
+        this.active_game.addWord(word);
+
+        this.emitter.emit('SCORE_WORD', this.active_game);
     }
 
     onScoreWord(handler) {
@@ -16,22 +26,25 @@ class AnagramStore {
     }
 
     startNewGame(game_obj) {
-        if (!this.ref) clearTimeout(this.ref);
-        this.ref = setTimeout(() => {this.endGame(game_obj)}, game_obj.time * 1000);
+        this.active_game = game_obj;
+
+        if (!this.timeout) clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {this.endGame(this.active_game)}, this.active_game.state.time * 1000);
 
         this.emitter.emit('START_GAME', game_obj);
     }
 
     onStartNewGame(handler) {
-        this.emitter.on('START_GAME', handler);
+        this.emitter.on('START_GAME', this.active_game);
     }
 
-    endGame(game_obj) {
-        if (!this.ref) clearTimeout(this.ref);
+    endGame() {
+        if (!this.timeout) clearTimeout(this.timeout);
 
-        game_obj.running = false;
+        this.active_game.state.running = false;
+        this.game_instances.push(this.active_game);
 
-        this.emitter.emit('END_GAME', game_obj);
+        this.emitter.emit('END_GAME', this.active_game);
     }
 
     onEndGame(handler) {
