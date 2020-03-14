@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import Tile from './Tile';
 
 import AnagramStore from '../../../state/AnagramStore';
-import AnagramInstance from '../../../state/AnagramInstance';
 
 import * as Constants from '../../../constants';
 
@@ -13,12 +12,13 @@ export default class Stage extends Component {
         super(props);
 
         this.state = {
-            picks: [],
-            options: []
+            options: [],
+            picks: []
         };
 
         this.handleAddTile = this.handleAddTile.bind(this);
         this.handleRemoveTile = this.handleRemoveTile.bind(this);
+        this.resetTiles = this.resetTiles.bind(this);
 
         this.setLettersFromGameState = this.setLettersFromGameState.bind(this);
     }
@@ -35,12 +35,10 @@ export default class Stage extends Component {
     setLettersFromGameState(state) {
         const options = state.letters.map((letter, idx) => letter + idx);
 
-        this.state = {
-            picks: options.map(_ => Constants.DESELECTOR),
+        this.setState({
             options: options,
-        };
-
-        this.resetTiles();
+            picks: options.map(_ => Constants.DESELECTOR),
+        });
     }
 
     handleAddTile(value) {
