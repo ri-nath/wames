@@ -10,6 +10,8 @@ class SuperStore {
     }
 
     stateToAnagramGame() {
+        console.log("New Anagram Game: ", new Date());
+
         // TODO: server-side
         let letters = [];
 
@@ -19,12 +21,9 @@ class SuperStore {
 
         const game_obj = new AnagramInstance();
 
-        game_obj.setState({
-            running: true,
+        game_obj.setConfig({
             letters: letters,
             time: Constants.GAME_TIME,
-            score: 0,
-            words: []
         });
 
         // End TODO

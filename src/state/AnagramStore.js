@@ -29,7 +29,9 @@ class AnagramStore {
         this.active_game = game_obj;
 
         if (!this.timeout) clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {this.endGame(this.active_game)}, this.active_game.state.time * 1000);
+        this.timeout = setTimeout(() => {
+            this.endGame(this.active_game)
+        }, this.active_game.config.time * 1000);
 
         this.emitter.emit('START_GAME', game_obj);
     }

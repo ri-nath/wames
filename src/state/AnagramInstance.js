@@ -11,18 +11,23 @@
  */
 
 export default class AnagramInstance {
-    constructor(uuid) {
-        this.uuid = uuid;
+    constructor(id) {
+        this.id = id;
 
         this.state = {
-            running: true,
-
-            letters: [],
             words: [],
-
-            time: 0,
+            running: true,
             score: 0,
         };
+
+        this.config = {
+            letters: [],
+            duration: 0,
+        }
+    }
+
+    setConfig(config) {
+        this.config = config;
     }
 
     setState(state) {

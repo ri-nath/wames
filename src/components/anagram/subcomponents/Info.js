@@ -22,7 +22,7 @@ export default class Info extends Component {
         this.resetIntervals = this.resetIntervals.bind(this);
         this.removeIntervals = this.removeIntervals.bind(this);
 
-        this.setInfoFromGameState = this.setInfoFromGameState.bind(this);
+        this.updateInfoFromGameInstance = this.updateInfoFromGameInstance.bind(this);
 
         this.intervals = [];
 
@@ -50,23 +50,28 @@ export default class Info extends Component {
         this.resetIntervals();
 
         const game_obj = AnagramStore.active_game;
-        this.setInfoFromGameState(game_obj.state);
+        this.updateInfoFromGameInstance(game_obj);
+
+        this.setState({
+            timer: game_obj.config.time
+        });
 
         AnagramStore.onScoreWord(game_obj => {
-            this.setInfoFromGameState(game_obj.state);
+            this.updateInfoFromGameInstance(game_obj);
         });
 
         AnagramStore.onEndGame(game_obj => {
-            this.setInfoFromGameState(game_obj.state);
+            this.updateInfoFromGameInstance(game_obj);
         });
     }
 
-    setInfoFromGameState(state) {
+    updateInfoFromGameInstance(game_obj) {
+        const game_state = game_obj.state;
+
         this.setState({
-            target_score: state.score,
-            timer: state.time,
-            show_timer: state.running,
-            words: state.words,
+            target_score: game_state.score,
+            show_timer: game_state.running,
+            words: game_state.words,
         });
     }
 
@@ -105,7 +110,7 @@ export default class Info extends Component {
                 <View style={styles.words}>
                     {
                         this.state.words.map((word, idx) =>
-                            <Text key={idx}>{ word.toUpperCase() }</Text>
+                            <Text style={styles.words_text} key={idx}>{ word.toUpperCase() }</Text>
                         )
                     }
                 </View>
@@ -133,6 +138,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+
+    words_text: {
+        fontSize: 10,
     },
 
     words: {

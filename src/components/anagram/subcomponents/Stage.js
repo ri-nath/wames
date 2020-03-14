@@ -20,20 +20,20 @@ export default class Stage extends Component {
         this.handleRemoveTile = this.handleRemoveTile.bind(this);
         this.resetTiles = this.resetTiles.bind(this);
 
-        this.setLettersFromGameState = this.setLettersFromGameState.bind(this);
+        this.setLettersFromGameInstance = this.setLettersFromGameInstance.bind(this);
     }
 
     componentDidMount() {
         const game_obj = AnagramStore.active_game;
-        this.setLettersFromGameState(game_obj.state);
+        this.setLettersFromGameInstance(game_obj);
 
         AnagramStore.onStartNewGame(game_obj => {
-            this.setLettersFromGameState(game_obj.state)
+            this.setLettersFromGameInstance(game_obj)
         });
     }
 
-    setLettersFromGameState(state) {
-        const options = state.letters.map((letter, idx) => letter + idx);
+    setLettersFromGameInstance(game_obj) {
+        const options = game_obj.config.letters.map((letter, idx) => letter + idx);
 
         this.setState({
             options: options,
