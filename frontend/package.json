@@ -1,4 +1,5 @@
 {
+  "name": "wames-frontend",
   "main": "src/main.js",
   "scripts": {
     "start": "expo start",
