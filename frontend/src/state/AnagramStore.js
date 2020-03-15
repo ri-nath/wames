@@ -8,6 +8,7 @@ class AnagramStore {
         this.emitter = new MicroEmitter();
 
         this.game_instances = [];
+
         this.active_game = null;
         this.timeout = null;
 
@@ -38,6 +39,10 @@ class AnagramStore {
             stage: 'running'
         });
 
+        if (this.game_instances.every(game_instance => game_instance.uuid !== this.active_game.uuid)) {
+            this.game_instances.push(this.active_game);
+        }
+
         this.emitter.emit('START_GAME', this.active_game);
     }
 
@@ -49,10 +54,8 @@ class AnagramStore {
         if (!this.timeout) clearTimeout(this.timeout);
 
         this.active_game.setLocalState({
-            stage: 'ended'
+            stage: 'finished'
         });
-
-        this.game_instances.push(this.active_game);
 
         this.emitter.emit('END_GAME', this.active_game);
     }

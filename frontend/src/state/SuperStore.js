@@ -14,13 +14,11 @@ class SuperStore {
     stateToAnagramGame(game_object) {
         console.log("New Anagram Game: ", new Date());
 
-        // TODO: server-side
-
-        const state_handler = new AnagramStateHandler(game_object, this.user_id);
+        // TODO: server-side;
 
         // End TODO
 
-        this.emitter.emit('START_ANAGRAM_GAME', state_handler);
+        this.emitter.emit('START_ANAGRAM_GAME', game_object);
     }
 
     onStateToAnagramGame(handler) {
