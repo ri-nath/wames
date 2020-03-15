@@ -67,6 +67,10 @@ function initServer() {
                 socket.emit('new-game-state', uuid, { [user_id]: state });
             })
         });
+
+        socket.on('disconnect', socket => {
+            delete sockets[socket.user_id];
+        })
     });
 
     server.listen(port, _ => console.log("Listening on port ", port));

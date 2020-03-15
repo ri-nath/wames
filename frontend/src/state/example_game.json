@@ -1,0 +1,19 @@
+{
+  "uuid": "fwu0e8gtabofubeg8g",
+  "states": {
+    "user_id_1": {
+      "words": ["dog, cat, mouse"],
+      "stage": "finished",
+      "score": 200
+    },
+    "user_id_2": {
+      "words": ["mouse"],
+      "stage": "finished",
+      "score": 70
+    }
+  },
+  "config": {
+    "letters": ["DOGCATMOUSE"],
+    "duration": 30
+  }
+}

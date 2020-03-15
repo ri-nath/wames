@@ -1,6 +1,7 @@
 import MicroEmitter from 'micro-emitter';
 
 import SuperStore from './SuperStore'
+import AnagramStateHandler from './AnagramStateHandler'
 
 class AnagramStore {
     constructor() {
@@ -16,7 +17,7 @@ class AnagramStore {
     }
 
     scoreWord(word) {
-        this.active_game.addWord(word);
+        this.active_game.scoreWordOnLocalState(word);
 
         this.emitter.emit('SCORE_WORD', this.active_game);
     }
@@ -25,25 +26,32 @@ class AnagramStore {
         this.emitter.on('SCORE_WORD', handler);
     }
 
-    startNewGame(game_obj) {
-        this.active_game = game_obj;
+    startNewGame(state_handler) {
+        this.active_game = state_handler;
 
         if (!this.timeout) clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
             this.endGame(this.active_game)
-        }, this.active_game.config.time * 1000);
+        }, this.active_game.config.duration * 1000);
 
-        this.emitter.emit('START_GAME', game_obj);
+        this.active_game.setLocalState({
+            stage: 'running'
+        });
+
+        this.emitter.emit('START_GAME', this.active_game);
     }
 
     onStartNewGame(handler) {
-        this.emitter.on('START_GAME', this.active_game);
+        this.emitter.on('START_GAME', handler);
     }
 
     endGame() {
         if (!this.timeout) clearTimeout(this.timeout);
 
-        this.active_game.state.running = false;
+        this.active_game.setLocalState({
+            stage: 'ended'
+        });
+
         this.game_instances.push(this.active_game);
 
         this.emitter.emit('END_GAME', this.active_game);

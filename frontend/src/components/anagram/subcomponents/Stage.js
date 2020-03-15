@@ -58,7 +58,7 @@ export default class Stage extends Component {
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        const words = AnagramStore.active_game.state.words;
+        const words = AnagramStore.active_game.getLocalState().words;
 
         if (!words.includes(current_word) && Constants.WORDS.includes(current_word)) {
             AnagramStore.scoreWord(current_word);

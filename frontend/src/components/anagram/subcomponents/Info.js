@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
-import AnagramInstance from '../../../state/AnagramInstance';
 
 export default class Info extends Component {
     constructor(props) {
@@ -53,7 +52,7 @@ export default class Info extends Component {
         this.updateInfoFromGameInstance(game_obj);
 
         this.setState({
-            timer: game_obj.config.time
+            timer: game_obj.config.duration
         });
 
         AnagramStore.onScoreWord(game_obj => {
@@ -66,11 +65,11 @@ export default class Info extends Component {
     }
 
     updateInfoFromGameInstance(game_obj) {
-        const game_state = game_obj.state;
+        const game_state = game_obj.getLocalState();
 
         this.setState({
             target_score: game_state.score,
-            show_timer: game_state.running,
+            show_timer: game_state.stage === 'running',
             words: game_state.words,
         });
     }

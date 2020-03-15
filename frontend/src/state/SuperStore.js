@@ -2,33 +2,25 @@ import MicroEmitter from 'micro-emitter';
 
 import * as Constants from '../constants';
 
-import AnagramInstance from './AnagramInstance';
+import AnagramStateHandler from "./AnagramStateHandler";
 
 class SuperStore {
     constructor() {
         this.emitter = new MicroEmitter();
+
+        this.user_id = 'CRAUEL';
     }
 
-    stateToAnagramGame() {
+    stateToAnagramGame(game_object) {
         console.log("New Anagram Game: ", new Date());
 
         // TODO: server-side
-        let letters = [];
 
-        for (let i = 0; i < Constants.TILES; i++) {
-            letters[i] = Constants.WEIGHTED_LETTERS[(Math.floor(Math.random() * Constants.WEIGHTED_LETTERS.length))];
-        }
-
-        const game_obj = new AnagramInstance();
-
-        game_obj.setConfig({
-            letters: letters,
-            time: Constants.GAME_TIME,
-        });
+        const state_handler = new AnagramStateHandler(game_object, this.user_id);
 
         // End TODO
 
-        this.emitter.emit('START_ANAGRAM_GAME', game_obj);
+        this.emitter.emit('START_ANAGRAM_GAME', state_handler);
     }
 
     onStateToAnagramGame(handler) {
