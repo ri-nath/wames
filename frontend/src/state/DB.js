@@ -1,17 +1,26 @@
 import socketIOClient from 'socket.io-client'
 
-class DB {
+export default class DB {
     constructor() {
-        const endpoint = 'http://localhost:3000/';
+        const endpoint = 'http://192.168.1.160:3000';
 
         this.socket = socketIOClient(endpoint);
-        this.user_id = Math.random().toString(36).substring(7) // TODO: implement properly
+        this.user_id = Math.random().toString(36).substring(7); // TODO: implement properly
 
         this.socket.emit('register-user', this.user_id);
+
+        this.socket.on('connect', _ => {
+            if (this.socket.connected) console.log('Socket Connected!');
+            else (console.log('Not Connected!'))
+        });
     }
 
-    createGame(rival_id) {
-        this.socket.emit('create-game', rival_id);
+    createGame(user_id, rival_id) {
+        this.socket.emit('create-game', user_id, rival_id);
+    }
+
+    onGameCreation(handler) {
+        this.socket.on('return-game', handler);
     }
 
     onAddGame(handler) {
@@ -24,7 +33,7 @@ class DB {
     }
 
     onNewGameState(handler) {
-        //params: uuid, { [user_id]: new state }
+        //params: uuid, user_id, new state }
         this.socket.on('new-game-state', handler);
     }
 }

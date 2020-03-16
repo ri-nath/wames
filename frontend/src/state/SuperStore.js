@@ -1,22 +1,28 @@
 import MicroEmitter from 'micro-emitter';
 
-import * as Constants from '../constants';
-
-import AnagramStateHandler from "./AnagramStateHandler";
+import DB from './DB';
 
 class SuperStore {
     constructor() {
+        console.log("Starting up... ", new Date());
+
         this.emitter = new MicroEmitter();
 
-        this.user_id = 'CRAUEL';
+        this.db = new DB();
+
+        this.user_id = this.db.user_id;
+
+        this.db.onGameCreation(game_object => {
+            this.stateToAnagramGame(game_object)
+        })
+    }
+
+    createAnagramGame(rival_id) {
+        this.db.createGame(this.user_id, rival_id);
     }
 
     stateToAnagramGame(game_object) {
         console.log("New Anagram Game: ", new Date());
-
-        // TODO: server-side;
-
-        // End TODO
 
         this.emitter.emit('START_ANAGRAM_GAME', game_object);
     }

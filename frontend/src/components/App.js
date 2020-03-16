@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
 import MenuContainer from "./menu/MenuContainer";
 import AnagramContainer from "./anagram/AnagramContainer";
@@ -36,17 +36,30 @@ export default class App extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                { this.state.panel === 'MENU' && <MenuContainer/> }
-                { this.state.panel === 'ANAGRAM' && <AnagramContainer/> }
-            </View>
+            <Fragment>
+                <View style={styles.id}>
+                    <Text>{ SuperStore.user_id }</Text>
+                </View>
+                <View style={styles.container}>
+                    { this.state.panel === 'MENU' && <MenuContainer/> }
+                    { this.state.panel === 'ANAGRAM' && <AnagramContainer/> }
+                </View>
+            </Fragment>
+
         )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
+    id: {
         flex: 1,
+        backgroundColor: '#4fff86',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    container: {
+        flex: 5,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',

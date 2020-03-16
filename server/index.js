@@ -53,19 +53,23 @@ function initServer() {
             const game = generateAnagramGame(id, rival_id);
             createGame(game);
 
-            [id, rival_id].filter(user_id => sockets[user_id]).forEach(socket => {
-                socket.emit('add-game', game);
-            });
+            socket.emit('return-game', game);
+
+            sockets[id].emit('add-game', game);
+
+            if (sockets[rival_id]) {
+                sockets[rival_id].emit('add-game', game);
+            }
         });
 
         socket.on('update-game-state', (uuid, state) => {
             const user_id = socket.user_id;
 
-            updateGame(uuid, user_id, state);
-
-            Object.keys(getGame(uuid).states).filter(user_id => sockets[user_id]).forEach(socket => {
-                socket.emit('new-game-state', uuid, { [user_id]: state });
-            })
+            updateGame(uuid, user_id, state).then(game => Object.keys(game.states)).then(users => {
+                users.map(user_id => sockets[user_id]).forEach(socket => {
+                    if (socket.connected) socket.emit('new-game-state', uuid, user_id, state);
+                })
+            });
         });
 
         socket.on('disconnect', socket => {
@@ -76,7 +80,7 @@ function initServer() {
     server.listen(port, _ => console.log("Listening on port ", port));
 }
 
-function generateAnagramGame(user_id, rival_id, length = 8, duration = 30) {
+function generateAnagramGame(user_id, rival_id, length = 8, duration = 60) {
     const uuid = uuidv4();
 
     const states = {
@@ -101,7 +105,9 @@ function generateAnagramGame(user_id, rival_id, length = 8, duration = 30) {
             letters: letters,
             duration: duration
         }
-    }
+    };
+
+    return game;
 }
 
 const example_game = {
@@ -133,6 +139,8 @@ function updateGame(uuid, user_id, state) {
         { uuid: uuid },
         { $set: { ['states.' + user_id]: state } }
     );
+
+    return getGame(uuid);
 }
 
 function getGame(uuid) {

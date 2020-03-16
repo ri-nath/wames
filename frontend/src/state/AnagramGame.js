@@ -1,4 +1,4 @@
-export default class AnagramStateHandler {
+export default class AnagramGame {
     constructor(game_object, user_id) {
         this.uuid = game_object.uuid;
         this.states = game_object.states;
