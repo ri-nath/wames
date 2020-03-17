@@ -1,0 +1,11 @@
+{
+  "name": "wames",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/vayelcrau/wames.git",
+  "author": "Rishi Nath <rishi.nath@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "heroku": "git subtree push --prefix server origin heroku"
+  }
+}

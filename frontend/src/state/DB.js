@@ -1,22 +1,21 @@
-import socketIOClient from 'socket.io-client'
-import { ENDPOINT } from 'react-native-dotenv'
+import io from 'socket.io-client'
 
 export default class DB {
     constructor() {
-        this.socket = socketIOClient(ENDPOINT);
+        this.socket = io('https://word-games-server.herokuapp.com');
         this.user_id = Math.random().toString(36).substring(7); // TODO: implement properly
 
         this.socket.emit('register-user', this.user_id);
-
-        setInterval(() => {
-            console.log(new Date());
-            if (this.socket.connected) console.log('Socket Connected!')
-        }, 5000);
 
         this.socket.on('connect', _ => {
             if (this.socket.connected) console.log('Socket Connected!');
             else (console.log('Not Connected!'))
         });
+
+        this.socket.on('disconnect', _ => {
+            if (this.socket.connected) console.log('Socket Connected!');
+            else (console.log('Not Connected!'))
+        })
     }
 
     createGame(user_id, rival_id) {
