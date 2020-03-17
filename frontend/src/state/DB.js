@@ -1,13 +1,17 @@
 import socketIOClient from 'socket.io-client'
+import { ENDPOINT } from 'react-native-dotenv'
 
 export default class DB {
     constructor() {
-        const endpoint = 'http://192.168.1.160:3000';
-
-        this.socket = socketIOClient(endpoint);
+        this.socket = socketIOClient(ENDPOINT);
         this.user_id = Math.random().toString(36).substring(7); // TODO: implement properly
 
         this.socket.emit('register-user', this.user_id);
+
+        setInterval(() => {
+            console.log(new Date());
+            if (this.socket.connected) console.log('Socket Connected!')
+        }, 5000);
 
         this.socket.on('connect', _ => {
             if (this.socket.connected) console.log('Socket Connected!');

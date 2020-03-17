@@ -12,6 +12,10 @@ const io = socketIO(server);
 
 const port = process.env.PORT || 3000;
 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 function init(database) {
     server.listen(port, _ => console.log("Listening on port ", port));
 

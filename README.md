@@ -1,4 +1,5 @@
 # word games
 cross-platform word games
 
-because i feel left out when people use game pigeon :-)
+#### Heroku Deployment
+To push to the `heroku` branch, use `git subtree push --prefix server origin heroku` from the root directory.
