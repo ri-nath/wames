@@ -9,6 +9,47 @@ class AnagramStore {
 
         this.game_instances = [];
 
+        // For testing layout:
+        //
+        // this.game_instances = [new AnagramGame({
+        //     "uuid": "fwu0e8gtabofubeg8g",
+        //     "states": {
+        //         [SuperStore.db.user_id]: {
+        //             "words": ["dog, cat, mouse"],
+        //             "stage": "finished",
+        //             "score": 200
+        //         },
+        //         "genericUsernameOne": {
+        //             "words": ["mouse"],
+        //             "stage": "finished",
+        //             "score": 70
+        //         }
+        //     },
+        //     "config": {
+        //         "letters": ["DOGCATMOUSE"],
+        //         "duration": 30
+        //     }
+        // }, SuperStore.db.user_id),
+        //     new AnagramGame({
+        //         "uuid": "fwu0e8gtabofubeg8g",
+        //         "states": {
+        //             [SuperStore.db.user_id]: {
+        //                 "words": ["dog, cat, mouse"],
+        //                 "stage": "finished",
+        //                 "score": 200
+        //             },
+        //             "xXxSecondGenericUsernamexXx": {
+        //                 "words": ["mouse"],
+        //                 "stage": "finished",
+        //                 "score": 70
+        //             }
+        //         },
+        //         "config": {
+        //             "letters": ["DOGCATMOUSE"],
+        //             "duration": 30
+        //         }
+        //     }, SuperStore.db.user_id)];
+
         this.active_game = null;
         this.timeout = null;
 

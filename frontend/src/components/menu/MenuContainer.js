@@ -30,7 +30,7 @@ export default class MenuContainer extends Component {
     render() {
         return (
             <Fragment>
-                <View styles={styles.create_game}>
+                <View style={styles.create_game}>
                     <TextInput
                         placeholder='Opponent Username'
                         value={this.state.name}
@@ -41,10 +41,11 @@ export default class MenuContainer extends Component {
                         onPress={_ => SuperStore.createAnagramGame(this.state.name)}
                         />
                 </View>
-                <View styles={styles.view_games}>
+                <View style={styles.view_games}>
+                    <Text style={styles.title}> Games </Text>
                     {
                         AnagramStore.game_instances.map((game_instance, idx) =>
-                            <View key={idx} flexDirection='row'>
+                            <View style={ styles.game_row } key={idx} flexDirection='row'>
                                 {
                                     Object.keys(game_instance.states).map((user_id, iidx) =>
                                         <Text key={AnagramStore.game_instances.length + iidx}>
@@ -57,7 +58,7 @@ export default class MenuContainer extends Component {
                                         <TouchableOpacity
                                             style={ styles.button }
                                             onPress={ _ => {alert(Object.keys(game_instance.states).map(user_id =>
-                                                user_id + ': ' + game_instance.states[user_id].score + ', with: ' + game_instance.states[user_id].words.join(' '),
+                                                user_id + ' vs ' + game_instance.states[user_id].score + ', with: ' + game_instance.states[user_id].words.join(' '),
                                             ).join('\n'))} }
                                         ><Text>View Results</Text></TouchableOpacity> :
                                         <TouchableOpacity
@@ -80,16 +81,33 @@ export default class MenuContainer extends Component {
 
 const styles = StyleSheet.create({
     create_game: {
-        flex: 3,
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
     },
 
     view_games: {
-        flex: 2,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+
+        marginVertical: 50,
+    },
+
+    game_row: {
+        marginVertical: 5
+    },
+
+    title: {
+        marginBottom: 10,
+        fontSize: 20,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
 
     button: {
-        backgroundColor: '#DDDDDD',
+        backgroundColor: '#DEC0F1',
+        padding: 5,
+        borderRadius: 10
     }
 });

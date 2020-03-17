@@ -37,12 +37,12 @@ export default class App extends Component {
     render() {
         return (
             <Fragment>
-                <View style={styles.id}>
-                    <Text>{ SuperStore.user_id }</Text>
-                </View>
                 <View style={styles.container}>
                     { this.state.panel === 'MENU' && <MenuContainer/> }
                     { this.state.panel === 'ANAGRAM' && <AnagramContainer/> }
+                </View>
+                <View style={styles.id}>
+                    <Text> Playing as: { SuperStore.user_id }</Text>
                 </View>
             </Fragment>
 
@@ -52,14 +52,14 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
     id: {
-        flex: 1,
+        height: 25,
         backgroundColor: '#4fff86',
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     container: {
-        flex: 5,
+        flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
