@@ -12,7 +12,7 @@ function generateLetters(length) {
     return letters;
 }
 
-function generateGame(user_id, rival_id, length = 8, duration = 7) {
+function generateGame(user_id, rival_id, length = 8, duration = 45) {
     const uuid = uuidv4();
 
     const states = {

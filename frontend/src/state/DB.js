@@ -1,8 +1,10 @@
 import io from 'socket.io-client'
 
+import * as Constants from '../constants';
+
 export default class DB {
     constructor() {
-        this.socket = io('https://word-games-server.herokuapp.com');
+        this.socket = io(Constants.SERVER_ENDPOINT);
         this.user_id = Math.random().toString(36).substring(7); // TODO: implement properly
 
         this.socket.emit('register-user', this.user_id);

@@ -65,14 +65,13 @@ class AnagramStore {
             this.emitter.emit('UPDATE_GAMES_LIST')
         });
 
+        // Fix wrong state being updated???
         SuperStore.db.onNewGameState((uuid, user_id, state) => {
-            const index = this.game_instances.findIndex(game_obj => game_obj.uuid = uuid);
-
-            console.log('NUB');
-            console.log(state);
-
-            if (index !== -1) {
-                this.game_instances[index].setState(user_id, state);
+            for (let game_obj of this.game_instances) {
+                if (game_obj.uuid === uuid) {
+                    game_obj.setState(state);
+                    break;
+                }
             }
 
             this.emitter.emit('UPDATE_GAMES_LIST')
