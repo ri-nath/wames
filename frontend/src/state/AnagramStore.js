@@ -57,19 +57,21 @@ class AnagramStore {
             this.startNewGame(new AnagramGame(game_obj, SuperStore.user_id));
         });
 
-        SuperStore.db.onAddGame(game => {
-            if (this.game_instances.every(game_obj => game_obj.uuid !== game.uuid)) {
-                this.game_instances.push(new AnagramGame(game, SuperStore.user_id));
+        SuperStore.db.onNewGames(games => {
+            for (const game of games) {
+                if (this.game_instances.every(game_obj => game_obj.uuid !== game.uuid)) {
+                    this.game_instances.push(new AnagramGame(game, SuperStore.user_id));
+                }
             }
 
-            this.emitter.emit('UPDATE_GAMES_LIST')
+            this.emitter.emit('UPDATE_GAMES_LIST');
         });
 
         // Fix wrong state being updated???
         SuperStore.db.onNewGameState((uuid, user_id, state) => {
             for (let game_obj of this.game_instances) {
                 if (game_obj.uuid === uuid) {
-                    game_obj.setState(state);
+                    game_obj.setState(user_id, state);
                     break;
                 }
             }

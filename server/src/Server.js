@@ -24,6 +24,11 @@ function init(database) {
     io.on('connection', socket => {
         console.log('A socket connected! ' + new Date());
 
+        if (socket.user_id) {
+            console.log('A user re-registered! ' + user_id);
+            sockets.map(list_socket => list_socket.user_id === user_id ? socket : list_socket)
+        }
+
         socket.on('register-user', user_id => {
             socket.user_id = user_id;
 
@@ -34,34 +39,70 @@ function init(database) {
                 console.log('A user registered! ' + user_id);
                 sockets.push(socket);
             }
-        });
 
-        // Args: id, rival_id
-        socket.on('create-game', (id, rival_id) => {
-            const game = AnagramUtil.generateGame(id, rival_id);
-            database.createAnagramGame(game);
+            database.getUserAnagramGames(user_id)
+                .then(documents => {
+                    documents.toArray((err, result) => {
+                       if (err) throw err;
 
-            socket.emit('return-game', game);
-            sockets.filter(list_socket => list_socket.user_id === id || list_socket.user_id === rival_id).forEach(filtered_socket => filtered_socket.emit('add-game', game))
-        });
-
-        // Args: uuid, state
-        socket.on('update-game-state', (uuid, state) => {
-            const updater_id = socket.user_id;
-
-            database.updateAnagramGame(uuid, updater_id, state)
-                .then(document => Object.keys(document.value.states))
-                .then(user_ids => {
-                    user_ids.forEach(user_id => sockets.filter(list_socket => list_socket.user_id === user_id)
-                        .forEach(filtered_socket => {
-                            filtered_socket.emit('new-game-state', uuid, updater_id, state)
-                    }))
+                       socket.emit('new-games', result);
+                    });
                 });
         });
 
-        socket.on('disconnect', disconnected_socket => {
+        // Args: id, rival_id
+        socket.on('create-game', (...target_ids) => {
+            console.log('Creating game for: ', target_ids.join(' '));
+
+            target_ids.push(socket.user_id);
+
+            const game = AnagramUtil.generateGame(...target_ids);
+            database.createAnagramGame(game);
+
+            sockets.filter(list_socket => target_ids.includes(list_socket.user_id))
+                .forEach(target_socket => target_socket.join(game.uuid));
+
+            socket.emit('return-game', game);
+            socket.broadcast.to(game.uuid).emit('new-games', [game]);
+        });
+
+        socket.on('join-game', (uuid) => {
+            database.getAnagramGame(uuid).then(doc => {
+                if (doc === null) {
+                    socket.emit('joined-game', new Error('Game ' + uuid + ' not found!'));
+                } else {
+                    socket.join(uuid);
+
+                    const user_id = socket.user_id;
+                    const game = doc.value;
+                    AnagramUtil.addUserToGame(game, user_id);
+
+                    const new_state = game.states[user_id];
+
+                    database.updateAnagramGame(uuid, user_id, new_state)
+                        .then(_ => {
+                            socket.emit('joined-game', game);
+                            socket.broadcast.to(game.uuid).emit('new-game-state', uuid, user_id, new_state);
+                        })
+                }
+            });
+        });
+
+        // Args: uuid, state
+        socket.on('update-game-state', (uuid, new_state) => {
+            const updater_id = socket.user_id;
+
+            database.updateAnagramGame(uuid, updater_id, new_state)
+                .then(doc => doc.value)
+                .then(game => {
+                    socket.broadcast.to(game.uuid).emit('new-game-state', uuid, updater_id, new_state);
+                });
+        });
+
+        socket.on('disconnect', socket => {
             console.log('A socket disconnected! ' + new Date());
-            sockets = sockets.filter(list_socket => list_socket !== disconnected_socket);
+            console.log('A user disconnected! ' + socket.user_id);
+            sockets = sockets.filter(list_socket => list_socket !== socket);
         })
     });
 }

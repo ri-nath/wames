@@ -20,6 +20,7 @@ To push to the `heroku` branch, use `yarn heroku` from the root directory.
 
 - secure connection & authentication
 - authenticate/store session & user ids
+- use mongodb _id field as uuid
 
 ### Misc
 

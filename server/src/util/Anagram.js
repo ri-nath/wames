@@ -12,37 +12,43 @@ function generateLetters(length) {
     return letters;
 }
 
-function generateGame(user_id, rival_id, length = 8, duration = 45) {
-    const uuid = uuidv4();
+const length = 8;
+const duration = 10;
 
-    const states = {
-        [user_id]: {
-            words: [],
-            stage: 'not-started',
-            score: 0
-        },
-        [rival_id]: {
-            words: [],
-            stage: 'not-started',
-            score: 0
-        },
-    };
-
+function generateGame(...target_ids) {
+    const uuid = 'angm-' + uuidv4();
     const letters = generateLetters(length);
 
-    return {
+    const game = {
         uuid: uuid,
-        states: states,
+        states: {},
         config: {
             letters: letters,
             duration: duration
         }
     };
+
+    for (const id of target_ids) {
+        addUserToGame(game, id);
+    }
+
+    return game;
+}
+
+function addUserToGame(game, user_id) {
+    game.states[user_id] = {
+            words: [],
+            stage: 'not-started',
+            score: 0
+    };
+
+    return game;
 }
 
 module.exports = {
     generateLetters,
-    generateGame
+    generateGame,
+    addUserToGame
 };
 
 // const example_game = {

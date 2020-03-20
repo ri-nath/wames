@@ -24,6 +24,16 @@ async function createAnagramGame(game_object) {
     return anagram_collection.insertOne(game_object);
 }
 
+async function getAnagramGame(uuid) {
+    return anagram_collection.findOne(uuid);
+}
+
+async function getUserAnagramGames(user_id) {
+    return anagram_collection.find({
+        ['states.' + user_id]: { $exists: true }
+    });
+}
+
 async function updateAnagramGame(uuid, user_id, updated_state) {
     return anagram_collection.findOneAndUpdate(
         { uuid: uuid },
@@ -32,7 +42,9 @@ async function updateAnagramGame(uuid, user_id, updated_state) {
 }
 
 module.exports = function() {
+    this.getUserAnagramGames = getUserAnagramGames;
     this.connectToDatabase = connectToDatabase;
     this.createAnagramGame = createAnagramGame;
     this.updateAnagramGame = updateAnagramGame;
+    this.getAnagramGame = getAnagramGame;
 };

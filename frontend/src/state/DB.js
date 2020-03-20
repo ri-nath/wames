@@ -7,16 +7,18 @@ export default class DB {
         this.socket = io(Constants.SERVER_ENDPOINT);
         this.user_id = Math.random().toString(36).substring(7); // TODO: implement properly
 
-        this.socket.emit('register-user', this.user_id);
-
         this.socket.on('connect', _ => {
-            if (this.socket.connected) console.log('Socket Connected!');
-            else (console.log('Not Connected!'))
+            console.log('Socket Connected!');
+            this.socket.emit('register-user', this.user_id);
+        });
+
+        this.socket.on('reconnect', _ => {
+            console.log('Socket Reconnected!');
+            this.socket.emit('register-user', this.user_id);
         });
 
         this.socket.on('disconnect', _ => {
-            if (this.socket.connected) console.log('Socket Connected!');
-            else (console.log('Not Connected!'))
+            console.log('Socket Disconnected!');
         })
     }
 
@@ -28,9 +30,9 @@ export default class DB {
         this.socket.on('return-game', handler);
     }
 
-    onAddGame(handler) {
+    onNewGames(handler) {
         // params: game
-        this.socket.on('add-game', handler);
+        this.socket.on('new-games', handler);
     }
 
     updateGameState(uuid, state) {
@@ -38,7 +40,7 @@ export default class DB {
     }
 
     onNewGameState(handler) {
-        //params: uuid, user_id, new state }
+        //params: uuid, user_id, new state
         this.socket.on('new-game-state', handler);
     }
 }
