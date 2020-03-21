@@ -41,9 +41,6 @@ export default class App extends Component {
                     { this.state.panel === 'MENU' && <MenuContainer/> }
                     { this.state.panel === 'ANAGRAM' && <AnagramContainer/> }
                 </View>
-                <View style={styles.id}>
-                    <Text> Playing as: { SuperStore.user_id }</Text>
-                </View>
             </Fragment>
 
         )
@@ -51,13 +48,6 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
-    id: {
-        height: 25,
-        backgroundColor: '#4fff86',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
     container: {
         flex: 1,
         backgroundColor: '#fff',

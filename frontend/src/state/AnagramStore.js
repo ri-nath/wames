@@ -54,13 +54,13 @@ class AnagramStore {
         this.timeout = null;
 
         SuperStore.onStateToAnagramGame(game_obj => {
-            this.startNewGame(new AnagramGame(game_obj, SuperStore.user_id));
+            this.startNewGame(new AnagramGame(game_obj, SuperStore.db.user_id));
         });
 
         SuperStore.db.onNewGames(games => {
             for (const game of games) {
                 if (this.game_instances.every(game_obj => game_obj.uuid !== game.uuid)) {
-                    this.game_instances.push(new AnagramGame(game, SuperStore.user_id));
+                    this.game_instances.push(new AnagramGame(game, SuperStore.db.user_id));
                 }
             }
 

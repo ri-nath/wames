@@ -10,15 +10,13 @@ class SuperStore {
 
         this.db = new DB();
 
-        this.user_id = this.db.user_id;
-
         this.db.onGameCreation(game_object => {
             this.stateToAnagramGame(game_object)
         })
     }
 
     createAnagramGame(rival_id) {
-        this.db.createGame(this.user_id, rival_id);
+        this.db.createGame(rival_id);
     }
 
     stateToAnagramGame(game_object) {

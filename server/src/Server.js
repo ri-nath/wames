@@ -26,14 +26,19 @@ function init(database) {
 
         if (socket.user_id) {
             console.log('A user re-registered! ' + user_id);
-            sockets.map(list_socket => list_socket.user_id === user_id ? socket : list_socket)
+
+            if (sockets.includes(socket)) {
+                sockets.map(list_socket => list_socket.user_id === user_id ? socket : list_socket)
+            } else {
+                sockets.push(socket);
+            }
         }
 
         socket.on('register-user', user_id => {
             socket.user_id = user_id;
 
             if (sockets.some(list_socket => list_socket.user_id === user_id)) {
-                console.log('A user re-registered! ' + user_id);
+                console.log('A user requested to re-register! ' + user_id);
                 sockets.map(list_socket => list_socket.user_id === user_id ? socket : list_socket)
             } else {
                 console.log('A user registered! ' + user_id);
@@ -66,7 +71,15 @@ function init(database) {
             socket.broadcast.to(game.uuid).emit('new-games', [game]);
         });
 
-        socket.on('join-game', (uuid) => {
+        socket.on('set-user-id', user_id => {
+            if (sockets.every(list_socket => list_socket.user_id !== user_id)) {
+                socket.user_id = user_id;
+            }
+
+            socket.emit('new-user-id', socket.user_id);
+        });
+
+        socket.on('join-game', uuid => {
             database.getAnagramGame(uuid).then(doc => {
                 if (doc === null) {
                     socket.emit('joined-game', new Error('Game ' + uuid + ' not found!'));
@@ -90,6 +103,9 @@ function init(database) {
 
         // Args: uuid, state
         socket.on('update-game-state', (uuid, new_state) => {
+            console.log('Updating game state from ' + socket.user_id + ' for game ' + uuid);
+            console.log(new_state);
+
             const updater_id = socket.user_id;
 
             database.updateAnagramGame(uuid, updater_id, new_state)

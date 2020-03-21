@@ -19,11 +19,15 @@ export default class DB {
 
         this.socket.on('disconnect', _ => {
             console.log('Socket Disconnected!');
+        });
+
+        this.onSetUsername(new_user_id => {
+            this.user_id = new_user_id;
         })
     }
 
-    createGame(user_id, rival_id) {
-        this.socket.emit('create-game', user_id, rival_id);
+    createGame(...target_ids) {
+        this.socket.emit('create-game', this.user_id, ...target_ids);
     }
 
     onGameCreation(handler) {
@@ -42,5 +46,13 @@ export default class DB {
     onNewGameState(handler) {
         //params: uuid, user_id, new state
         this.socket.on('new-game-state', handler);
+    }
+
+    setUsername(user_id) {
+        this.socket.emit('set-user-id', user_id);
+    }
+
+    onSetUsername(handler) {
+        this.socket.on('new-user-id', handler);
     }
 }
