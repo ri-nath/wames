@@ -7,8 +7,12 @@ import Info from "./subcomponents/Info";
 import AnagramStore from "../../state/AnagramStore";
 import SuperStore, { State } from "../../state/SuperStore";
 
-export default class AnagramContainer extends Component {
-    constructor(props) {
+type State = {
+    in_game: boolean,
+}
+
+export default class AnagramContainer extends Component<any, State> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -21,7 +25,7 @@ export default class AnagramContainer extends Component {
             in_game: true,
         });
 
-        AnagramStore.onEndGame(_ => {
+        AnagramStore.onEndGame(() => {
             this.setState({
                 in_game: false
             })

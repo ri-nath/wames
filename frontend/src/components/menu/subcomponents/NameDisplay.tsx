@@ -4,8 +4,12 @@ import { StyleSheet, View, Text } from 'react-native';
 import DB from '../../../state/DB';
 import Centralizer from '../../../state/Centralizer';
 
-export default class NameDisplay extends Component {
-    constructor(props) {
+type State = {
+    name: string
+}
+
+export default class NameDisplay extends Component<any, State> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -18,8 +22,10 @@ export default class NameDisplay extends Component {
             name: Centralizer.getUsername()
         });
 
-        DB.onSetUsername(new_username => {
-            this.setState(new_username);
+        DB.onSetUsername((new_username: string) => {
+            this.setState({
+                name: new_username
+            });
         });
     }
 

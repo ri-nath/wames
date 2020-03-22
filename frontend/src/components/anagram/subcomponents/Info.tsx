@@ -2,10 +2,20 @@ import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
-import { AnagramState } from '../../../state/wrappers/Anagram';
+import Anagram, { AnagramState } from '../../../state/wrappers/Anagram';
 
-export default class Info extends Component {
-    constructor(props) {
+type State = {
+    score: number,
+    target_score: number,
+    timer: number,
+    show_timer: boolean,
+    words: string[]
+}
+
+export default class Info extends Component<any, State> {
+    private interval_handles: number[];
+
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -24,7 +34,7 @@ export default class Info extends Component {
 
         this.updateInfoFromGameInstance = this.updateInfoFromGameInstance.bind(this);
 
-        this.intervals = [];
+        this.interval_handles = [];
 
         this.resetIntervals();
     }
@@ -32,18 +42,18 @@ export default class Info extends Component {
     resetIntervals() {
         this.removeIntervals();
 
-        this.intervals.push(
+        this.interval_handles.push(
             setInterval(this.incrementScore, 5), // 5 ms
             setInterval(this.incrementTimer, 1000) // 1 second
         );
     }
 
     removeIntervals() {
-        for (let interval of this.intervals) {
+        for (let interval of this.interval_handles) {
             clearInterval(interval);
         }
 
-        this.intervals = [];
+        this.interval_handles = [];
     }
 
     componentDidMount() {
@@ -56,16 +66,18 @@ export default class Info extends Component {
             timer: game_obj.getConfig().duration
         });
 
-        AnagramStore.onScoreWord(game_obj => {
+        AnagramStore.onScoreWord((game_obj: Anagram) => {
             this.updateInfoFromGameInstance(game_obj);
         });
 
-        AnagramStore.onEndGame(game_obj => {
+        AnagramStore.onEndGame((game_obj: Anagram) => {
             this.updateInfoFromGameInstance(game_obj);
         });
     }
 
-    updateInfoFromGameInstance(game_obj) {
+    updateInfoFromGameInstance(game_obj: Anagram) {
+        // TODO: type
+
         const game_state = game_obj.getLocalState();
 
         this.setState({
@@ -109,7 +121,7 @@ export default class Info extends Component {
                 </View>
                 <View style={styles.words}>
                     {
-                        this.state.words.map((word, idx) =>
+                        this.state.words.map((word: string, idx: number) =>
                             <Text style={styles.words_text} key={idx}>{ word.toUpperCase() }</Text>
                         )
                     }

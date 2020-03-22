@@ -1,37 +1,55 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, TextInput, Button} from 'react-native';
+import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
 
 import DB from '../../../state/DB';
+import Centralizer from '../../../state/Centralizer';
 
-export default class Challenger extends Component {
-    constructor(props) {
+type State = {
+    value: string
+}
+
+
+export default class NameChanger extends Component<any, State> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
             value: ''
-        }
+        };
 
         this.handleChangeValue = this.handleChangeValue.bind(this);
     }
 
-    handleChangeValue(value) {
+    handleChangeValue(value: string) {
         this.setState({
             value: value
         });
+    }
+
+    componentDidMount() {
+        this.setState({
+            value: Centralizer.getUsername()
+        });
+
+        DB.onSetUsername((username: string) => {
+            this.setState({
+                value: username
+            });
+        })
     }
 
     render() {
         return (
             <View style={styles.create_game}>
                 <TextInput
-                    placeholder='Opponent Username'
+                    placeholder='Username'
                     value={this.state.value}
                     onChangeText={this.handleChangeValue}
                 />
                 <Button
                     disabled={this.state.value.length < 1}
-                    title='Challenge User'
-                    onPress={_ => DB.createGame(this.state.value)}
+                    title='Confirm New Username'
+                    onPress={_ => DB.setUsername(this.state.value)}
                 />
             </View>
         )
@@ -40,6 +58,7 @@ export default class Challenger extends Component {
 
 const styles = StyleSheet.create({
     create_game: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-end',
     },

@@ -4,11 +4,16 @@ import { View } from 'react-native';
 import Tile from './Tile';
 
 import AnagramStore from '../../../state/AnagramStore';
-
 import * as Constants from '../../../constants';
+import Anagram from '../../../state/wrappers/Anagram';
 
-export default class Stage extends Component {
-    constructor(props) {
+type State = {
+    options: string[],
+    picks: string[]
+}
+
+export default class Stage extends Component<any, State> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -27,12 +32,12 @@ export default class Stage extends Component {
         const game_obj = AnagramStore.active_game;
         this.setLettersFromGameInstance(game_obj);
 
-        AnagramStore.onStartNewGame(game_obj => {
+        AnagramStore.onStartNewGame((game_obj: Anagram) => {
             this.setLettersFromGameInstance(game_obj)
         });
     }
 
-    setLettersFromGameInstance(game_obj) {
+    setLettersFromGameInstance(game_obj: Anagram) {
         const options = game_obj.getConfig().letters.map((letter, idx) => letter + idx);
 
         this.setState({
@@ -41,7 +46,7 @@ export default class Stage extends Component {
         });
     }
 
-    handleAddTile(value) {
+    handleAddTile(value: string) {
         let picks = this.state.picks;
         picks[picks.indexOf(Constants.DESELECTOR)] = value;
 
@@ -53,12 +58,12 @@ export default class Stage extends Component {
             options: options
         });
 
-        let current_word = this.state.picks.map(
+        let current_word: string = this.state.picks.map(
             element => Constants.ALPHABET.split('').find(
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        const words = AnagramStore.active_game.getLocalState().words;
+        const words: string[] = AnagramStore.active_game.getLocalState().words;
 
         if (!words.includes(current_word) && Constants.WORDS.includes(current_word)) {
             AnagramStore.scoreWord(current_word);
@@ -70,7 +75,7 @@ export default class Stage extends Component {
         }
     }
 
-    handleRemoveTile(tile) {
+    handleRemoveTile(tile: string) {
         let options = this.state.options;
         options[options.indexOf(Constants.DESELECTOR + tile)] = tile;
 
@@ -99,7 +104,7 @@ export default class Stage extends Component {
             <View>
                 <View flexDirection='row' justifyContent='flex-start'>
                     {
-                        this.state.options.map((letter, idx) =>
+                        this.state.options.map((letter: string, idx: number) =>
                             <Tile
                                 key={ idx }
                                 name={ letter }
@@ -110,7 +115,7 @@ export default class Stage extends Component {
                 </View>
                 <View flexDirection='row'>
                     {
-                        this.state.picks.map((letter, idx) =>
+                        this.state.picks.map((letter: string, idx: number) =>
                             <Tile
                                 key={ idx + this.state.options.length }
                                 name={ letter }

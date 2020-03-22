@@ -1,9 +1,14 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import * as Constants from '../../../constants';
 
-export default function Tile(props) {
+type Props = {
+    name: string
+    onPress: any
+}
+
+export default function Tile(props: Props) {
     const disabled = props.name.includes(Constants.DESELECTOR);
 
     return (

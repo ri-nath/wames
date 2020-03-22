@@ -7,8 +7,8 @@ import AnagramContainer from "./anagram/AnagramContainer";
 import SuperStore, { State } from "../state/SuperStore";
 import AnagramStore from "../state/AnagramStore";
 
-export default class App extends Component {
-    constructor(props) {
+export default class App extends Component<any, any> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -18,7 +18,7 @@ export default class App extends Component {
 
     componentDidMount() {
         for (const state of Object.values(State)) {
-            SuperStore.onSetState(state, _ => {
+            SuperStore.onSetState(state, () => {
                this.setState({
                    panel: state
                });

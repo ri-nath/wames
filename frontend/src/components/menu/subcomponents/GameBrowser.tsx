@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
 import SuperStore, { State } from "../../../state/SuperStore";
-import { AnagramState } from "../../../state/wrappers/Anagram";
+import Anagram, { AnagramState } from "../../../state/wrappers/Anagram";
 
-export default class GameBrowser extends Component {
-    constructor(props) {
+type State = {
+    games: Anagram[]
+}
+
+export default class GameBrowser extends Component<any, State> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -22,7 +26,7 @@ export default class GameBrowser extends Component {
             games: AnagramStore.getGamesList()
         });
 
-        AnagramStore.onUpdateGamesList(games_list => {
+        AnagramStore.onUpdateGamesList((games_list: Anagram[]) => {
             this.setState({
                 games: games_list
             });
@@ -34,10 +38,10 @@ export default class GameBrowser extends Component {
             <View style={styles.view_games}>
                 <Text style={styles.title}> Games </Text>
                 {
-                    this.state.games.map((game, idx) =>
-                        <View style={ styles.game_row } key={idx} flexDirection='row'>
+                    this.state.games.map((game: Anagram, idx: number) =>
+                        <View style={ styles.game_row } key={idx}>
                             {
-                                game.getPlayers().map((user_id, iidx) =>
+                                game.getPlayers().map((user_id: string, iidx: number) =>
                                     <Text key={this.state.games.length + iidx}>
                                         {user_id + (game.getPlayers().length - 1 !== iidx ? ', ' : ' ')}
                                     </Text>
@@ -48,7 +52,7 @@ export default class GameBrowser extends Component {
                                     <TouchableOpacity
                                         style={ styles.button }
                                         onPress={ _ => {
-                                            alert(game.getPlayers().map(user_id =>
+                                            Alert.alert(game.getPlayers().map(user_id =>
                                             user_id + ' vs ' + game.getState(user_id).score + ', with: ' + game.getState(user_id).words.join(' '),)
                                                 .join('\n'))
                                         } }
@@ -82,7 +86,8 @@ const styles = StyleSheet.create({
     },
 
     game_row: {
-        marginVertical: 5
+        marginVertical: 5,
+        flexDirection: 'row'
     },
 
     title: {
@@ -91,6 +96,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+
+    button: {
+        backgroundColor: '#DDDDDD',
+    }
 });
 
 
