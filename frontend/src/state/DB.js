@@ -1,54 +1,50 @@
 import io from 'socket.io-client'
 
+import Centralizer from './Centralizer';
 import * as Constants from '../constants';
 
-export default class DB {
+class DB {
     constructor() {
         this.socket = io(Constants.SERVER_ENDPOINT);
-        this.user_id = Math.random().toString(36).substring(7); // TODO: implement properly
 
         this.socket.on('connect', _ => {
             console.log('Socket Connected!');
-            this.socket.emit('register-user', this.user_id);
+            this.socket.emit('register-user', Centralizer.getUsername());
         });
 
         this.socket.on('reconnect', _ => {
             console.log('Socket Reconnected!');
-            this.socket.emit('register-user', this.user_id);
         });
 
         this.socket.on('disconnect', _ => {
             console.log('Socket Disconnected!');
-        });
-
-        this.onSetUsername(new_user_id => {
-            this.user_id = new_user_id;
         })
     }
 
-    createGame(...target_ids) {
-        this.socket.emit('create-game', this.user_id, ...target_ids);
+    createGame(...target_users) {
+        this.socket.emit('create-game', Centralizer.getUsername(), ...target_users);
     }
 
     onGameCreation(handler) {
+        // args: game object
         this.socket.on('return-game', handler);
     }
 
     onNewGames(handler) {
-        // params: game
+        // args: array of game objects
         this.socket.on('new-games', handler);
     }
 
-    updateGameState(uuid, state) {
-        this.socket.emit('update-game-state', uuid, state);
+    updateGameState(game_uuid, state) {
+        this.socket.emit('update-game-state', game_uuid, state);
     }
 
     onNewGameState(handler) {
-        //params: uuid, user_id, new state
+        // args: game uuid, username, new state
         this.socket.on('new-game-state', handler);
     }
 
-    setUsername(user_id) {
+    setUsername(username) {
         this.socket.emit('set-user-id', user_id);
     }
 
@@ -56,3 +52,5 @@ export default class DB {
         this.socket.on('new-user-id', handler);
     }
 }
+
+export default new DB();

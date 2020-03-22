@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
+import { AnagramState } from '../../../state/wrappers/Anagram';
 
 export default class Info extends Component {
     constructor(props) {
@@ -15,8 +16,8 @@ export default class Info extends Component {
             words: [],
         };
 
-        this.countScoreUp = this.countScoreUp.bind(this);
-        this.countTimerDown = this.countTimerDown.bind(this);
+        this.incrementScore = this.incrementScore.bind(this);
+        this.incrementTimer = this.incrementTimer.bind(this);
 
         this.resetIntervals = this.resetIntervals.bind(this);
         this.removeIntervals = this.removeIntervals.bind(this);
@@ -32,8 +33,8 @@ export default class Info extends Component {
         this.removeIntervals();
 
         this.intervals.push(
-            setInterval(this.countScoreUp, 5), // 5 ms
-            setInterval(this.countTimerDown, 1000) // 1 second
+            setInterval(this.incrementScore, 5), // 5 ms
+            setInterval(this.incrementTimer, 1000) // 1 second
         );
     }
 
@@ -52,7 +53,7 @@ export default class Info extends Component {
         this.updateInfoFromGameInstance(game_obj);
 
         this.setState({
-            timer: game_obj.config.duration
+            timer: game_obj.getConfig().duration
         });
 
         AnagramStore.onScoreWord(game_obj => {
@@ -69,7 +70,7 @@ export default class Info extends Component {
 
         this.setState({
             target_score: game_state.score,
-            show_timer: game_state.stage === 'running',
+            show_timer: game_state.stage === AnagramState.PLAYING,
             words: game_state.words,
         });
     }
@@ -78,7 +79,7 @@ export default class Info extends Component {
         this.removeIntervals();
     }
 
-    countScoreUp() {
+    incrementScore() {
         if (this.state.score !== this.state.target_score) {
             this.setState({
                 score: this.state.score > this.state.target_score ? this.state.score - 10 : this.state.score + 10
@@ -86,7 +87,7 @@ export default class Info extends Component {
         }
     }
 
-    countTimerDown() {
+    incrementTimer() {
         if (this.state.timer > 0) {
             this.setState({
                 timer: this.state.timer - 1

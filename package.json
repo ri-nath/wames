@@ -7,5 +7,7 @@
   "license": "MIT",
   "scripts": {
     "heroku": "git subtree push --prefix server origin heroku"
+  },
+  "dependencies": {
   }
 }

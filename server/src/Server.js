@@ -103,9 +103,6 @@ function init(database) {
 
         // Args: uuid, state
         socket.on('update-game-state', (uuid, new_state) => {
-            console.log('Updating game state from ' + socket.user_id + ' for game ' + uuid);
-            console.log(new_state);
-
             const updater_id = socket.user_id;
 
             database.updateAnagramGame(uuid, updater_id, new_state)

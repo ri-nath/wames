@@ -3,6 +3,8 @@ Casual cross platform multiplayer word games.
 
 To push to the `heroku` branch, use `yarn heroku` from the root directory.
 
+Using `react-native` `v0.61.4`.
+
 ## Roadmap
 
 ### Client Side

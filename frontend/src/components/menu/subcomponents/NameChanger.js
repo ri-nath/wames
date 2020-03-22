@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
 
-import SuperStore from '../../../state/SuperStore';
+import DB from '../../../state/DB';
+import Centralizer from '../../../state/Centralizer';
 
 export default class NameChanger extends Component {
     constructor(props) {
@@ -22,12 +23,12 @@ export default class NameChanger extends Component {
 
     componentDidMount() {
         this.setState({
-            value: SuperStore.db.user_id
+            value: Centralizer.getUsername()
         });
 
-        SuperStore.db.onSetUsername(user_id => {
+        DB.onSetUsername(username => {
             this.setState({
-                value: user_id
+                value: username
             });
         })
     }

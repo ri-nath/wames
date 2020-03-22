@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
-import SuperStore from "../../../state/SuperStore";
+import SuperStore, { State } from "../../../state/SuperStore";
+import { AnagramState } from "../../../state/wrappers/Anagram";
 
 export default class GameBrowser extends Component {
     constructor(props) {
@@ -10,19 +11,22 @@ export default class GameBrowser extends Component {
 
         this.state = {
             games: []
-        }
+        };
     }
+
+    // TODO: Fix games being displayed as 'running' instead of 'finished'...
+    // For some reason, AnagramStore.getGamesList() returns a bad list, while onUpdateGamesList has the correct one...
 
     componentDidMount() {
         this.setState({
-            games: AnagramStore.game_instances
+            games: AnagramStore.getGamesList()
         });
 
-        AnagramStore.onUpdateGamesList(_ => {
+        AnagramStore.onUpdateGamesList(games_list => {
             this.setState({
-                games: AnagramStore.game_instances
+                games: games_list
             });
-        })
+        });
     }
 
     render() {
@@ -30,29 +34,34 @@ export default class GameBrowser extends Component {
             <View style={styles.view_games}>
                 <Text style={styles.title}> Games </Text>
                 {
-                    AnagramStore.game_instances.map((game_instance, idx) =>
+                    this.state.games.map((game, idx) =>
                         <View style={ styles.game_row } key={idx} flexDirection='row'>
                             {
-                                Object.keys(game_instance.states).map((user_id, iidx) =>
-                                    <Text key={AnagramStore.game_instances.length + iidx}>
-                                        {user_id + (Object.keys(game_instance.states).length - 1 !== iidx ? ', ' : ' ')}
+                                game.getPlayers().map((user_id, iidx) =>
+                                    <Text key={this.state.games.length + iidx}>
+                                        {user_id + (game.getPlayers().length - 1 !== iidx ? ', ' : ' ')}
                                     </Text>
                                 )
                             }
                             {
-                                game_instance.getLocalState().stage === 'finished' ?
+                                game.getLocalState().stage === AnagramState.FINISHED ?
                                     <TouchableOpacity
                                         style={ styles.button }
-                                        onPress={ _ => {alert(Object.keys(game_instance.states).map(user_id =>
-                                            user_id + ' vs ' + game_instance.states[user_id].score + ', with: ' + game_instance.states[user_id].words.join(' '),
-                                        ).join('\n'))} }
-                                    ><Text>View Results</Text></TouchableOpacity> :
-                                    <TouchableOpacity
-                                        style={ styles.button }
-                                        disabled={ game_instance.getLocalState().stage !== 'not-started' }
-                                        onPress={ _ => {SuperStore.stateToAnagramGame(game_instance)} }
+                                        onPress={ _ => {
+                                            alert(game.getPlayers().map(user_id =>
+                                            user_id + ' vs ' + game.getState(user_id).score + ', with: ' + game.getState(user_id).words.join(' '),)
+                                                .join('\n'))
+                                        } }
                                     >
-                                        <Text>{ game_instance.getLocalState().stage }</Text>
+                                        <Text>View Results</Text>
+                                    </TouchableOpacity>
+                                    :
+                                    <TouchableOpacity
+                                        style={ styles.button }
+                                        disabled={ game.getLocalState().stage !== AnagramState.NOT_STARTED }
+                                        onPress={ _ => {SuperStore.setState(State.ANAGRAM_GAME, game)} }
+                                    >
+                                        <Text>{ game.getLocalState().stage }</Text>
                                     </TouchableOpacity>
 
                             }

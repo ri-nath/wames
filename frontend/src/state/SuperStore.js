@@ -1,45 +1,38 @@
 import MicroEmitter from 'micro-emitter';
 
 import DB from './DB';
+import Anagram from './wrappers/Anagram';
+
+export const State = {
+    MENU: 'menu',
+    ANAGRAM_GAME: 'anagram'
+};
 
 class SuperStore {
     constructor() {
-        console.log("Starting up... ", new Date());
-
         this.emitter = new MicroEmitter();
 
-        this.db = new DB();
+        this.state = State.MENU;
 
-        this.db.onGameCreation(game_object => {
-            this.stateToAnagramGame(game_object)
-        })
+        DB.onGameCreation(game_object => {
+            this.setState(State.ANAGRAM_GAME, new Anagram(game_object));
+        });
     }
 
-    createAnagramGame(rival_id) {
-        this.db.createGame(rival_id);
+    setState(state, args) {
+        if (!Object.values(State).includes(state)) throw "Invalid state! " + state;
+        this.emitter.emit('to-' + state, args);
     }
 
-    stateToAnagramGame(game_object) {
-        console.log("New Anagram Game: ", new Date());
-
-        this.emitter.emit('START_ANAGRAM_GAME', game_object);
-    }
-
-    onStateToAnagramGame(handler) {
-        this.emitter.on('START_ANAGRAM_GAME', handler);
-    }
-
-    stateToMenu() {
-        this.emitter.emit('START_MENU');
-    }
-
-    onStateToMenu(handler) {
-        this.emitter.on('START_MENU', handler);
+    onSetState(state, handler) {
+        if (!Object.values(State).includes(state)) throw "Invalid state! " + state;
+        this.emitter.on('to-' + state, handler);
     }
 
     closeAllListeners() {
-        this.emitter.off('START_ANAGRAM_GAME');
-        this.emitter.off('START_MENU');
+        for (const state of Object.values(State)) {
+            this.emitter.off(state);
+        }
     }
 }
 

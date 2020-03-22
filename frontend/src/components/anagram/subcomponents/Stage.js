@@ -33,7 +33,7 @@ export default class Stage extends Component {
     }
 
     setLettersFromGameInstance(game_obj) {
-        const options = game_obj.config.letters.map((letter, idx) => letter + idx);
+        const options = game_obj.getConfig().letters.map((letter, idx) => letter + idx);
 
         this.setState({
             options: options,

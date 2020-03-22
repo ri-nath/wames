@@ -1,146 +1,152 @@
 import MicroEmitter from 'micro-emitter';
+import SuperStore, { State } from './SuperStore';
+import DB from './DB';
 
-import SuperStore from './SuperStore'
-import AnagramGame from './AnagramGame'
+import Anagram, { AnagramState } from './wrappers/Anagram';
+
+const EVENTS = {
+    START_GAME: 'start-game',
+    END_GAME: 'end-game',
+    SCORE_WORD: 'score-word',
+    UPDATE_GAMES_LIST: 'update-games-list',
+};
 
 class AnagramStore {
     constructor() {
         this.emitter = new MicroEmitter();
 
-        this.game_instances = [];
-
-        // For testing layout:
-        //
-        // this.game_instances = [new AnagramGame({
-        //     "uuid": "fwu0e8gtabofubeg8g",
-        //     "states": {
-        //         [SuperStore.db.user_id]: {
-        //             "words": ["dog, cat, mouse"],
-        //             "stage": "finished",
-        //             "score": 200
-        //         },
-        //         "genericUsernameOne": {
-        //             "words": ["mouse"],
-        //             "stage": "finished",
-        //             "score": 70
-        //         }
-        //     },
-        //     "config": {
-        //         "letters": ["DOGCATMOUSE"],
-        //         "duration": 30
-        //     }
-        // }, SuperStore.db.user_id),
-        //     new AnagramGame({
-        //         "uuid": "fwu0e8gtabofubeg8g",
-        //         "states": {
-        //             [SuperStore.db.user_id]: {
-        //                 "words": ["dog, cat, mouse"],
-        //                 "stage": "finished",
-        //                 "score": 200
-        //             },
-        //             "xXxSecondGenericUsernamexXx": {
-        //                 "words": ["mouse"],
-        //                 "stage": "finished",
-        //                 "score": 70
-        //             }
-        //         },
-        //         "config": {
-        //             "letters": ["DOGCATMOUSE"],
-        //             "duration": 30
-        //         }
-        //     }, SuperStore.db.user_id)];
-
         this.active_game = null;
-        this.timeout = null;
+        this.active_timeout = null;
 
-        SuperStore.onStateToAnagramGame(game_obj => {
-            this.startNewGame(new AnagramGame(game_obj, SuperStore.db.user_id));
+        this.setListeners();
+
+        // const debugger = {
+        //     get: function(target, property) {
+        //         console.log('getting ', property, 'which is ', target[property]);
+        //         // property is index in this case
+        //         return target[property];
+        //     },
+        //     set: function(target, property, value, receiver) {
+        //         console.log('setting ', property, ' with value' , value);
+        //         target[property] = value;
+        //         // you have to return true to accept the changes
+        //         return true;
+        //     }
+        // };
+        //
+        // this.games = new Proxy([], debugger);
+
+        this.games = [];
+
+        // setInterval(_ => {
+        //     console.log(this.games.length > 0 ? this.games[0].getObject().states : "print");
+        // }, 1000);
+    }
+
+    setListeners() {
+        SuperStore.onSetState(State.ANAGRAM_GAME, game_object => {
+            this.processUpdateGame(game_object, true);
         });
 
-        SuperStore.db.onNewGames(games => {
-            for (const game of games) {
-                if (this.game_instances.every(game_obj => game_obj.uuid !== game.uuid)) {
-                    this.game_instances.push(new AnagramGame(game, SuperStore.db.user_id));
-                }
+        DB.onNewGames(new_games => {
+            new_games.forEach(game => this.processUpdateGame(new Anagram(game), false));
+        });
+
+        DB.onNewGameState((game_uuid, username, state) => {
+            let index = this.games.findIndex(game => game.getID() === game_uuid);
+
+            if (index > -1) {
+                this.games[index].setState(username, state);
+
+                this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
             }
 
-            this.emitter.emit('UPDATE_GAMES_LIST');
+            // TODO: Maybe add game if not found?
         });
-
-        // Fix wrong state being updated???
-        SuperStore.db.onNewGameState((uuid, user_id, state) => {
-            for (let game_obj of this.game_instances) {
-                if (game_obj.uuid === uuid) {
-                    game_obj.setState(user_id, state);
-                    break;
-                }
-            }
-
-            this.emitter.emit('UPDATE_GAMES_LIST')
-        })
     }
 
-    scoreWord(word) {
-        this.active_game.scoreWordOnLocalState(word);
+    processUpdateGame(game_object, set_active) {
+        let index = this.games.findIndex(game => game.getID() === game_object.getID());
 
-        this.emitter.emit('SCORE_WORD', this.active_game);
-    }
-
-    onScoreWord(handler) {
-        this.emitter.on('SCORE_WORD', handler);
-    }
-
-    startNewGame(state_handler) {
-        this.active_game = state_handler;
-
-        if (!this.timeout) clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-            this.endGame(this.active_game)
-        }, this.active_game.config.duration * 1000);
-
-        this.active_game.setLocalState({
-            stage: 'running'
-        });
-
-        if (this.game_instances.every(game_instance => game_instance.uuid !== this.active_game.uuid)) {
-            this.game_instances.push(this.active_game);
+        if (index > -1) {
+            this.games[index] = game_object;
+        } else {
+            this.games.push(game_object);
         }
 
-        this.emitter.emit('START_GAME', this.active_game);
+        if (set_active) {
+            this.startNewGame(game_object);
+        }
+
+        this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
     }
 
-    onStartNewGame(handler) {
-        this.emitter.on('START_GAME', handler);
-    }
+    startNewGame(game_object) {
+        this.active_game = game_object;
 
-    endGame() {
-        if (!this.timeout) clearTimeout(this.timeout);
+        if (!this.active_game) clearTimeout(this.active_timeout);
+        this.active_timeout = setTimeout(() => {
+            this.endActiveGame()
+        }, this.active_game.getConfig().duration * 1000);
 
         this.active_game.setLocalState({
-            stage: 'finished'
+            stage: AnagramState.PLAYING
         });
 
-        SuperStore.db.updateGameState(
-            this.active_game.uuid,
+        this.emitter.emit(EVENTS.START_GAME, this.active_game);
+    }
+
+    endActiveGame() {
+        if (!this.active_timeout) clearTimeout(this.active_timeout);
+
+        this.active_game.setLocalState({
+            stage: AnagramState.FINISHED
+        });
+
+        DB.updateGameState(
+            this.active_game.getID(),
             this.active_game.getLocalState()
         );
 
-        this.emitter.emit('END_GAME', this.active_game);
+        this.emitter.emit(EVENTS.END_GAME, this.active_game);
+    }
+
+    scoreWord(word) {
+        this.active_game.lazyScoreWord(word);
+
+        this.emitter.emit(EVENTS.SCORE_WORD, this.active_game);
+    }
+
+    // TODO: Replace with one method
+
+    onUpdateGamesList(handler) {
+        this.emitter.on(EVENTS.UPDATE_GAMES_LIST, handler);
+    }
+
+    onStartNewGame(handler) {
+        this.emitter.on(EVENTS.START_GAME, handler);
     }
 
     onEndGame(handler) {
-        this.emitter.on('END_GAME', handler);
+        this.emitter.on(EVENTS.END_GAME, handler);
     }
 
-    onUpdateGamesList(handler) {
-        this.emitter.on('UPDATE_GAMES_LIST', handler);
+    onScoreWord(handler) {
+        this.emitter.on(EVENTS.SCORE_WORD, handler);
     }
 
     closeAllListeners() {
-        this.emitter.off('SCORE_WORD');
-        this.emitter.off('START_GAME');
-        this.emitter.off('END_GAME');
-        this.emitter.off('UPDATE_GAMES_LIST');
+        for (const event of Object.values(EVENTS)) {
+            this.emitter.off(event);
+        }
+    }
+
+    getActiveGame() {
+        return this.active_game;
+    }
+
+    getGamesList() {
+        return this.games;
     }
 }
 

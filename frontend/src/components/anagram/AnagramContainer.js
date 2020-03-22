@@ -5,7 +5,7 @@ import Stage from "./subcomponents/Stage";
 import Info from "./subcomponents/Info";
 
 import AnagramStore from "../../state/AnagramStore";
-import SuperStore from "../../state/SuperStore";
+import SuperStore, { State } from "../../state/SuperStore";
 
 export default class AnagramContainer extends Component {
     constructor(props) {
@@ -51,7 +51,7 @@ export default class AnagramContainer extends Component {
                         <Info/>
                     </View>
                     <View style={styles.stage}>
-                        <Button title='MENU' onPress={_ => {SuperStore.stateToMenu()}}/>
+                        <Button title='MENU' onPress={_ => { SuperStore.setState(State.MENU) }}/>
                     </View>
                 </Fragment>
             )

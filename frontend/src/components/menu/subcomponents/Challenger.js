@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
+import {StyleSheet, View, TextInput, Button} from 'react-native';
 
-import SuperStore from '../../../state/SuperStore';
+import DB from '../../../state/DB';
 
 export default class Challenger extends Component {
     constructor(props) {
@@ -31,7 +31,7 @@ export default class Challenger extends Component {
                 <Button
                     disabled={this.state.value.length < 1}
                     title='Challenge User'
-                    onPress={_ => SuperStore.createAnagramGame(this.state.value)}
+                    onPress={_ => DB.createGame(this.state.value)}
                 />
             </View>
         )

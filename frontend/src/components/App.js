@@ -4,7 +4,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import MenuContainer from "./menu/MenuContainer";
 import AnagramContainer from "./anagram/AnagramContainer";
 
-import SuperStore from "../state/SuperStore";
+import SuperStore, { State } from "../state/SuperStore";
 import AnagramStore from "../state/AnagramStore";
 
 export default class App extends Component {
@@ -12,22 +12,18 @@ export default class App extends Component {
         super(props);
 
         this.state = {
-            panel: 'MENU',
+            panel: State.MENU,
         }
     }
 
     componentDidMount() {
-        SuperStore.onStateToAnagramGame(_ => {
-           this.setState({
-               panel: 'ANAGRAM'
-           });
-        });
-
-        SuperStore.onStateToMenu(_ => {
-            this.setState({
-                panel: 'MENU'
-            })
-        })
+        for (const state of Object.values(State)) {
+            SuperStore.onSetState(state, _ => {
+               this.setState({
+                   panel: state
+               });
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -38,8 +34,8 @@ export default class App extends Component {
         return (
             <Fragment>
                 <View style={styles.container}>
-                    { this.state.panel === 'MENU' && <MenuContainer/> }
-                    { this.state.panel === 'ANAGRAM' && <AnagramContainer/> }
+                    { this.state.panel === State.MENU && <MenuContainer/> }
+                    { this.state.panel === State.ANAGRAM_GAME && <AnagramContainer/> }
                 </View>
             </Fragment>
 
