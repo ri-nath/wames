@@ -13,6 +13,7 @@
     "@types/react": "^16.9.25",
     "@types/react-native": "^0.61.23",
     "@types/react-test-renderer": "^16.9.2",
+    "@types/socket.io-client": "^1.4.32",
     "an-array-of-english-words": "^2.0.0",
     "clipboardy": "^2.2.0",
     "expo": "~36.0.0",
@@ -24,7 +25,7 @@
     "react-native-web": "~0.11.7",
     "socket.io-client": "^2.3.0",
     "typescript": "^3.8.3",
-    "username-generator": "^1.1.0"
+    "unique-names-generator": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
