@@ -22,12 +22,12 @@ class SuperStore {
         });
     }
 
-    setState(state: SuperState, args: any) {
-        this.emitter.emit('to-' + SuperState, args);
+    setState(state: SuperState, args?: any) {
+        this.emitter.emit('to-' + state, args);
     }
 
     onSetState(state: SuperState, handler: Function) {
-        this.emitter.on('to-' + SuperState, handler);
+        this.emitter.on('to-' + state, handler);
     }
 
     closeAllListeners() {

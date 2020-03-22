@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 import Tile from './Tile';
 
@@ -29,7 +29,7 @@ export default class Stage extends Component<any, State> {
     }
 
     componentDidMount() {
-        const game_obj = AnagramStore.active_game;
+        const game_obj: Anagram = AnagramStore.getActiveGame();
         this.setLettersFromGameInstance(game_obj);
 
         AnagramStore.onStartNewGame((game_obj: Anagram) => {
@@ -63,7 +63,7 @@ export default class Stage extends Component<any, State> {
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        const words: string[] = AnagramStore.active_game.getLocalState().words;
+        const words: string[] = AnagramStore.getActiveGame().getLocalState().words;
 
         if (!words.includes(current_word) && Constants.WORDS.includes(current_word)) {
             AnagramStore.scoreWord(current_word);
@@ -102,24 +102,24 @@ export default class Stage extends Component<any, State> {
     render() {
         return (
             <View>
-                <View flexDirection='row' justifyContent='flex-start'>
+                <View style={styles.options_row}>
                     {
                         this.state.options.map((letter: string, idx: number) =>
                             <Tile
                                 key={ idx }
                                 name={ letter }
-                                onPress= { _ => {this.handleAddTile(letter)} }
+                                onPress= { () => {this.handleAddTile(letter)} }
                             />
                         )
                     }
                 </View>
-                <View flexDirection='row'>
+                <View style={styles.picks_row}>
                     {
                         this.state.picks.map((letter: string, idx: number) =>
                             <Tile
                                 key={ idx + this.state.options.length }
                                 name={ letter }
-                                onPress= { _ => {this.handleRemoveTile(letter)} }
+                                onPress= { () => {this.handleRemoveTile(letter)} }
                             />
                         )
                     }
@@ -128,3 +128,14 @@ export default class Stage extends Component<any, State> {
         )
     }
 }
+
+const styles = StyleSheet.create({
+    options_row: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start'
+    },
+
+    picks_row: {
+        flexDirection: 'row',
+    }
+});

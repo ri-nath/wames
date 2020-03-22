@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
-import SuperStore, { State } from "../../../state/SuperStore";
-import Anagram, { AnagramState } from "../../../state/wrappers/Anagram";
+import SuperStore, { SuperState } from "../../../state/SuperStore";
+import Anagram, { AnagramStage } from "../../../state/wrappers/Anagram";
 
 type State = {
     games: Anagram[]
@@ -34,6 +34,8 @@ export default class GameBrowser extends Component<any, State> {
     }
 
     render() {
+        console.log(this.state.games);
+
         return (
             <View style={styles.view_games}>
                 <Text style={styles.title}> Games </Text>
@@ -48,10 +50,10 @@ export default class GameBrowser extends Component<any, State> {
                                 )
                             }
                             {
-                                game.getLocalState().stage === AnagramState.FINISHED ?
+                                game.getLocalState().stage === AnagramStage.FINISHED ?
                                     <TouchableOpacity
                                         style={ styles.button }
-                                        onPress={ _ => {
+                                        onPress={ () => {
                                             Alert.alert(game.getPlayers().map(user_id =>
                                             user_id + ' vs ' + game.getState(user_id).score + ', with: ' + game.getState(user_id).words.join(' '),)
                                                 .join('\n'))
@@ -62,8 +64,8 @@ export default class GameBrowser extends Component<any, State> {
                                     :
                                     <TouchableOpacity
                                         style={ styles.button }
-                                        disabled={ game.getLocalState().stage !== AnagramState.NOT_STARTED }
-                                        onPress={ _ => {SuperStore.setState(State.ANAGRAM_GAME, game)} }
+                                        disabled={ game.getLocalState().stage !== AnagramStage.NOT_STARTED }
+                                        onPress={ () => {SuperStore.setState(SuperState.ANAGRAM_GAME, game)} }
                                     >
                                         <Text>{ game.getLocalState().stage }</Text>
                                     </TouchableOpacity>

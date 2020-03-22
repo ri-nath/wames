@@ -7,6 +7,8 @@ class Centralizer {
     constructor() {
         this.username = uniqueNamesGenerator({
             dictionaries: [adjectives, animals], // colors can be omitted here as not used
+            separator: '',
+            style: 'capital',
             length: 2
         });
     }

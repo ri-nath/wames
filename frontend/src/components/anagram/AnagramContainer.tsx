@@ -5,7 +5,7 @@ import Stage from "./subcomponents/Stage";
 import Info from "./subcomponents/Info";
 
 import AnagramStore from "../../state/AnagramStore";
-import SuperStore, { State } from "../../state/SuperStore";
+import SuperStore, { SuperState } from "../../state/SuperStore";
 
 type State = {
     in_game: boolean,
@@ -55,7 +55,7 @@ export default class AnagramContainer extends Component<any, State> {
                         <Info/>
                     </View>
                     <View style={styles.stage}>
-                        <Button title='MENU' onPress={_ => { SuperStore.setState(State.MENU) }}/>
+                        <Button title='MENU' onPress={_ => { SuperStore.setState(SuperState.MENU) }}/>
                     </View>
                 </Fragment>
             )

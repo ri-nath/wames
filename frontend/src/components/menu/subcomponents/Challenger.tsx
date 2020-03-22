@@ -35,7 +35,7 @@ export default class Challenger extends Component<any, State> {
                 <Button
                     disabled={this.state.value.length < 1}
                     title='Challenge User'
-                    onPress={_ => DB.createGame(this.state.value)}
+                    onPress={() => DB.createGame(this.state.value)}
                 />
             </View>
         )

@@ -1,5 +1,5 @@
 import MicroEmitter from 'micro-emitter';
-import SuperStore, { State } from './SuperStore';
+import SuperStore, { SuperState } from './SuperStore';
 import DB from './DB';
 
 import Anagram, {AnagramObject, AnagramStage, AnagramState} from './wrappers/Anagram';
@@ -30,7 +30,7 @@ class AnagramStore {
     }
 
     setListeners() {
-        SuperStore.onSetState(State.ANAGRAM_GAME, (game_object: Anagram) => {
+        SuperStore.onSetState(SuperState.ANAGRAM_GAME, (game_object: Anagram) => {
             this.processUpdateGame(game_object, true);
         });
 
@@ -136,8 +136,12 @@ class AnagramStore {
         }
     }
 
-    getActiveGame(): Anagram | null {
-        return this.active_game;
+    getActiveGame(): Anagram {
+        if (this.active_game) {
+            return this.active_game;
+        } else {
+            throw 'getActiveGame(): Game not initialized properly!'
+        }
     }
 
     getGamesList(): Anagram[] {

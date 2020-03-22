@@ -1,9 +1,9 @@
 import Centralizer from '../Centralizer';
 
 export enum AnagramStage {
-    NOT_STARTED,
-    PLAYING,
-    FINISHED
+    NOT_STARTED = 'not-started',
+    PLAYING = 'running',
+    FINISHED = 'finished'
 }
 
 export interface AnagramState {
