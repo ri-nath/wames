@@ -28,9 +28,11 @@ export default class Server {
     private server;
     private io;
 
-    private sockets: LooseSocket[] = [];
+    private sockets_list: LooseSocket[] = [];
 
     constructor() {
+        this.setListeners = this.setListeners.bind(this);
+
         this.app = express();
         this.server = http.createServer(this.app);
         this.io = io(this.server);
@@ -49,27 +51,31 @@ export default class Server {
     setListeners(socket: LooseSocket) {
         console.log('A socket connected from ', socket.handshake.address);
 
-        socket.on(Events.REGISTER_USER, (user: User, callback: (ret: AnagramObject[] | Error) => void) => {
-            console.log('Registering user: ', user);
+        socket.on(Events.REGISTER_USER, (user_id: string, callback: (ret: User | Error) => void) => {
+            console.log('Registering user: ', user_id);
 
-            if (socket.registered) {
-                callback(Error("Socket already registered!"));
-            } else {
+            DB.registerUser(user_id, res => {
+                console.log('Resolved user: ', res);
 
-                DB.registerUser(user, res => {
                     if (!(res instanceof Error)) {
-                        socket.user = user;
+                        socket.user = res;
                         socket.registered = true;
 
-                        DB.getUserAnagramGames(user, callback);
-                    } else {
-                        callback(res);
+                        this.sockets_list.push(socket);
+
+                        DB.getUserAnagramGames(res, (games: AnagramObject[]) => {
+                            socket.emit(Events.NEW_GAMES, games);
+                        });
                     }
+
+                    callback(res);
                 });
-            }
+
         });
 
         socket.on(Events.CREATE_GAME, (target_usernames: string[], callback: (game: AnagramObject) => void) => {
+            console.log('Creating game from: ', socket.user.username, ' for: ', target_usernames);
+
             DB.getUsersByName(target_usernames, (users: User[]) => {
                 let target_users = users;
                 target_users.push(socket.user);
@@ -79,7 +85,7 @@ export default class Server {
                 DB.createAnagramGame(game, (db_game: AnagramObject) => {
                     const room = db_game.uuid;
 
-                    this.sockets.filter(list_socket =>
+                    this.sockets_list.filter(list_socket =>
                         target_users.includes(list_socket.user))
                         .forEach(target_socket => {
                             target_socket.join(room);
@@ -93,6 +99,8 @@ export default class Server {
         });
 
         socket.on(Events.SET_USERNAME, (username: string, callback: (res: User | Error) => void) => {
+            console.log('Setting username for: ', socket.user.username, ' to: ', username);
+
             const new_user: User = {
                 user_id: socket.user.user_id,
                 username: username
@@ -108,15 +116,17 @@ export default class Server {
         });
 
         socket.on(Events.UPDATE_GAME_STATE, (uuid: string, new_state: AnagramState) => {
-            DB.updateAnagramGame(socket.user, uuid, new_state, (updated_game: AnagramObject) => {
+            console.log('Updating game id ', uuid, ' from: ', socket.user.username, ' with: ', new_state);
+
+            DB.updateAnagramGame(socket.user, uuid, new_state, () => {
                 socket.broadcast.to(uuid).emit(Events.UPDATE_GAME_STATE, uuid, socket.user, new_state);
             });
         });
 
         socket.on('disconnect', () => {
-            console.log('A user disconnected! ' + socket.user.user_id);
+            console.log('A user disconnected!');
 
-            this.sockets = this.sockets.filter(list_socket => list_socket !== socket);
+            //this.sockets = this.sockets.filter(list_socket => !list_socket.disconnected);
         });
     }
 }

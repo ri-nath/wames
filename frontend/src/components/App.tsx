@@ -11,7 +11,7 @@ export default class App extends Component<any, any> {
         super(props);
 
         this.state = {
-            panel: SuperState.MENU,
+            panel: SuperState.LOADING,
         }
     }
 
@@ -33,6 +33,7 @@ export default class App extends Component<any, any> {
         return (
             <Fragment>
                 <View style={styles.container}>
+                    { this.state.panel === SuperState.LOADING && <Text>Connecting to Server...</Text>}
                     { this.state.panel === SuperState.MENU && <MenuContainer/> }
                     { this.state.panel === SuperState.ANAGRAM_GAME && <AnagramContainer/> }
                 </View>

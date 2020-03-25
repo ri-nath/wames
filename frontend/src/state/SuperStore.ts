@@ -1,11 +1,14 @@
 import MicroEmitter from 'micro-emitter';
 
+import { AnagramObject } from '../../types';
+
 import DB from './DB';
-import Anagram, {AnagramObject} from './wrappers/Anagram';
+import Anagram from './wrappers/Anagram';
 
 export enum SuperState {
     MENU = 'menu',
-    ANAGRAM_GAME ='anagram'
+    ANAGRAM_GAME ='anagram',
+    LOADING = 'loading'
 };
 
 class SuperStore {
@@ -15,11 +18,17 @@ class SuperStore {
     constructor() {
         this.emitter = new MicroEmitter();
 
-        this.state = SuperState.MENU;
+        this.state = SuperState.LOADING;
 
-        DB.onGameCreation((game_object: AnagramObject) => {
-            this.setState(SuperState.ANAGRAM_GAME, new Anagram(game_object));
-        });
+        for (const state of Object.values(SuperState)) {
+            this.emitter.on('to-' + state, () => {
+                this.state = state;
+            })
+        }
+
+        DB.onConnect(() => {
+            this.setState(SuperState.MENU);
+        })
     }
 
     setState(state: SuperState, args?: any) {
@@ -35,6 +44,9 @@ class SuperStore {
             // @ts-ignore
             this.emitter.off(state);
         }
+
+        // @ts-ignore
+        this.emitter.off('change-username');
     }
 }
 

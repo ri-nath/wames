@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
-import Anagram, { AnagramStage } from '../../../state/wrappers/Anagram';
+import Anagram from '../../../state/wrappers/Anagram';
 
 type State = {
     score: number,
@@ -82,7 +82,7 @@ export default class Info extends Component<any, State> {
 
         this.setState({
             target_score: game_state.score,
-            show_timer: game_state.stage === AnagramStage.PLAYING,
+            show_timer: game_state.stage === 'RUNNING',
             words: game_state.words,
         });
     }

@@ -44,6 +44,8 @@ export function addUserToGame(game: AnagramObject, user: User): AnagramObject {
         score: 0
     };
 
+    console.log(user);
+
     game.states[user.user_id] = state;
 
     game.users.push(user);

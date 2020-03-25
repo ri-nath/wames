@@ -1,6 +1,14 @@
 import { AnagramObject, AnagramState, User } from '../types';
 
 import monk, { IMonkManager, ICollection } from 'monk';
+import { uniqueNamesGenerator, adjectives, animals, Config } from 'unique-names-generator';
+
+const name_config: Config = {
+    dictionaries: [adjectives, animals],
+    separator: '',
+    style: 'capital',
+    length: 2
+};
 
 class DB {
     private db: IMonkManager = monk(process.env.DB_URI);
@@ -37,40 +45,55 @@ class DB {
             .catch(console.error);
     }
 
-    // USER METHODS
-    registerUser(user: User, callback: (res: User | Error) => void) {
+    generateUsername(callback: (username: string) => void) {
+        let username = uniqueNamesGenerator(name_config);
+
         this.users.find({
-            user_id: user.user_id
+            username: username,
+        }).then((docs: User[]) => {
+            if (docs.length > 0) {
+                this.generateUsername(callback);
+            } else {
+                callback(username);
+            }
+        });
+    };
+
+    // USER METHODS
+    registerUser(user_id: string, callback: (res: User | Error) => void) {
+        this.users.find({
+            user_id: user_id
         })
             .then(docs => {
                 if (docs.length > 0) {
-                    callback(Error("User already registered!"));
+                    callback(docs[0]);
                 } else {
-                    this.users.insert({
-                        user_id: user.user_id,
-                    })
-                        .then(user => {
-                            this.setUsername(user, callback);
+                    this.generateUsername(username => {
+                        this.users.insert({
+                            user_id: user_id,
+                            username: username,
                         })
-                        .catch(console.error);
+                            .then(callback)
+                            .catch(console.error);
+                    });
                 }
             })
             .catch(console.error);
     }
 
     setUsername(user: User, callback: (res: User | Error) => void) {
-        if (user.username === '') return;
+        if (user.username === '') callback(Error("Username cannot be empty!"));
 
         this.users.find({
             username: user.username
         })
-            .then(docs => {
+            .then((docs: User[]) => {
                 if (docs.length > 0) {
-                    callback(Error("Username is taken!"))
+                    callback(Error("Username is taken! " + docs[0].username))
                 } else {
                     this.users.findOneAndUpdate(
                         {user_id: user.user_id},
-                        {username: user.username}
+                        {$set: {username: user.username}}
                     )
                         .then(callback)
                         .catch(console.error);

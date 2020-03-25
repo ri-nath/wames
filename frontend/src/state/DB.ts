@@ -1,18 +1,40 @@
 import io from 'socket.io-client';
 
-import Centralizer from './Centralizer';
-import * as Constants from '../constants';
-import { AnagramState } from './wrappers/Anagram';
+import MicroEmitter from 'micro-emitter';
+
+import * as PConstants from '../constants';
+import { AnagramObject, AnagramState, User } from '../../types';
+
+import Constants from 'expo-constants';
+
+enum Events {
+    ERROR = 'error',
+    REGISTER_USER = 'register-user',
+    NEW_GAMES = 'new-games',
+    CREATE_GAME = 'create-game',
+    SET_USERNAME = 'user-id',
+    UPDATE_GAME_STATE = 'update-game-state'
+}
 
 class DB {
     private socket: SocketIOClient.Socket;
+    private user: User | undefined;
+    private emitter: MicroEmitter;
 
     constructor() {
-        this.socket = io(Constants.SERVER_ENDPOINT);
+        this.emitter = new MicroEmitter();
+        this.socket = io(PConstants.SERVER_ENDPOINT);
 
         this.socket.on('connect', () => {
             console.log('Socket Connected!');
-            this.socket.emit('register-user', Centralizer.getUsername());
+
+            this.socket.emit(Events.REGISTER_USER, Constants.installationId, (res: User | Error) => {
+                if (!(res instanceof Error)) {
+                    this.user = res;
+
+                    this.emitter.emit('connect', res);
+                }
+            });
         });
 
         this.socket.on('reconnect', () => {
@@ -24,35 +46,46 @@ class DB {
         });
     }
 
-    createGame(...target_users: string[]) {
-        this.socket.emit('create-game', Centralizer.getUsername(), ...target_users);
+    onConnect(handler: (res: User) => void) {
+        this.emitter.on('connect', handler);
     }
 
-    onGameCreation(handler: Function) {
-        // args: game object
-        this.socket.on('return-game', handler);
+    createGame(target_users: string[], callback: (game: AnagramObject) => void) {
+        this.socket.emit(Events.CREATE_GAME, target_users, callback);
     }
 
     onNewGames(handler: Function) {
         // args: array of game objects
-        this.socket.on('new-games', handler);
+        this.socket.on(Events.NEW_GAMES, handler);
     }
 
-    updateGameState(game_uuid: number, state: AnagramState) {
-        this.socket.emit('update-game-state', game_uuid, state);
+    updateGameState(game_uuid: string, state: AnagramState) {
+        this.socket.emit(Events.UPDATE_GAME_STATE, game_uuid, state);
     }
 
     onNewGameState(handler: Function) {
         // args: game uuid, username, new state
-        this.socket.on('new-game-state', handler);
+        this.socket.on(Events.UPDATE_GAME_STATE, handler);
     }
 
     setUsername(username: String) {
-        this.socket.emit('set-user-id', username);
+        this.socket.emit(Events.SET_USERNAME, username, (res: User | Error) => {
+            if (!(res instanceof Error)) {
+                this.emitter.emit(Events.SET_USERNAME, res.username);
+            }
+        });
     }
 
-    onSetUsername(handler: Function) {
-        this.socket.on('new-user-id', handler);
+    onSetUsername(handler: (res: string) => void) {
+        this.emitter.on(Events.SET_USERNAME, handler);
+    }
+
+    getUsername() {
+        return this.user ? this.user.username : '';
+    }
+
+    getUserID() {
+        return this.user ? this.user.user_id : '';
     }
 }
 

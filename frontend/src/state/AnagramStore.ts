@@ -2,7 +2,8 @@ import MicroEmitter from 'micro-emitter';
 import SuperStore, { SuperState } from './SuperStore';
 import DB from './DB';
 
-import Anagram, {AnagramObject, AnagramStage, AnagramState} from './wrappers/Anagram';
+import Anagram from './wrappers/Anagram';
+import {AnagramObject, AnagramStage, AnagramState} from '../../types';
 
 enum EVENTS {
     START_GAME = 'start-game',
@@ -35,10 +36,10 @@ class AnagramStore {
         });
 
         DB.onNewGames((new_games: AnagramObject[]) => {
-            new_games.forEach(game => this.processUpdateGame(new Anagram(game), false));
+            new_games.forEach(game => this.processUpdateGame(new Anagram(game, DB.getUserID()), false));
         });
 
-        DB.onNewGameState((game_uuid: number, username: string, state: AnagramState) => {
+        DB.onNewGameState((game_uuid: string, username: string, state: AnagramState) => {
             let index = this.games.findIndex(game => game.getID() === game_uuid);
 
             if (index > -1) {
@@ -76,7 +77,7 @@ class AnagramStore {
         }, this.active_game.getConfig().duration * 1000);
 
         this.active_game.setLocalState({
-            stage: AnagramStage.PLAYING
+            stage: 'RUNNING'
         });
 
         this.emitter.emit(EVENTS.START_GAME, this.active_game);
@@ -87,7 +88,7 @@ class AnagramStore {
 
         if (this.active_game) {
             this.active_game.setLocalState({
-                stage: AnagramStage.FINISHED
+                stage: 'FINISHED'
             });
 
             DB.updateGameState(
@@ -97,7 +98,7 @@ class AnagramStore {
 
             this.emitter.emit(EVENTS.END_GAME, this.active_game);
         } else {
-            console.log('Game not initialized! ', 'endGame()');
+            console.error('Game not initialized! ', 'endGame()');
         }
     }
 
@@ -107,7 +108,7 @@ class AnagramStore {
 
             this.emitter.emit(EVENTS.SCORE_WORD, this.active_game);
         } else {
-            console.log('Game not initialized! ', 'scoreWord() ', word);
+            console.error('Game not initialized! ', 'scoreWord() ', word);
         }
     }
 

@@ -1,7 +1,10 @@
+import { AnagramObject } from '../../../../types';
+
 import React, { Component } from 'react';
 import {StyleSheet, View, TextInput, Button} from 'react-native';
 
 import DB from '../../../state/DB';
+import SuperStore, { SuperState } from 'state/SuperStore';
 
 type State = {
     value: string
@@ -35,7 +38,9 @@ export default class Challenger extends Component<any, State> {
                 <Button
                     disabled={this.state.value.length < 1}
                     title='Challenge User'
-                    onPress={() => DB.createGame(this.state.value)}
+                    onPress={() => DB.createGame([this.state.value], (game: AnagramObject) => {
+                        SuperStore.setState(SuperState.ANAGRAM_GAME, game);
+                    })}
                 />
             </View>
         )

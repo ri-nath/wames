@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Alert, Platform} from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
 import SuperStore, { SuperState } from "../../../state/SuperStore";
-import Anagram, { AnagramStage } from "../../../state/wrappers/Anagram";
+import Anagram  from "../../../state/wrappers/Anagram";
+import {User} from '../../../../types';
 
 type State = {
     games: Anagram[]
@@ -18,9 +19,6 @@ export default class GameBrowser extends Component<any, State> {
         };
     }
 
-    // TODO: Fix games being displayed as 'running' instead of 'finished'...
-    // For some reason, AnagramStore.getGamesList() returns a bad list, while onUpdateGamesList has the correct one...
-
     componentDidMount() {
         this.setState({
             games: AnagramStore.getGamesList()
@@ -33,9 +31,23 @@ export default class GameBrowser extends Component<any, State> {
         });
     }
 
-    render() {
-        console.log(this.state.games);
+    alert(game: Anagram) {
+        if (Platform.OS === 'web') {
+            alert(game.getPlayers().map((user: User) =>
+                user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
+                .join('\n'))
+        } else {
+            Alert.alert(
+                game.getPlayers().map((user: User, iidx: number) =>
+                    user.username + (game.getPlayers().length - 1 !== iidx ? 'vs ' : ' ')
+                ).join(''),
+                game.getPlayers().map((user: User) =>
+                    user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
+                    .join('\n'))
+        }
+    }
 
+    render() {
         return (
             <View style={styles.view_games}>
                 <Text style={styles.title}> Games </Text>
@@ -43,20 +55,18 @@ export default class GameBrowser extends Component<any, State> {
                     this.state.games.map((game: Anagram, idx: number) =>
                         <View style={ styles.game_row } key={idx}>
                             {
-                                game.getPlayers().map((user_id: string, iidx: number) =>
+                                game.getPlayers().map((user: User, iidx: number) =>
                                     <Text key={this.state.games.length + iidx}>
-                                        {user_id + (game.getPlayers().length - 1 !== iidx ? ', ' : ' ')}
+                                        {user.username + (game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')}
                                     </Text>
                                 )
                             }
                             {
-                                game.getLocalState().stage === AnagramStage.FINISHED ?
+                                game.getLocalState().stage === 'FINISHED' ?
                                     <TouchableOpacity
                                         style={ styles.button }
                                         onPress={ () => {
-                                            Alert.alert(game.getPlayers().map(user_id =>
-                                            user_id + ' vs ' + game.getState(user_id).score + ', with: ' + game.getState(user_id).words.join(' '),)
-                                                .join('\n'))
+                                            this.alert(game);
                                         } }
                                     >
                                         <Text>View Results</Text>
@@ -64,7 +74,7 @@ export default class GameBrowser extends Component<any, State> {
                                     :
                                     <TouchableOpacity
                                         style={ styles.button }
-                                        disabled={ game.getLocalState().stage !== AnagramStage.NOT_STARTED }
+                                        disabled={ game.getLocalState().stage !== 'NOT-STARTED' }
                                         onPress={ () => {SuperStore.setState(SuperState.ANAGRAM_GAME, game)} }
                                     >
                                         <Text>{ game.getLocalState().stage }</Text>

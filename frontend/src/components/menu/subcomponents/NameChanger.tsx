@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
 
 import DB from '../../../state/DB';
-import Centralizer from '../../../state/Centralizer';
+import { User } from '../../../../types';
+import SuperStore from 'state/SuperStore';
 
 type State = {
+    username: string,
     value: string
 }
 
@@ -14,10 +16,12 @@ export default class NameChanger extends Component<any, State> {
         super(props);
 
         this.state = {
-            value: ''
+            username: '',
+            value: '',
         };
 
         this.handleChangeValue = this.handleChangeValue.bind(this);
+        this.handlePress = this.handlePress.bind(this);
     }
 
     handleChangeValue(value: string) {
@@ -26,16 +30,19 @@ export default class NameChanger extends Component<any, State> {
         });
     }
 
+    handlePress() {
+        DB.setUsername(this.state.value);
+    }
+
     componentDidMount() {
+        const username = DB.getUsername();
+
         this.setState({
-            value: Centralizer.getUsername()
+            value: username,
+            username: username
         });
 
-        DB.onSetUsername((username: string) => {
-            this.setState({
-                value: username
-            });
-        })
+        DB.onSetUsername(this.handleChangeValue);
     }
 
     render() {
@@ -49,7 +56,7 @@ export default class NameChanger extends Component<any, State> {
                 <Button
                     disabled={this.state.value.length < 1}
                     title='Confirm New Username'
-                    onPress={_ => DB.setUsername(this.state.value)}
+                    onPress={this.handlePress}
                 />
             </View>
         )

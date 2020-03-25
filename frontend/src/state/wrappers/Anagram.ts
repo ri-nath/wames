@@ -1,36 +1,15 @@
-import Centralizer from '../Centralizer';
-
-export enum AnagramStage {
-    NOT_STARTED = 'not-started',
-    PLAYING = 'running',
-    FINISHED = 'finished'
-}
-
-export interface AnagramState {
-    stage: AnagramStage,
-    words: string[],
-    score: number
-}
-
-export interface AnagramConfig {
-    letters: string[],
-    duration: number
-}
-
-export interface AnagramObject {
-    uuid: number,
-    states: { [username: string]: AnagramState },
-    config: AnagramConfig
-}
+import {AnagramConfig, AnagramObject, AnagramState, User} from '../../../types';
 
 export default class Anagram {
     private game_object: AnagramObject;
+    private local_user_id: string;
 
-    constructor(game_object: AnagramObject) {
+    constructor(game_object: AnagramObject, local_user_id: string) {
         this.game_object = game_object;
+        this.local_user_id = local_user_id;
     }
 
-    getID(): number {
+    getID(): string {
         return this.game_object.uuid;
     }
 
@@ -38,12 +17,12 @@ export default class Anagram {
         return this.game_object.config;
     }
 
-    getState(username: string): AnagramState {
-        return this.game_object.states[username];
+    getState(user_id: string): AnagramState {
+        return this.game_object.states[user_id];
     }
 
     getLocalState() : AnagramState {
-        return this.getState(Centralizer.getUsername());
+        return this.getState(this.local_user_id);
     }
 
     setState(username: string, state: Partial<AnagramState>) {
@@ -54,7 +33,7 @@ export default class Anagram {
     }
 
     setLocalState(state: Partial<AnagramState>) {
-        this.setState(Centralizer.getUsername(), state);
+        this.setState(this.local_user_id, state);
     }
 
     lazyScoreWord(word: string) {
@@ -62,8 +41,8 @@ export default class Anagram {
         this.getLocalState().score = this.getLocalState().score + word.length * 100;
     }
 
-    getPlayers(): string[] {
-        return Object.keys(this.game_object.states);
+    getPlayers(): User[] {
+        return this.game_object.users;
     }
 
     getObject(): AnagramObject {
