@@ -14,7 +14,7 @@ export function generateLetters(length: number): string[] {
 }
 
 const length = 8;
-const duration = 10;
+const duration = 60;
 
 export function generateGame(target_users: User[]): AnagramObject {
     const uuid: string = v4();

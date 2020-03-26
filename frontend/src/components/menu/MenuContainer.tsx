@@ -64,6 +64,4 @@ const styles = StyleSheet.create({
     challenger: {
         flex: 1,
     }
-
-
 });

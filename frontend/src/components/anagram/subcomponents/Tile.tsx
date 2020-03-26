@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 
 import * as Constants from '../../../constants';
 
@@ -25,6 +25,10 @@ export default function Tile(props: Props) {
     )
 }
 
+const length = Dimensions.get('window').width * (1.0 / 8.0);
+const margin = 2;
+const filtered_length = length - 2.0 * margin;
+
 const styles = StyleSheet.create({
     text: {
         color: '#E4EDE4',
@@ -32,10 +36,10 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        width: 45,
-        height: 45,
+        width: filtered_length,
+        height: filtered_length,
         padding: 10,
-        margin: 2,
+        margin: margin,
         backgroundColor: '#9DBF9E',
         borderRadius: 5,
     },
