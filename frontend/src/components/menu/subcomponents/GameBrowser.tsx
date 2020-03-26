@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Alert, Platform} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Alert, Platform, FlatList, Dimensions} from 'react-native';
 
 import AnagramStore from '../../../state/AnagramStore';
 import SuperStore, { SuperState } from "../../../state/SuperStore";
@@ -51,22 +51,26 @@ export default class GameBrowser extends Component<any, State> {
         return (
             <View style={styles.view_games}>
                 <Text style={styles.title}> Games </Text>
-                {
-                    this.state.games.map((game: Anagram, idx: number) =>
-                        <View style={ styles.game_row } key={idx}>
+                <FlatList
+                    style={styles.list}
+                    data={this.state.games.reverse()}
+                    extraData={this.state}
+                    keyExtractor={(item) => item.getID()}
+                    renderItem={({item}) =>
+                        <View style={styles.game_row}>
                             {
-                                game.getPlayers().map((user: User, iidx: number) =>
+                                item.getPlayers().map((user: User, iidx: number) =>
                                     <Text key={this.state.games.length + iidx}>
-                                        {user.username + (game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')}
+                                        {user.username + (item.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')}
                                     </Text>
                                 )
                             }
                             {
-                                game.getLocalState().stage === 'FINISHED' ?
+                                item.getLocalState().stage === 'FINISHED' ?
                                     <TouchableOpacity
                                         style={ styles.button }
                                         onPress={ () => {
-                                            this.alert(game);
+                                            this.alert(item);
                                         } }
                                     >
                                         <Text>View Results</Text>
@@ -74,26 +78,27 @@ export default class GameBrowser extends Component<any, State> {
                                     :
                                     <TouchableOpacity
                                         style={ styles.button }
-                                        disabled={ game.getLocalState().stage !== 'NOT-STARTED' }
-                                        onPress={ () => {SuperStore.setStateToAnagramGame(game)} }
+                                        disabled={ item.getLocalState().stage !== 'NOT-STARTED' }
+                                        onPress={ () => {SuperStore.setStateToAnagramGame(item)} }
                                     >
-                                        <Text>{ game.getLocalState().stage }</Text>
+                                        <Text>{ item.getLocalState().stage }</Text>
                                     </TouchableOpacity>
 
                             }
                         </View>
-                    )
-                }
+                    }
+                />
             </View>
         )
     }
 }
 
+const height = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
     view_games: {
         alignItems: 'center',
         justifyContent: 'flex-start',
-
         marginVertical: 50,
     },
 
@@ -111,6 +116,11 @@ const styles = StyleSheet.create({
 
     button: {
         backgroundColor: '#DDDDDD',
+    },
+
+    list: {
+        flexGrow: 0,
+        height: height * 0.4
     }
 });
 

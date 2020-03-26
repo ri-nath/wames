@@ -40,6 +40,7 @@ export default class NameDisplay extends Component<any, State> {
 
 const styles = StyleSheet.create({
     name: {
+        alignSelf: 'stretch',
         height: 25,
         backgroundColor: '#4fff86',
         alignItems: 'center',

@@ -54,7 +54,7 @@ export default class NameChanger extends Component<any, State> {
                     onChangeText={this.handleChangeValue}
                 />
                 <Button
-                    disabled={this.state.value.length < 1}
+                    disabled={this.state.value.length < 1 || this.state.value === this.state.username}
                     title='Confirm New Username'
                     onPress={this.handlePress}
                 />
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     create_game: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
     },
 
     button: {
