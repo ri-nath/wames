@@ -39,6 +39,14 @@ class SuperStore {
         this.emitter.on('to-' + state, handler);
     }
 
+    setStateToAnagramGame(game: Anagram) {
+        this.emitter.emit('to-' + SuperState.ANAGRAM_GAME, game);
+    }
+
+    onStateToAnagramGame(handler: (game: Anagram) => void) {
+        this.emitter.on('to-' + SuperState.ANAGRAM_GAME, handler);
+    }
+
     closeAllListeners() {
         for (const state of Object.values(SuperState)) {
             // @ts-ignore

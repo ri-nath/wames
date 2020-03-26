@@ -75,7 +75,7 @@ export default class GameBrowser extends Component<any, State> {
                                     <TouchableOpacity
                                         style={ styles.button }
                                         disabled={ game.getLocalState().stage !== 'NOT-STARTED' }
-                                        onPress={ () => {SuperStore.setState(SuperState.ANAGRAM_GAME, game)} }
+                                        onPress={ () => {SuperStore.setStateToAnagramGame(game)} }
                                     >
                                         <Text>{ game.getLocalState().stage }</Text>
                                     </TouchableOpacity>

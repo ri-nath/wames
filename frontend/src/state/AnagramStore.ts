@@ -3,7 +3,7 @@ import SuperStore, { SuperState } from './SuperStore';
 import DB from './DB';
 
 import Anagram from './wrappers/Anagram';
-import {AnagramObject, AnagramStage, AnagramState} from '../../types';
+import {AnagramObject, AnagramStage, AnagramState, User} from '../../types';
 
 enum EVENTS {
     START_GAME = 'start-game',
@@ -31,19 +31,19 @@ class AnagramStore {
     }
 
     setListeners() {
-        SuperStore.onSetState(SuperState.ANAGRAM_GAME, (game_object: Anagram) => {
-            this.processUpdateGame(game_object, true);
+        SuperStore.onStateToAnagramGame((game: Anagram) => {
+            this.processLoadGame(game, true);
         });
 
         DB.onNewGames((new_games: AnagramObject[]) => {
-            new_games.forEach(game => this.processUpdateGame(new Anagram(game, DB.getUserID()), false));
+            new_games.forEach(game => this.processLoadGame(new Anagram(game, DB.getUserID()), false));
         });
 
-        DB.onNewGameState((game_uuid: string, username: string, state: AnagramState) => {
+        DB.onNewGameState((game_uuid: string, user: User, state: AnagramState) => {
             let index = this.games.findIndex(game => game.getID() === game_uuid);
 
             if (index > -1) {
-                this.games[index].setState(username, state);
+                this.games[index].setState(user.user_id, state);
 
                 this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
             }
@@ -52,7 +52,7 @@ class AnagramStore {
         });
     }
 
-    processUpdateGame(game_object: Anagram, set_active: boolean) {
+    processLoadGame(game_object: Anagram, set_active: boolean) {
         let index = this.games.findIndex(game => game.getID() === game_object.getID());
 
         if (index > -1) {

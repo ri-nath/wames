@@ -86,8 +86,9 @@ export default class Server {
                     const room = db_game.uuid;
 
                     this.sockets_list.filter(list_socket =>
-                        target_users.includes(list_socket.user))
+                        target_users.map(target_user => target_user.user_id).includes(list_socket.user.user_id))
                         .forEach(target_socket => {
+                            console.log(target_socket.user.username, ' joined game ', db_game.uuid);
                             target_socket.join(room);
                         });
 
