@@ -1,7 +1,7 @@
 {
   "name": "wames-server",
   "version": "1.0.0",
-  "main": "build/index.js",
+  "main": "built/index.js",
   "dependencies": {
     "@types/expo": "^33.0.1",
     "@types/express": "^4.17.3",
@@ -21,6 +21,6 @@
     "uuid": "^7.0.2"
   },
   "scripts": {
-    "start": "node -r dotenv/config build/index.js"
+    "start": "node -r dotenv/config built/index.js"
   }
 }

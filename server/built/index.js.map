@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":";;AAAA,qCAA8B;AAE9B,MAAM,MAAM,GAAG,IAAI,gBAAM,EAAE,CAAC","sourcesContent":["import Server from './Server';\r\n\r\nconst server = new Server();"]}

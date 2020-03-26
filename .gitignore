@@ -92,13 +92,13 @@ typings/
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
-# next.js build output
+# next.js built output
 .next
 
-# nuxt.js build output
+# nuxt.js built output
 .nuxt
 
-# rollup.js default build output
+# rollup.js default built output
 dist/
 
 # Uncomment the public line if your project uses Gatsby
@@ -106,11 +106,11 @@ dist/
 # https://create-react-app.dev/docs/using-the-public-folder/#docsNav
 # public
 
-# Storybook build outputs
+# Storybook built outputs
 .out
 .storybook-out
 
-# vuepress build output
+# vuepress built output
 .vuepress/dist
 
 # Serverless directories
@@ -238,7 +238,7 @@ captures/
 #*.jks
 #*.keystore
 
-# External native build folder generated in Android Studio 2.2 and later
+# External native built folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 
 # Google Services (e.g. APIs or Firebase)
@@ -351,20 +351,20 @@ Temporary Items
 
 # parcel-bundler cache (https://parceljs.org/)
 
-# next.js build output
+# next.js built output
 
-# nuxt.js build output
+# nuxt.js built output
 
-# rollup.js default build output
+# rollup.js default built output
 
 # Uncomment the public line if your project uses Gatsby
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # https://create-react-app.dev/docs/using-the-public-folder/#docsNav
 # public
 
-# Storybook build outputs
+# Storybook built outputs
 
-# vuepress build output
+# vuepress built output
 
 # Serverless directories
 
