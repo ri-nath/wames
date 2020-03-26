@@ -32,7 +32,7 @@ export default class App extends Component<any, any> {
     render() {
         return (
             <Fragment>
-                    { this.state.panel === SuperState.LOADING && <Text style={styles.container}>Connecting to Server...</Text>}
+                { this.state.panel === SuperState.LOADING && <View style={styles.container}><Text>Connecting to Server...</Text></View>}
                     { this.state.panel === SuperState.MENU && <MenuContainer style={styles.container}/> }
                     { this.state.panel === SuperState.ANAGRAM_GAME && <AnagramContainer style={styles.container}/> }
             </Fragment>

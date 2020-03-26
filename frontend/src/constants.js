@@ -1,6 +1,6 @@
 import Words from "an-array-of-english-words";
 
-export const IS_DEV = true;
+export const IS_DEV = false;
 
 export const WORDS = Words.filter(word => word.length > 2);
 
