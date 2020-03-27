@@ -3,9 +3,9 @@ import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
 import Tile from './Tile';
 
-import AnagramStore from '../../../state/AnagramStore';
-import * as Constants from '../../../constants';
-import Anagram from '../../../state/wrappers/Anagram';
+import AnagramStore from 'state/AnagramStore';
+import * as Constants from 'constants';
+import Anagram from 'wrappers/Anagram';
 
 type State = {
     options: string[],

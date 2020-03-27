@@ -1,4 +1,4 @@
-import {AnagramConfig, AnagramObject, AnagramState, User} from '../../../types';
+import {AnagramConfig, AnagramObject, AnagramState, User} from '../../types';
 
 export default class Anagram {
     private game_object: AnagramObject;

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Alert, Platform, FlatList, Dimensions} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, FlatList, Dimensions } from 'react-native';
 
-import AnagramStore from '../../../state/AnagramStore';
-import SuperStore, { SuperState } from "../../../state/SuperStore";
-import Anagram  from "../../../state/wrappers/Anagram";
-import {User} from '../../../../types';
+import { User } from '../../../../types';
+
+import AnagramStore from 'state/AnagramStore';
+import SuperStore  from "state/SuperStore";
+import Anagram  from "wrappers/Anagram";
 
 type State = {
     games: Anagram[]

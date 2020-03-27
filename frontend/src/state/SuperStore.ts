@@ -1,9 +1,7 @@
 import MicroEmitter from 'micro-emitter';
 
-import { AnagramObject } from '../../types';
-
-import DB from './DB';
-import Anagram from './wrappers/Anagram';
+import ServerStore from '../server/ServerStore';
+import Anagram from '../wrappers/Anagram';
 
 export enum SuperState {
     MENU = 'menu',
@@ -26,7 +24,7 @@ class SuperStore {
             })
         }
 
-        DB.onConnect(() => {
+        ServerStore.onConnect(() => {
             this.setState(SuperState.MENU);
         })
     }

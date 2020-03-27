@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
 
-import DB from '../../../state/DB';
-import { User } from '../../../../types';
-import SuperStore from 'state/SuperStore';
+import ServerStore from 'server/ServerStore';
 
 type State = {
     username: string,
@@ -31,18 +29,18 @@ export default class NameChanger extends Component<any, State> {
     }
 
     handlePress() {
-        DB.setUsername(this.state.value);
+        ServerStore.setUsername(this.state.value);
     }
 
     componentDidMount() {
-        const username = DB.getUsername();
+        const username = ServerStore.getUsername();
 
         this.setState({
             value: username,
             username: username
         });
 
-        DB.onSetUsername(this.handleChangeValue);
+        ServerStore.onSetUsername(this.handleChangeValue);
     }
 
     render() {

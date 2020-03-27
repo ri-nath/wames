@@ -1,9 +1,9 @@
 import MicroEmitter from 'micro-emitter';
-import SuperStore, { SuperState } from './SuperStore';
-import DB from './DB';
+import SuperStore  from './SuperStore';
+import DB from '../server/ServerStore';
 
-import Anagram from './wrappers/Anagram';
-import {AnagramObject, AnagramStage, AnagramState, User} from '../../types';
+import Anagram from '../wrappers/Anagram';
+import {AnagramObject, AnagramState, User} from '../../types';
 
 enum EVENTS {
     START_GAME = 'start-game',

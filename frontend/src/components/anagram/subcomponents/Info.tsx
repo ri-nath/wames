@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
-import AnagramStore from '../../../state/AnagramStore';
-import Anagram from '../../../state/wrappers/Anagram';
+import AnagramStore from 'state/AnagramStore';
+import Anagram from 'wrappers/Anagram';
 
 type State = {
     score: number,

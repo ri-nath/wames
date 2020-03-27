@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-import SuperStore from 'state/SuperStore';
-import DB from 'state/DB';
+import ServerStore from 'server/ServerStore';
 
 type State = {
     name: string
@@ -19,10 +18,10 @@ export default class NameDisplay extends Component<any, State> {
 
     componentDidMount() {
         this.setState({
-            name: DB.getUsername()
+            name: ServerStore.getUsername()
         });
 
-        DB.onSetUsername((new_username: string) => {
+        ServerStore.onSetUsername((new_username: string) => {
             this.setState({
                 name: new_username
             });

@@ -16,7 +16,7 @@ enum Events {
     UPDATE_GAME_STATE = 'update-game-state'
 }
 
-class DB {
+class ServerStore {
     private socket: SocketIOClient.Socket;
     private user: User | undefined;
     private emitter: MicroEmitter;
@@ -89,4 +89,4 @@ class DB {
     }
 }
 
-export default new DB();
+export default new ServerStore();
