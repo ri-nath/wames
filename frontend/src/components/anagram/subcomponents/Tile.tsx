@@ -1,7 +1,7 @@
 import React from 'react';
-import {Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 
-import * as Constants from '../../../constants';
+import * as PConstants from 'constants';
 
 type Props = {
     name: string
@@ -9,7 +9,7 @@ type Props = {
 }
 
 export default function Tile(props: Props) {
-    const disabled = props.name.includes(Constants.DESELECTOR);
+    const disabled = props.name.includes(PConstants.DESELECTOR);
 
     return (
         <TouchableOpacity

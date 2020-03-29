@@ -1,13 +1,12 @@
-import { AnagramObject } from '../../../../types';
-
 import React, { Component } from 'react';
 import {StyleSheet, View, TextInput, Button} from 'react-native';
 
-import ServerStore from 'server/ServerStore';
-import SuperStore  from 'state/SuperStore';
-import Anagram from 'wrappers/Anagram';
+import { AnagramObject } from '../../../../types';
 
-import * as RootNavigation from 'RootNavigation';
+import ServerStore from 'server/ServerStore';
+import RootNavigator from 'state/RootNavigator';
+
+import Anagram from 'lib/Anagram';
 
 type State = {
     value: string
@@ -42,7 +41,7 @@ export default class Challenger extends Component<any, State> {
                     disabled={this.state.value.length < 1}
                     title='Challenge User'
                     onPress={() => ServerStore.createGame([this.state.value], (game: AnagramObject) => {
-                        RootNavigation.navigate('Anagram', { game: new Anagram(game, ServerStore.getUserID()) })
+                        RootNavigator.navigateToAnagramInfo(new Anagram(game, ServerStore.getUserID()));
                     })}
                 />
             </View>

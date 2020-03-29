@@ -30,9 +30,9 @@ export default class NameDisplay extends Component<any, State> {
 
     render() {
         return (
-        <View style={styles.name}>
-            <Text> Playing as: { this.state.name } </Text>
-        </View>
+            <View style={styles.name}>
+                <Text> Playing as: { this.state.name } </Text>
+            </View>
         )
     }
 }

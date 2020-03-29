@@ -1,7 +1,7 @@
 import MicroEmitter from 'micro-emitter';
 
-import ServerStore from '../server/ServerStore';
-import Anagram from '../wrappers/Anagram';
+import ServerStore from 'server/ServerStore';
+import Anagram from 'lib/Anagram';
 
 export enum SuperState {
     MENU = 'menu',

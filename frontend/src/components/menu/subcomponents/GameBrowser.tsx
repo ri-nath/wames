@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 
 import { User } from '../../../../types';
 
 import AnagramStore from 'state/AnagramStore';
-import SuperStore  from "state/SuperStore";
-import Anagram  from "wrappers/Anagram";
+import RootNavigator from 'state/RootNavigator';
+import Anagram  from 'lib/Anagram';
 
-import * as RootNavigation from 'RootNavigation';
-
-import { AnagramMenuNavigationProp } from 'components/menu/MenuContainer';
 
 type State = {
     games: Anagram[]
@@ -65,7 +62,7 @@ export default class GameBrowser extends Component<any, State> {
                         <View style={styles.game_row}>
                             <TouchableOpacity
                                 style={ [styles.button, { backgroundColor: item.getLocalState().stage === 'NOT-STARTED' ? 'lime' : 'gray'} ] }
-                                onPress={ () => { RootNavigation.navigate('Anagram', { game: item }) } }
+                                onPress={ () => { RootNavigator.navigateToAnagramInfo(item) } }
                             >
                                 <Text style={styles.button_text}>
                                     {

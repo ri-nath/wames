@@ -1,11 +1,9 @@
 import io from 'socket.io-client';
-
+import Constants from 'expo-constants';
 import MicroEmitter from 'micro-emitter';
 
-import * as PConstants from '../constants';
+import * as PConstants from 'constants';
 import { AnagramObject, AnagramState, User } from '../../types';
-
-import Constants from 'expo-constants';
 
 enum Events {
     ERROR = 'error',

@@ -4,8 +4,9 @@ import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import Tile from './Tile';
 
 import AnagramStore from 'state/AnagramStore';
-import * as Constants from 'constants';
-import Anagram from 'wrappers/Anagram';
+import Anagram from 'lib/Anagram';
+
+import * as PConstants from 'constants';
 
 type State = {
     options: string[],
@@ -46,13 +47,13 @@ export default class Stage extends Component<any, State> {
 
         this.setState({
             options: options,
-            picks: options.map(_ => Constants.DESELECTOR),
+            picks: options.map(_ => PConstants.DESELECTOR),
         });
     }
 
     handleScoreWord() {
         const current_word: string = this.state.picks.map(
-            element => Constants.ALPHABET.split('').find(
+            element => PConstants.ALPHABET.split('').find(
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
@@ -74,17 +75,17 @@ export default class Stage extends Component<any, State> {
         let picks = this.state.picks;
 
         if (adding) {
-            picks[picks.indexOf(Constants.DESELECTOR)] = tile;
-            options[options.indexOf(tile)] = Constants.DESELECTOR + tile;
+            picks[picks.indexOf(PConstants.DESELECTOR)] = tile;
+            options[options.indexOf(tile)] = PConstants.DESELECTOR + tile;
         } else {
-            options[options.indexOf(Constants.DESELECTOR + tile)] = tile;
+            options[options.indexOf(PConstants.DESELECTOR + tile)] = tile;
 
             picks.splice(picks.indexOf(tile), 1);
-            picks.push(Constants.DESELECTOR);
+            picks.push(PConstants.DESELECTOR);
         }
 
         let current_word: string = this.state.picks.map(
-            element => Constants.ALPHABET.split('').find(
+            element => PConstants.ALPHABET.split('').find(
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
@@ -93,13 +94,13 @@ export default class Stage extends Component<any, State> {
         this.setState({
             picks: picks,
             options: options,
-            on_word: !words.includes(current_word) && Constants.WORDS.includes(current_word)
+            on_word: !words.includes(current_word) && PConstants.WORDS.includes(current_word)
         });
     }
 
     resetTiles() {
-        const options = this.state.options.map(letter => letter.replace(Constants.DESELECTOR,''));
-        const picks = this.state.picks.map(_ => Constants.DESELECTOR);
+        const options = this.state.options.map(letter => letter.replace(PConstants.DESELECTOR,''));
+        const picks = this.state.picks.map(_ => PConstants.DESELECTOR);
 
         this.setState({
             options: options,
@@ -144,7 +145,7 @@ export default class Stage extends Component<any, State> {
                     >
                         <Text style={styles.score_button_text}>{
                             this.state.picks.map(
-                                element => Constants.ALPHABET.split('').find(
+                                element => PConstants.ALPHABET.split('').find(
                                     letter => element.includes(letter)
                                 )).join('').toUpperCase()
                         }</Text>

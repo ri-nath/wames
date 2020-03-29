@@ -1,25 +1,22 @@
-import React from 'react';
-import {Button, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 
-import Anagram from 'wrappers/Anagram';
-import SuperStore from '../../../state/SuperStore';
-
 import { User } from '../../../../types';
-import { RootStackParamList } from 'components/menu/MenuContainer';
 
-type AnagramPortalNavigationProp = StackNavigationProp<RootStackParamList, 'Anagram'>;
+import SuperStore from 'state/SuperStore';
+
+import { RootStackParamList } from '../MenuContainer';
+
 type AnagramPortalRouteProp = RouteProp<RootStackParamList, 'Anagram'>;
 
 type Props = {
     route: AnagramPortalRouteProp,
-    navigator: AnagramPortalNavigationProp,
 }
 
-export default function GamePortal(props: Props) {
-
-        const { game } = props.route.params;
+export default class GamePortal extends Component<Props, any> {
+    render() {
+        const { game } = this.props.route.params;
 
         if (game.getLocalState().stage === 'NOT-STARTED') {
             return (
@@ -27,7 +24,9 @@ export default function GamePortal(props: Props) {
                     <View style={{flex: 1, justifyContent: "flex-start"}}>
                         <Text style={styles.name}>
                             {
-                                game.getPlayers().map((user: User, iidx: number) => user.username + (game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' '))
+                                game.getPlayers().map((user: User, iidx: number) =>
+                                    user.username + (game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
+                                )
                             }
                         </Text>
                     </View>
@@ -68,7 +67,7 @@ export default function GamePortal(props: Props) {
                 </View>
             );
         }
-
+    }
 }
 
 const styles = StyleSheet.create({

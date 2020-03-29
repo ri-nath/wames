@@ -1,8 +1,8 @@
-import {AnagramConfig, AnagramObject, AnagramState, User} from '../../types';
+import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
 
 export default class Anagram {
-    private game_object: AnagramObject;
-    private local_user_id: string;
+    private readonly game_object: AnagramObject;
+    private readonly local_user_id: string;
 
     constructor(game_object: AnagramObject, local_user_id: string) {
         this.game_object = game_object;

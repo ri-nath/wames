@@ -1,12 +1,16 @@
 import React, { Component, Fragment } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-import MenuContainer from "./menu/MenuContainer";
-import AnagramContainer from "./anagram/AnagramContainer";
+import MenuContainer from './menu/MenuContainer';
+import AnagramContainer from './anagram/AnagramContainer';
 
-import SuperStore, { SuperState } from "../state/SuperStore";
+import SuperStore, { SuperState } from '../state/SuperStore';
 
-export default class App extends Component<any, any> {
+type State = {
+    panel: SuperState;
+}
+
+export default class App extends Component<any, State> {
     constructor(props: any) {
         super(props);
 

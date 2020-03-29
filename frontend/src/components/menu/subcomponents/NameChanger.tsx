@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
+import { StyleSheet, View, TextInput, Button } from 'react-native';
 
 import ServerStore from 'server/ServerStore';
 

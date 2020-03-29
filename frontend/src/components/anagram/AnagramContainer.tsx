@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import Stage from "./subcomponents/Stage";
-import Info from "./subcomponents/Info";
+import Stage from './subcomponents/Stage';
+import Info from './subcomponents/Info';
 
 export default function AnagramContainer() {
          return (

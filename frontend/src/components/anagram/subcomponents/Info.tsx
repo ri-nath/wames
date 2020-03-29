@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from 'state/AnagramStore';
-import Anagram from 'wrappers/Anagram';
+import Anagram from 'lib/Anagram';
 
 type State = {
     score: number,

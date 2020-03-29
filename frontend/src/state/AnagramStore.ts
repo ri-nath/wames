@@ -1,9 +1,11 @@
 import MicroEmitter from 'micro-emitter';
-import SuperStore  from './SuperStore';
-import DB from '../server/ServerStore';
 
-import Anagram from '../wrappers/Anagram';
 import {AnagramObject, AnagramState, User} from '../../types';
+
+import SuperStore, {SuperState} from './SuperStore';
+import RootNavigator from './RootNavigator';
+import DB from 'server/ServerStore';
+import Anagram from 'lib/Anagram';
 
 enum EVENTS {
     START_GAME = 'start-game',
@@ -95,6 +97,9 @@ class AnagramStore {
                 this.active_game.getID(),
                 this.active_game.getLocalState()
             );
+
+            SuperStore.setState(SuperState.MENU);
+            RootNavigator.navigateToAnagramInfo(this.active_game);
 
             this.emitter.emit(EVENTS.END_GAME, this.active_game);
         } else {
