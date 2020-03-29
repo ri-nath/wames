@@ -1,5 +1,7 @@
 import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
 
+import * as PConstants from 'constants';
+
 export default class Anagram {
     private readonly game_object: AnagramObject;
     private readonly local_user_id: string;

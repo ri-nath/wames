@@ -33,22 +33,6 @@ export default class GameBrowser extends Component<any, State> {
         });
     }
 
-    // alert(game: Anagram) {
-    //     if (Platform.OS === 'web') {
-    //         alert(game.getPlayers().map((user: User) =>
-    //             user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
-    //             .join('\n'))
-    //     } else {
-    //         Alert.alert(
-    //             game.getPlayers().map((user: User, iidx: number) =>
-    //                 user.username + (game.getPlayers().length - 1 !== iidx ? 'vs ' : ' ')
-    //             ).join(''),
-    //             game.getPlayers().map((user: User) =>
-    //                 user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
-    //                 .join('\n'))
-    //     }
-    // }
-
     render() {
         return (
             <View style={styles.view_games}>

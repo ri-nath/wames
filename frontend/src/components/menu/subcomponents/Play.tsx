@@ -16,9 +16,6 @@ export default function AnagramMenu() {
             <NameDisplay/>
             <Challenger style={styles.challenger}/>
             <GameBrowser style={styles.game_browser}/>
-            <View style={styles.settings}>
-                <Button title='Settings' onPress={() => RootNavigator.navigate('Settings')}/>
-            </View>
         </Fragment>
     )
 }
