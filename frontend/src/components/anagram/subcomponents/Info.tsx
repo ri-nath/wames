@@ -8,7 +8,6 @@ type State = {
     score: number,
     target_score: number,
     timer: number,
-    show_timer: boolean,
     words: string[]
 }
 
@@ -22,7 +21,6 @@ export default class Info extends Component<any, State> {
             score: 0,
             target_score: 0,
             timer: 0,
-            show_timer: true,
             words: [],
         };
 
@@ -69,20 +67,14 @@ export default class Info extends Component<any, State> {
         AnagramStore.onScoreWord((game_obj: Anagram) => {
             this.updateInfoFromGameInstance(game_obj);
         });
-
-        AnagramStore.onEndGame((game_obj: Anagram) => {
-            this.updateInfoFromGameInstance(game_obj);
-        });
     }
 
     updateInfoFromGameInstance(game_obj: Anagram) {
         // TODO: type
-
         const game_state = game_obj.getLocalState();
 
         this.setState({
             target_score: game_state.score,
-            show_timer: game_state.stage === 'RUNNING',
             words: game_state.words,
         });
     }
@@ -110,12 +102,9 @@ export default class Info extends Component<any, State> {
     render() {
         return (
             <Fragment>
-                {
-                    this.state.show_timer &&
                     <View style={styles.timer}>
                         <Text style={styles.timer_text}> { this.state.timer + 's' } </Text>
                     </View>
-                }
                 <View style={styles.score}>
                     <Text style={styles.score_text}> { this.state.score } </Text>
                 </View>

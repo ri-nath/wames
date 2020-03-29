@@ -7,6 +7,8 @@ import ServerStore from 'server/ServerStore';
 import SuperStore  from 'state/SuperStore';
 import Anagram from 'wrappers/Anagram';
 
+import * as RootNavigation from 'RootNavigation';
+
 type State = {
     value: string
 }
@@ -40,7 +42,7 @@ export default class Challenger extends Component<any, State> {
                     disabled={this.state.value.length < 1}
                     title='Challenge User'
                     onPress={() => ServerStore.createGame([this.state.value], (game: AnagramObject) => {
-                        SuperStore.setStateToAnagramGame(new Anagram(game, ServerStore.getUserID()))
+                        RootNavigation.navigate('Anagram', { game: new Anagram(game, ServerStore.getUserID()) })
                     })}
                 />
             </View>

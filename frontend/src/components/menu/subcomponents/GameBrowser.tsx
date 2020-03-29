@@ -7,6 +7,10 @@ import AnagramStore from 'state/AnagramStore';
 import SuperStore  from "state/SuperStore";
 import Anagram  from "wrappers/Anagram";
 
+import * as RootNavigation from 'RootNavigation';
+
+import { AnagramMenuNavigationProp } from 'components/menu/MenuContainer';
+
 type State = {
     games: Anagram[]
 }
@@ -32,21 +36,21 @@ export default class GameBrowser extends Component<any, State> {
         });
     }
 
-    alert(game: Anagram) {
-        if (Platform.OS === 'web') {
-            alert(game.getPlayers().map((user: User) =>
-                user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
-                .join('\n'))
-        } else {
-            Alert.alert(
-                game.getPlayers().map((user: User, iidx: number) =>
-                    user.username + (game.getPlayers().length - 1 !== iidx ? 'vs ' : ' ')
-                ).join(''),
-                game.getPlayers().map((user: User) =>
-                    user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
-                    .join('\n'))
-        }
-    }
+    // alert(game: Anagram) {
+    //     if (Platform.OS === 'web') {
+    //         alert(game.getPlayers().map((user: User) =>
+    //             user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
+    //             .join('\n'))
+    //     } else {
+    //         Alert.alert(
+    //             game.getPlayers().map((user: User, iidx: number) =>
+    //                 user.username + (game.getPlayers().length - 1 !== iidx ? 'vs ' : ' ')
+    //             ).join(''),
+    //             game.getPlayers().map((user: User) =>
+    //                 user.username + ' scored ' + game.getState(user.user_id).score + ', with: ' + game.getState(user.user_id).words.join(' '),)
+    //                 .join('\n'))
+    //     }
+    // }
 
     render() {
         return (
@@ -59,33 +63,17 @@ export default class GameBrowser extends Component<any, State> {
                     keyExtractor={(item) => item.getID()}
                     renderItem={({item}) =>
                         <View style={styles.game_row}>
-                            {
-                                item.getPlayers().map((user: User, iidx: number) =>
-                                    <Text key={this.state.games.length + iidx}>
-                                        {user.username + (item.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')}
-                                    </Text>
-                                )
-                            }
-                            {
-                                item.getLocalState().stage === 'FINISHED' ?
-                                    <TouchableOpacity
-                                        style={ styles.button }
-                                        onPress={ () => {
-                                            this.alert(item);
-                                        } }
-                                    >
-                                        <Text>View Results</Text>
-                                    </TouchableOpacity>
-                                    :
-                                    <TouchableOpacity
-                                        style={ styles.button }
-                                        disabled={ item.getLocalState().stage !== 'NOT-STARTED' }
-                                        onPress={ () => {SuperStore.setStateToAnagramGame(item)} }
-                                    >
-                                        <Text>{ item.getLocalState().stage }</Text>
-                                    </TouchableOpacity>
-
-                            }
+                            <TouchableOpacity
+                                style={ [styles.button, { backgroundColor: item.getLocalState().stage === 'NOT-STARTED' ? 'lime' : 'gray'} ] }
+                                onPress={ () => { RootNavigation.navigate('Anagram', { game: item }) } }
+                            >
+                                <Text style={styles.button_text}>
+                                    {
+                                        item.getPlayers().map((user: User, iidx: number) => user.username + (item.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
+                                        )
+                                    }
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     }
                 />
@@ -116,7 +104,11 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: '#DDDDDD',
+        borderRadius: 5,
+    },
+
+    button_text: {
+        padding: 5
     },
 
     list: {

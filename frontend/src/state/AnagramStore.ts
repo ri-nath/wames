@@ -122,7 +122,7 @@ class AnagramStore {
         this.emitter.on(EVENTS.START_GAME, handler);
     }
 
-    onEndGame(handler: Function) {
+    onEndGame(handler: (game: Anagram) => void) {
         this.emitter.on(EVENTS.END_GAME, handler);
     }
 
