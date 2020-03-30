@@ -3,13 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 
 import { User } from '../../../../types';
+import { RootStackParamList } from '../MenuContainer';
 
 import SuperStore from 'state/SuperStore';
-
-import { RootStackParamList } from '../MenuContainer';
-import Anagram from 'lib/Anagram';
 import AnagramStore from 'state/AnagramStore';
-import moment from 'moment';
+import Anagram from 'lib/Anagram';
 
 type AnagramPortalRouteProp = RouteProp<RootStackParamList, 'Anagram'>;
 
@@ -37,7 +35,7 @@ export default class GamePortal extends Component<Props, any> {
     render() {
         return (
             <View style={styles.container}>
-                <Text>{ moment(this.game.getTimestamp()).format('MMMM Do, h:mm a') } </Text>
+                <Text>{ this.game.getDate() } </Text>
                 <Text> Anagram Game </Text>
                 {
                     this.game.getLocalState().stage === 'NOT-STARTED' ?
