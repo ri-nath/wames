@@ -1,7 +1,7 @@
-import MicroEmitter from 'micro-emitter';
+import WamesEmitter, {WamesListener} from 'lib/WamesEmitter';
+import Anagram from 'lib/Anagram';
 
 import ServerStore from 'server/ServerStore';
-import Anagram from 'lib/Anagram';
 
 export enum SuperState {
     MENU = 'menu',
@@ -10,11 +10,11 @@ export enum SuperState {
 };
 
 class SuperStore {
-    private emitter: MicroEmitter;
+    private emitter: WamesEmitter;
     private state: SuperState;
 
     constructor() {
-        this.emitter = new MicroEmitter();
+        this.emitter = new WamesEmitter();
 
         this.state = SuperState.LOADING;
 
@@ -33,26 +33,16 @@ class SuperStore {
         this.emitter.emit('to-' + state, args);
     }
 
-    onSetState(state: SuperState, handler: Function) {
-        this.emitter.on('to-' + state, handler);
+    onSetState(state: SuperState, handler: Function): WamesListener {
+        return this.emitter.wrappedListen('to-' + state, handler);
     }
 
     setStateToAnagramGame(game: Anagram) {
         this.emitter.emit('to-' + SuperState.ANAGRAM_GAME, game);
     }
 
-    onStateToAnagramGame(handler: (game: Anagram) => void) {
-        this.emitter.on('to-' + SuperState.ANAGRAM_GAME, handler);
-    }
-
-    closeAllListeners() {
-        for (const state of Object.values(SuperState)) {
-            // @ts-ignore
-            this.emitter.off(state);
-        }
-
-        // @ts-ignore
-        this.emitter.off('change-username');
+    onStateToAnagramGame(handler: (game: Anagram) => void): WamesListener {
+        return this.emitter.wrappedListen('to-' + SuperState.ANAGRAM_GAME, handler);
     }
 }
 

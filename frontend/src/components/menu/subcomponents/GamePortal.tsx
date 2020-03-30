@@ -43,8 +43,8 @@ export default class GamePortal extends Component<Props, any> {
                             <View style={{flex: 1, justifyContent: "flex-start"}}>
                                 <Text style={styles.name}>
                                     {
-                                        this.game.getPlayers().map((user: User, iidx: number) =>
-                                            user.username + (this.game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
+                                        this.game.getPlayers().map((user: User, idx: number) =>
+                                            user.username + (this.game.getPlayers().length - 1 !== idx ? ' vs. ' : ' ')
                                         )
                                     }
                                 </Text>
@@ -60,22 +60,30 @@ export default class GamePortal extends Component<Props, any> {
                         :
                         <View style={styles.user_cols}>
                             {
-                                this.game.getPlayers().map((user: User) => {
+                                this.game.getPlayers().map((user: User, idx: number) => {
                                     const state = this.game.getState(user.user_id);
 
                                     if (state.stage === 'NOT-STARTED') {
                                         return (
-                                            <View style={styles.user_data}>
+                                            <View
+                                                key={idx}
+                                                style={styles.user_data}>
                                                 <Text style={styles.name}> {user.username}</Text>
                                                 <Text> Challenge sent... </Text>
                                             </View>
                                         );
                                     } else if (state.stage === 'FINISHED') {
                                         return (
-                                            <View style={styles.user_data}>
+                                            <View
+                                                key={idx}
+                                                style={styles.user_data}>
                                                 <Text style={styles.name}> {user.username}</Text>
                                                 <Text style={styles.score}> {state.score}</Text>
-                                                { state.words.map(word => <Text> {word.toUpperCase()} </Text>) }
+                                                {
+                                                    state.words.map((word, iidx) =>
+                                                        <Text key={iidx}> {word.toUpperCase()} </Text>
+                                                    )
+                                                }
                                             </View>
                                         );
                                     }

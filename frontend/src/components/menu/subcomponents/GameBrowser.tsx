@@ -6,6 +6,7 @@ import { User } from '../../../../types';
 import AnagramStore from 'state/AnagramStore';
 import RootNavigator from 'state/RootNavigator';
 import Anagram  from 'lib/Anagram';
+import {WamesListener} from 'lib/WamesEmitter';
 
 type Props = {
     style: any,
@@ -17,6 +18,8 @@ type State = {
 }
 
 export default class GameBrowser extends Component<Props, State> {
+    private listener: WamesListener | undefined;
+
     constructor(props: Props) {
         super(props);
 
@@ -30,7 +33,11 @@ export default class GameBrowser extends Component<Props, State> {
     componentDidMount() {
         this.handleUpdateGamesList(AnagramStore.getGamesList());
 
-        AnagramStore.onUpdateGamesList(this.handleUpdateGamesList);
+        this.listener = AnagramStore.onUpdateGamesList(this.handleUpdateGamesList);
+    }
+
+    componentWillUnmount(): void {
+        if (this.listener) this.listener.off();
     }
 
     handleUpdateGamesList(games: Anagram[]) {

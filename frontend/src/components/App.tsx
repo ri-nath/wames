@@ -5,12 +5,15 @@ import MenuContainer from './menu/MenuContainer';
 import AnagramContainer from './anagram/AnagramContainer';
 
 import SuperStore, { SuperState } from '../state/SuperStore';
+import {WamesListener} from 'lib/WamesEmitter';
 
 type State = {
     panel: SuperState;
 }
 
 export default class App extends Component<any, State> {
+    private listeners: WamesListener[] = [];
+
     constructor(props: any) {
         super(props);
 
@@ -21,16 +24,22 @@ export default class App extends Component<any, State> {
 
     componentDidMount() {
         for (const state of Object.values(SuperState)) {
-            SuperStore.onSetState(state, () => {
-               this.setState({
-                   panel: state
-               });
-            });
+            this.listeners.push(
+                SuperStore.onSetState(state, () => {
+                    this.setState({
+                        panel: state
+                    });
+                })
+            );
         }
     }
 
     componentWillUnmount() {
-        SuperStore.closeAllListeners();
+        this.listeners.forEach(listener => {
+            listener.off();
+        });
+
+        this.listeners = [];
     }
 
     render() {

@@ -1,8 +1,8 @@
-import MicroEmitter from 'micro-emitter';
+import WamesEmitter, {WamesListener} from 'lib/WamesEmitter';
 
 import {AnagramObject, AnagramState, User} from '../../types';
 
-import SuperStore, {SuperState} from './SuperStore';
+import SuperStore, { SuperState } from './SuperStore';
 import RootNavigator from './RootNavigator';
 import DB from 'server/ServerStore';
 import Anagram from 'lib/Anagram';
@@ -15,14 +15,14 @@ enum EVENTS {
 }
 
 class AnagramStore {
-    private emitter: MicroEmitter;
+    private emitter: WamesEmitter;
     private games: Anagram[];
 
     private timeout_handle: number | null;
     private active_game: Anagram | null;
 
     constructor() {
-        this.emitter = new MicroEmitter();
+        this.emitter = new WamesEmitter();
 
         this.active_game = null;
         this.timeout_handle = null;
@@ -126,20 +126,20 @@ class AnagramStore {
 
     // TODO: Replace with one method
 
-    onUpdateGamesList(handler: Function) {
-        this.emitter.on(EVENTS.UPDATE_GAMES_LIST, handler);
+    onUpdateGamesList(handler: Function): WamesListener {
+        return this.emitter.wrappedListen(EVENTS.UPDATE_GAMES_LIST, handler);
     }
 
-    onStartNewGame(handler: Function) {
-        this.emitter.on(EVENTS.START_GAME, handler);
+    onStartNewGame(handler: Function): WamesListener {
+        return this.emitter.wrappedListen(EVENTS.START_GAME, handler);
     }
 
-    onEndGame(handler: (game: Anagram) => void) {
-        this.emitter.on(EVENTS.END_GAME, handler);
+    onEndGame(handler: (game: Anagram) => void): WamesListener {
+        return this.emitter.wrappedListen(EVENTS.END_GAME, handler);
     }
 
-    onScoreWord(handler: Function) {
-        this.emitter.on(EVENTS.SCORE_WORD, handler);
+    onScoreWord(handler: Function): WamesListener {
+        return this.emitter.wrappedListen(EVENTS.SCORE_WORD, handler);
     }
 
     closeAllListeners() {

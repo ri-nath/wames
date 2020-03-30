@@ -3,6 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 
 import AnagramStore from 'state/AnagramStore';
 import Anagram from 'lib/Anagram';
+import {WamesListener} from 'lib/WamesEmitter';
 
 type State = {
     score: number,
@@ -13,6 +14,7 @@ type State = {
 
 export default class Info extends Component<any, State> {
     private interval_handles: number[];
+    private listener: WamesListener | undefined;
 
     constructor(props: any) {
         super(props);
@@ -64,7 +66,7 @@ export default class Info extends Component<any, State> {
             timer: game_obj.getConfig().duration
         });
 
-        AnagramStore.onScoreWord((game_obj: Anagram) => {
+        this.listener = AnagramStore.onScoreWord((game_obj: Anagram) => {
             this.updateInfoFromGameInstance(game_obj);
         });
     }
@@ -81,6 +83,8 @@ export default class Info extends Component<any, State> {
 
     componentWillUnmount() {
         this.removeIntervals();
+
+        if (this.listener) this.listener.off();
     }
 
     incrementScore() {

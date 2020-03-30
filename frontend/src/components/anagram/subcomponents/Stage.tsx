@@ -7,6 +7,7 @@ import AnagramStore from 'state/AnagramStore';
 import Anagram from 'lib/Anagram';
 
 import * as PConstants from 'constants';
+import {WamesListener} from 'lib/WamesEmitter';
 
 type State = {
     options: string[],
@@ -15,6 +16,8 @@ type State = {
 }
 
 export default class Stage extends Component<any, State> {
+    private listener: WamesListener | undefined;
+
     constructor(props: any) {
         super(props);
 
@@ -37,9 +40,13 @@ export default class Stage extends Component<any, State> {
         const game_obj: Anagram = AnagramStore.getActiveGame();
         this.setLettersFromGameInstance(game_obj);
 
-        AnagramStore.onStartNewGame((game_obj: Anagram) => {
+        this.listener = AnagramStore.onStartNewGame((game_obj: Anagram) => {
             this.setLettersFromGameInstance(game_obj)
         });
+    }
+
+    componentWillUnmount(): void {
+        if (this.listener) this.listener.off();
     }
 
     setLettersFromGameInstance(game_obj: Anagram) {

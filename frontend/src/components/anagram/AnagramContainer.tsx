@@ -4,7 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import Stage from './subcomponents/Stage';
 import Info from './subcomponents/Info';
 
-export default function AnagramContainer() {
+type Props = {
+    style: any
+}
+
+export default function AnagramContainer(props: Props) {
          return (
              <Fragment>
                     <View style={styles.info}>
