@@ -16,7 +16,6 @@ function generateGame(target_users) {
     const uuid = uuid_1.v4();
     const letters = generateLetters(length);
     const game = {
-        uuid: uuid,
         states: {},
         config: {
             letters: letters,

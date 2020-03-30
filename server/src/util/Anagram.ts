@@ -16,12 +16,11 @@ export function generateLetters(length: number): string[] {
 const length = 8;
 const duration = 5;
 
-export function generateGame(target_users: User[]): AnagramObject {
+export function generateGame(target_users: User[]): Partial<AnagramObject> {
     const uuid: string = v4();
     const letters = generateLetters(length);
 
-    const game: AnagramObject = {
-        uuid: uuid,
+    const game: Partial<AnagramObject> = {
         states: {},
         config: {
             letters: letters,
@@ -37,7 +36,7 @@ export function generateGame(target_users: User[]): AnagramObject {
     return game;
 }
 
-export function addUserToGame(game: AnagramObject, user: User): AnagramObject {
+export function addUserToGame(game: Partial<AnagramObject>, user: User): Partial<AnagramObject> {
     const state: AnagramState = {
         words: [],
         stage: 'NOT-STARTED',

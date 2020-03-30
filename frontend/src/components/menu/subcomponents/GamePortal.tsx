@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 
@@ -9,6 +9,7 @@ import SuperStore from 'state/SuperStore';
 import { RootStackParamList } from '../MenuContainer';
 import Anagram from 'lib/Anagram';
 import AnagramStore from 'state/AnagramStore';
+import moment from 'moment';
 
 type AnagramPortalRouteProp = RouteProp<RootStackParamList, 'Anagram'>;
 
@@ -34,65 +35,68 @@ export default class GamePortal extends Component<Props, any> {
     }
 
     render() {
-        if (this.game.getLocalState().stage === 'NOT-STARTED') {
-            return (
-                <View style={styles.not_started}>
-                    <View style={{flex: 1, justifyContent: "flex-start"}}>
-                        <Text style={styles.name}>
+        return (
+            <View style={styles.container}>
+                <Text>{ moment(this.game.getTimestamp()).format('MMMM Do, h:mm a') } </Text>
+                <Text> Anagram Game </Text>
+                {
+                    this.game.getLocalState().stage === 'NOT-STARTED' ?
+                        <Fragment>
+                            <View style={{flex: 1, justifyContent: "flex-start"}}>
+                                <Text style={styles.name}>
+                                    {
+                                        this.game.getPlayers().map((user: User, iidx: number) =>
+                                            user.username + (this.game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
+                                        )
+                                    }
+                                </Text>
+                            </View>
+                            <View style={{flex: 3, justifyContent: "center"}}>
+                                <TouchableOpacity
+                                    style={styles.play_button}
+                                    onPress={() => SuperStore.setStateToAnagramGame(this.game)}>
+                                    <Text style={styles.play_button_text}>Play</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Fragment>
+                        :
+                        <View style={styles.user_cols}>
                             {
-                                this.game.getPlayers().map((user: User, iidx: number) =>
-                                    user.username + (this.game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
-                                )
-                            }
-                        </Text>
-                    </View>
-                    <View style={{flex: 3, justifyContent: "center"}}>
-                        <TouchableOpacity
-                            style={styles.play_button}
-                            onPress={() => SuperStore.setStateToAnagramGame(this.game)}>
-                            <Text style={styles.play_button_text}>Play</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            );
-        } else if (this.game.getLocalState().stage === 'FINISHED') {
-            return (
-                <View style={styles.container}>
-                    {
-                        this.game.getPlayers().map((user: User) => {
-                            const state = this.game.getState(user.user_id);
+                                this.game.getPlayers().map((user: User) => {
+                                    const state = this.game.getState(user.user_id);
 
-                            if (state.stage === 'NOT-STARTED') {
-                                return (
-                                    <View style={styles.user_data}>
-                                        <Text style={styles.name}> {user.username}</Text>
-                                        <Text> Challenge sent... </Text>
-                                    </View>
-                                );
-                            } else if (state.stage === 'FINISHED') {
-                                return (
-                                    <View style={styles.user_data}>
-                                        <Text style={styles.name}> {user.username}</Text>
-                                        <Text style={styles.score}> {state.score}</Text>
-                                        { state.words.map(word => <Text> {word.toUpperCase()} </Text>) }
-                                    </View>
-                                );
+                                    if (state.stage === 'NOT-STARTED') {
+                                        return (
+                                            <View style={styles.user_data}>
+                                                <Text style={styles.name}> {user.username}</Text>
+                                                <Text> Challenge sent... </Text>
+                                            </View>
+                                        );
+                                    } else if (state.stage === 'FINISHED') {
+                                        return (
+                                            <View style={styles.user_data}>
+                                                <Text style={styles.name}> {user.username}</Text>
+                                                <Text style={styles.score}> {state.score}</Text>
+                                                { state.words.map(word => <Text> {word.toUpperCase()} </Text>) }
+                                            </View>
+                                        );
+                                    }
+                                })
                             }
-                        })
-                    }
-                </View>
-            );
-        }
+                        </View>
+                }
+            </View>
+        )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
+    user_cols: {
         flex: 1,
         flexDirection: 'row',
     },
 
-    not_started: {
+    container: {
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',

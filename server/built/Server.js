@@ -52,14 +52,14 @@ class Server {
                 target_users.push(socket.user);
                 const game = AUtil.generateGame(target_users);
                 Database_1.default.createAnagramGame(game, (db_game) => {
-                    const room = db_game.uuid;
+                    const room = db_game._id;
                     this.sockets_list.filter(list_socket => target_users.map(target_user => target_user.user_id).includes(list_socket.user.user_id))
                         .forEach(target_socket => {
-                        console.log(target_socket.user.username, ' joined game ', db_game.uuid);
+                        console.log(target_socket.user.username, ' joined game ', db_game._id);
                         target_socket.join(room);
                     });
                     socket.broadcast.to(room).emit(Events.NEW_GAMES, [db_game]);
-                    callback(game);
+                    callback(db_game);
                 });
             });
         });
@@ -76,11 +76,11 @@ class Server {
                 callback(res);
             });
         });
-        socket.on(Events.UPDATE_GAME_STATE, (uuid, new_state) => {
-            console.log('Updating game id ', uuid, ' from: ', socket.user.username, ' with: ', new_state);
+        socket.on(Events.UPDATE_GAME_STATE, (_id, new_state) => {
+            console.log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
             const unview = !(Object.keys(new_state).length == 1 && Object.keys(new_state)[0] == 'viewed');
-            Database_1.default.updateAnagramGame(socket.user, uuid, new_state, () => {
-                socket.broadcast.to(uuid).emit(Events.UPDATE_GAME_STATE, uuid, socket.user, new_state, unview);
+            Database_1.default.updateAnagramGame(socket.user, _id, new_state, () => {
+                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state, unview);
             });
         });
         socket.on('disconnect', () => {

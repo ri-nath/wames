@@ -66,6 +66,8 @@ class AnagramStore {
             this.games[index] = game_object;
         } else {
             this.games.push(game_object);
+
+            this.games.sort((a: Anagram, b: Anagram) => a.getID().localeCompare((b.getID())));
         }
 
         if (set_active) {

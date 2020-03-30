@@ -13,7 +13,7 @@ export interface AnagramConfig {
 }
 
 export interface AnagramObject {
-    uuid: string,
+    _id: string,
     states: {
         [user_id: string]: AnagramState
     },

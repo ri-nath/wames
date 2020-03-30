@@ -5,14 +5,19 @@ import * as PConstants from 'constants';
 export default class Anagram {
     private readonly game_object: AnagramObject;
     private readonly local_user_id: string;
+    private readonly timestamp: Date;
 
     constructor(game_object: AnagramObject, local_user_id: string) {
         this.game_object = game_object;
         this.local_user_id = local_user_id;
+
+        this.timestamp = new Date(
+            parseInt(this.getID().substring(0, 8), 16) * 1000
+        )
     }
 
     getID(): string {
-        return this.game_object.uuid;
+        return this.game_object._id;
     }
 
     getConfig(): AnagramConfig {
@@ -57,5 +62,9 @@ export default class Anagram {
 
     markAsViewed(): void {
         this.getLocalState().viewed = true;
+    }
+
+    getTimestamp(): Date {
+        return this.timestamp;
     }
 }
