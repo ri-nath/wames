@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { MutableRefObject, RefObject } from 'react';
-import { NavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainerRef, DrawerActions } from '@react-navigation/native';
 
 import Anagram from 'lib/Anagram';
 
@@ -26,6 +26,16 @@ class RootNavigator {
         });
 
         this.buffer = [];
+    }
+
+    toggleDrawer() {
+        if (this.isMountedRef.current && this.navigationRef.current) {
+            this.navigationRef.current.dispatch(DrawerActions.toggleDrawer());
+        } else {
+            this.buffer.push(() => {
+                this.toggleDrawer();
+            });
+        }
     }
 
     navigate(name: Path, params?: Object): void {
