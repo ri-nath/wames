@@ -7,6 +7,8 @@ import { User } from '../../../../types';
 import SuperStore from 'state/SuperStore';
 
 import { RootStackParamList } from '../MenuContainer';
+import Anagram from 'lib/Anagram';
+import AnagramStore from 'state/AnagramStore';
 
 type AnagramPortalRouteProp = RouteProp<RootStackParamList, 'Anagram'>;
 
@@ -15,17 +17,31 @@ type Props = {
 }
 
 export default class GamePortal extends Component<Props, any> {
-    render() {
+    private readonly game: Anagram;
+
+    constructor(props: Props) {
+        super(props);
+
         const { game } = this.props.route.params;
 
-        if (game.getLocalState().stage === 'NOT-STARTED') {
+        this.game = game;
+    }
+
+    componentDidMount(): void {
+        this.game.markAsViewed();
+
+        AnagramStore.processLoadGame(this.game, false);
+    }
+
+    render() {
+        if (this.game.getLocalState().stage === 'NOT-STARTED') {
             return (
                 <View style={styles.not_started}>
                     <View style={{flex: 1, justifyContent: "flex-start"}}>
                         <Text style={styles.name}>
                             {
-                                game.getPlayers().map((user: User, iidx: number) =>
-                                    user.username + (game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
+                                this.game.getPlayers().map((user: User, iidx: number) =>
+                                    user.username + (this.game.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
                                 )
                             }
                         </Text>
@@ -33,18 +49,18 @@ export default class GamePortal extends Component<Props, any> {
                     <View style={{flex: 3, justifyContent: "center"}}>
                         <TouchableOpacity
                             style={styles.play_button}
-                            onPress={() => SuperStore.setStateToAnagramGame(game)}>
+                            onPress={() => SuperStore.setStateToAnagramGame(this.game)}>
                             <Text style={styles.play_button_text}>Play</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             );
-        } else if (game.getLocalState().stage === 'FINISHED') {
+        } else if (this.game.getLocalState().stage === 'FINISHED') {
             return (
                 <View style={styles.container}>
                     {
-                        game.getPlayers().map((user: User) => {
-                            const state = game.getState(user.user_id);
+                        this.game.getPlayers().map((user: User) => {
+                            const state = this.game.getState(user.user_id);
 
                             if (state.stage === 'NOT-STARTED') {
                                 return (

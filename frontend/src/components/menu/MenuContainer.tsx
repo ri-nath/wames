@@ -8,9 +8,10 @@ import Anagram from 'lib/Anagram';
 import RootNavigator from 'state/RootNavigator';
 
 import GamePortal from './subcomponents/GamePortal';
-import AnagramMenu from './subcomponents/Play';
+import PlayMenu from './subcomponents/Play';
 import Settings from './subcomponents/Settings';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import Statistics from './subcomponents/Statistics';
 
 export type RootStackParamList = {
     Menu: undefined;
@@ -19,7 +20,8 @@ export type RootStackParamList = {
 
 export type RootDrawerParamList = {
     Play: undefined,
-    Settings: undefined
+    Settings: undefined,
+    Games: undefined
 }
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -27,9 +29,9 @@ const Drawer = createDrawerNavigator<RootDrawerParamList>();
 
 function DrawerWrapper() {
     return (
-        <Drawer.Navigator
-        >
-            <Drawer.Screen name='Play' component={AnagramMenu}/>
+        <Drawer.Navigator>
+            <Drawer.Screen name='Play' component={PlayMenu}/>
+            <Drawer.Screen name='Games' component={Statistics}/>
             <Drawer.Screen name='Settings' component={Settings}/>
         </Drawer.Navigator>
     )

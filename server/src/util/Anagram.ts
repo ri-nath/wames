@@ -14,7 +14,7 @@ export function generateLetters(length: number): string[] {
 }
 
 const length = 8;
-const duration = 60;
+const duration = 5;
 
 export function generateGame(target_users: User[]): AnagramObject {
     const uuid: string = v4();
@@ -41,10 +41,9 @@ export function addUserToGame(game: AnagramObject, user: User): AnagramObject {
     const state: AnagramState = {
         words: [],
         stage: 'NOT-STARTED',
-        score: 0
+        score: 0,
+        viewed: false
     };
-
-    console.log(user);
 
     game.states[user.user_id] = state;
 

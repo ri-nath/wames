@@ -27,6 +27,7 @@ function generateGame(target_users) {
     for (const user of target_users) {
         addUserToGame(game, user);
     }
+    console.log(game);
     return game;
 }
 exports.generateGame = generateGame;

@@ -3,7 +3,8 @@ export type AnagramStage = 'NOT-STARTED' | 'RUNNING' | 'FINISHED';
 export interface AnagramState {
     stage: AnagramStage,
     words: string[],
-    score: number
+    score: number,
+    viewed: boolean
 }
 
 export interface AnagramConfig {

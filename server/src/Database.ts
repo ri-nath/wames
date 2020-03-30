@@ -21,7 +21,6 @@ class DB {
     }
 
     // ANAGRAM METHODS
-
     createAnagramGame(game_object: AnagramObject, callback?: (doc: AnagramObject) => void) {
         this.anagrams.insert(game_object)
             .then(callback)

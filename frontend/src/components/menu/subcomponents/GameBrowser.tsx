@@ -7,36 +7,48 @@ import AnagramStore from 'state/AnagramStore';
 import RootNavigator from 'state/RootNavigator';
 import Anagram  from 'lib/Anagram';
 
+type Props = {
+    style: any,
+    reduced?: boolean
+}
 
 type State = {
     games: Anagram[]
 }
 
-export default class GameBrowser extends Component<any, State> {
-    constructor(props: any) {
+export default class GameBrowser extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
             games: []
         };
+
+        this.handleUpdateGamesList = this.handleUpdateGamesList.bind(this);
     }
 
     componentDidMount() {
-        this.setState({
-            games: AnagramStore.getGamesList()
-        });
+        this.handleUpdateGamesList(AnagramStore.getGamesList());
 
-        AnagramStore.onUpdateGamesList((games_list: Anagram[]) => {
+        AnagramStore.onUpdateGamesList(this.handleUpdateGamesList);
+    }
+
+    handleUpdateGamesList(games: Anagram[]) {
+        if (this.props.reduced) {
             this.setState({
-                games: games_list
+                games: games.filter(game => !game.hasBeenViewed())
             });
-        });
+        } else {
+            this.setState({
+                games: games
+            });
+        }
     }
 
     render() {
         return (
             <View style={styles.view_games}>
-                <Text style={styles.title}> Games </Text>
+                <Text style={styles.title}> { this.props.reduced ? 'Unopened Games' : 'All Games' } </Text>
                 <FlatList
                     style={styles.list}
                     data={this.state.games.reverse()}

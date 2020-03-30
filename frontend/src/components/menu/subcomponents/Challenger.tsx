@@ -54,12 +54,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
     },
-
-    button: {
-        backgroundColor: '#DEC0F1',
-        padding: 5,
-        borderRadius: 10
-    }
 });
 
 

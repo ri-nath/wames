@@ -119,8 +119,10 @@ export default class Server {
         socket.on(Events.UPDATE_GAME_STATE, (uuid: string, new_state: AnagramState) => {
             console.log('Updating game id ', uuid, ' from: ', socket.user.username, ' with: ', new_state);
 
+            const unview: boolean = !(Object.keys(new_state).length == 1 && Object.keys(new_state)[0] == 'viewed');
+
             DB.updateAnagramGame(socket.user, uuid, new_state, () => {
-                socket.broadcast.to(uuid).emit(Events.UPDATE_GAME_STATE, uuid, socket.user, new_state);
+                socket.broadcast.to(uuid).emit(Events.UPDATE_GAME_STATE, uuid, socket.user, new_state, unview);
             });
         });
 

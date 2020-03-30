@@ -1,36 +1,39 @@
 import React, { Fragment } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 
-import { RootStackParamList } from '../MenuContainer';
 
 import NameDisplay from './NameDisplay';
 import Challenger from './Challenger';
 import GameBrowser from './GameBrowser';
 
-import RootNavigator from 'state/RootNavigator';
-
-export default function AnagramMenu() {
+export default function Play() {
     return (
         <Fragment>
             <NameDisplay/>
-            <Challenger style={styles.challenger}/>
-            <GameBrowser style={styles.game_browser}/>
+            <View style={styles.container}>
+                <Challenger style={styles.challenger}/>
+                <GameBrowser
+                    key='reduced'
+                    reduced={true}
+                    style={styles.game_browser}
+                />
+            </View>
+
         </Fragment>
     )
 }
 
 const styles = StyleSheet.create({
-    settings: {
-        alignItems: 'center',
+    container: {
+        flex: 1,
         justifyContent: 'center',
     },
 
     game_browser: {
-        flex: 2,
+        flex: 1,
     },
 
     challenger: {
-        flex: 1,
+        flex: 3,
     }
 });

@@ -62,7 +62,7 @@ class ServerStore {
     }
 
     onNewGameState(handler: Function) {
-        // args: game uuid, username, new state
+        // args: game uuid, username, new state, unview
         this.socket.on(Events.UPDATE_GAME_STATE, handler);
     }
 

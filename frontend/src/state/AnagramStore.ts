@@ -41,15 +41,20 @@ class AnagramStore {
             new_games.forEach(game => this.processLoadGame(new Anagram(game, DB.getUserID()), false));
         });
 
-        DB.onNewGameState((game_uuid: string, user: User, state: AnagramState) => {
+        DB.onNewGameState((game_uuid: string, user: User, state: AnagramState, unview: boolean) => {
             let index = this.games.findIndex(game => game.getID() === game_uuid);
 
             if (index > -1) {
                 this.games[index].setState(user.user_id, state);
 
+                if (unview) {
+                    this.games[index].setLocalState({
+                        viewed: unview,
+                    })
+                }
+
                 this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
             }
-
             // TODO: Maybe add game if not found?
         });
     }

@@ -50,4 +50,12 @@ export default class Anagram {
     getObject(): AnagramObject {
         return this.game_object;
     }
+
+    hasBeenViewed(): boolean {
+        return this.getLocalState().viewed;
+    }
+
+    markAsViewed(): void {
+        this.getLocalState().viewed = true;
+    }
 }
