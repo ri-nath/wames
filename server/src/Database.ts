@@ -27,12 +27,20 @@ class DB {
             .catch(console.error);
     }
 
-    updateAnagramGame(updating_user: User, game_uuid: string, updated_state: AnagramState, callback: (updated_doc: AnagramObject | undefined) => void) {
+    updateAnagramGame(updating_user: User, game_id: string, updated_state: AnagramState, callback: (updated_doc: AnagramObject | undefined) => void) {
         this.anagrams.findOneAndUpdate(
-            { uuid: game_uuid },
+            { _id: game_id },
             { $set: {['states.' + updating_user.user_id]: updated_state} }
         )
             .then(callback)
+            .catch(console.error);
+    }
+
+    markAnagramGameAsViewed(user: User, game_id: string) {
+        this.anagrams.findOneAndUpdate(
+            { _id: game_id },
+            { $set: {['states.' + user.user_id + '.viewed']: true }}
+        )
             .catch(console.error);
     }
 

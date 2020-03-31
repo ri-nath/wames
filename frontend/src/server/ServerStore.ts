@@ -11,7 +11,8 @@ enum Events {
     NEW_GAMES = 'new-games',
     CREATE_GAME = 'create-game',
     SET_USERNAME = 'user-id',
-    UPDATE_GAME_STATE = 'update-game-state'
+    UPDATE_GAME_STATE = 'update-game-state',
+    MARK_AS_VIEWED = 'view'
 }
 
 class ServerStore {
@@ -59,6 +60,10 @@ class ServerStore {
 
     updateGameState(game_uuid: string, state: AnagramState) {
         this.socket.emit(Events.UPDATE_GAME_STATE, game_uuid, state);
+    }
+
+    markGameAsViewed(game_id: string) {
+        this.socket.emit(Events.MARK_AS_VIEWED, game_id);
     }
 
     onNewGameState(handler: Function) {

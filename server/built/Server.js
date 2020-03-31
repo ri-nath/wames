@@ -13,6 +13,7 @@ var Events;
     Events["CREATE_GAME"] = "create-game";
     Events["SET_USERNAME"] = "user-id";
     Events["UPDATE_GAME_STATE"] = "update-game-state";
+    Events["MARK_AS_VIEWED"] = "view";
 })(Events || (Events = {}));
 class Server {
     constructor() {
@@ -78,10 +79,13 @@ class Server {
         });
         socket.on(Events.UPDATE_GAME_STATE, (_id, new_state) => {
             console.log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
-            const unview = !(Object.keys(new_state).length == 1 && Object.keys(new_state)[0] == 'viewed');
             Database_1.default.updateAnagramGame(socket.user, _id, new_state, () => {
-                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state, unview);
+                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state);
             });
+        });
+        socket.on(Events.MARK_AS_VIEWED, (_id) => {
+            console.log('Marking game id ', _id, ' as viewed for ', socket.user.username);
+            Database_1.default.markAnagramGameAsViewed(socket.user, _id, { viewed: true });
         });
         socket.on('disconnect', () => {
             console.log('A user disconnected!');

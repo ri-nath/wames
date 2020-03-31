@@ -15,7 +15,8 @@ enum Events {
     NEW_GAMES = 'new-games',
     CREATE_GAME = 'create-game',
     SET_USERNAME = 'user-id',
-    UPDATE_GAME_STATE = 'update-game-state'
+    UPDATE_GAME_STATE = 'update-game-state',
+    MARK_AS_VIEWED = 'view'
 }
 
 interface LooseSocket extends Socket {
@@ -119,11 +120,15 @@ export default class Server {
         socket.on(Events.UPDATE_GAME_STATE, (_id: string, new_state: AnagramState) => {
             console.log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
 
-            const unview: boolean = !(Object.keys(new_state).length == 1 && Object.keys(new_state)[0] == 'viewed');
-
             DB.updateAnagramGame(socket.user, _id, new_state, () => {
-                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state, unview);
+                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state);
             });
+        });
+
+        socket.on(Events.MARK_AS_VIEWED, (_id: string) => {
+            console.log('Marking game id ', _id, ' as viewed for ', socket.user.username);
+
+            DB.markAnagramGameAsViewed(socket.user, _id, { viewed: true })
         });
 
         socket.on('disconnect', () => {

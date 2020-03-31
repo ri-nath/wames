@@ -77,6 +77,18 @@ class AnagramStore {
         this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
     }
 
+    markGameAsViewed(game_object: Anagram) {
+        let index = this.games.findIndex(game => game.getID() === game_object.getID());
+
+        if (index > -1) {
+            this.games[index].markAsViewed();
+        }
+
+        DB.markGameAsViewed(this.games[index].getID());
+
+        this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
+    }
+
     startNewGame(game_object: Anagram) {
         this.active_game = game_object;
 

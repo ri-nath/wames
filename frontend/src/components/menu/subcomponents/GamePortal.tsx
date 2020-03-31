@@ -27,9 +27,7 @@ export default class GamePortal extends Component<Props, any> {
     }
 
     componentDidMount(): void {
-        this.game.markAsViewed();
-
-        AnagramStore.processLoadGame(this.game, false);
+        AnagramStore.markGameAsViewed(this.game);
     }
 
     render() {
