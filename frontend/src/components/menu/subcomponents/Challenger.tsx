@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {StyleSheet, View, TextInput, Button} from 'react-native';
+import { Text } from 'react-native-elements';
 
 import { AnagramObject } from '../../../../types';
 
@@ -32,33 +33,77 @@ export default class Challenger extends Component<any, State> {
 
     render() {
         return (
-            <View style={styles.create_game}>
-                <TextInput
-                    placeholder='Opponent Username'
-                    value={this.state.value}
-                    onChangeText={this.handleChangeValue}
-                />
-                <Button
-                    disabled={this.state.value.length < 1}
-                    title='Challenge User'
-                    onPress={() => ServerStore.createGame([this.state.value], (game: AnagramObject) => {
-                        // TODO: Improve logic
-                        const wrapped = new Anagram(game, ServerStore.getUserID());
+            <View style={styles.container}>
+                <Text h4> Play Anagrams </Text>
+                <View style={styles.create_game}>
+                    <View style={styles.left_box}>
+                        <Text style={styles.small_header}> Challenge a User </Text>
+                        <TextInput
+                            placeholder='Opponent Username'
+                            value={this.state.value}
+                            onChangeText={this.handleChangeValue}
+                        />
+                        <Button
+                            disabled={this.state.value.length < 1}
+                            title='Challenge User'
+                            onPress={() => ServerStore.createGame([this.state.value], (game: AnagramObject) => {
+                                // TODO: Improve logic
+                                const wrapped = new Anagram(game, ServerStore.getUserID());
 
-                        AnagramStore.processLoadGame(wrapped, false);
-                        RootNavigator.navigateToAnagramInfo(wrapped);
-                    })}
-                />
+                                AnagramStore.processLoadGame(wrapped, false);
+                                RootNavigator.navigateToAnagramInfo(wrapped);
+                            })}
+                        />
+                    </View>
+                    <View style={styles.right_box}>
+                        <Text style={styles.small_header}> Create a Link </Text>
+                        <Text>Implement me!</Text>
+                    </View>
+                </View>
+
+
+
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    create_game: {
+    container: {
+        margin: 10,
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-start',
     },
+
+    create_game: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
+
+    left_box: {
+        borderRightColor: 'gray',
+        borderRightWidth: StyleSheet.hairlineWidth,
+
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+
+    right_box: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+
+    small_header: {
+        fontSize: 15,
+        margin: 20,
+    }
 });
 
 

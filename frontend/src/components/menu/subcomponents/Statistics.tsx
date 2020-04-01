@@ -1,28 +1,27 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-
+import React, {Fragment} from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
 import NameDisplay from './NameDisplay';
 import GameBrowser from './GameBrowser';
 
-
 export default function Statistics() {
     return (
-        <View style={styles.container}>
+        <Fragment>
             <NameDisplay/>
-            <GameBrowser
-                key='raw'
-                reduced={false}
-                style={styles.game_browser}
-            />
-        </View>
+            <View style={styles.container}>
+                <GameBrowser
+                    key='reduced'
+                    reduced={true}
+                    style={styles.game_browser}
+                />
+            </View>
+        </Fragment>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'center',
-        justifyContent: 'flex-start',
+        flex: 1,
     },
 
     game_browser: {

@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View, Text } from 'react-native';
 
 
 import NameDisplay from './NameDisplay';
@@ -12,13 +12,14 @@ export default function Play() {
             <NameDisplay/>
             <View style={styles.container}>
                 <Challenger style={styles.challenger}/>
-                <GameBrowser
-                    key='reduced'
-                    reduced={true}
-                    style={styles.game_browser}
-                />
+                <View style={styles.game_browser}>
+                    <GameBrowser
+                        key='reduced'
+                        reduced={true}
+                        style={styles.game_browser}
+                    />
+                </View>
             </View>
-
         </Fragment>
     )
 }
@@ -31,9 +32,10 @@ const styles = StyleSheet.create({
 
     game_browser: {
         flex: 1,
+        margin: 20,
     },
 
     challenger: {
-        flex: 2,
+        flex: 3,
     }
 });

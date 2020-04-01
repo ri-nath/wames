@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 
 import { User } from '../../../../types';
 
@@ -7,7 +7,7 @@ import AnagramStore from 'state/AnagramStore';
 import RootNavigator from 'state/RootNavigator';
 import Anagram  from 'lib/Anagram';
 import {WamesListener} from 'lib/WamesEmitter';
-import {Badge, Icon} from 'react-native-elements';
+import {Badge, Icon, ListItem, Text} from 'react-native-elements';
 import SuperStore from 'state/SuperStore';
 import ServerStore from 'server/ServerStore';
 
@@ -31,6 +31,8 @@ export default class GameBrowser extends Component<Props, State> {
         };
 
         this.handleUpdateGamesList = this.handleUpdateGamesList.bind(this);
+
+        if (!this.props.reduced) setInterval(() => console.log(this.state.games.length, this.props.reduced), 1000);
     }
 
     componentDidMount() {
@@ -58,112 +60,73 @@ export default class GameBrowser extends Component<Props, State> {
     render() {
         return (
             <View style={styles.view_games}>
-                <Text style={styles.title}> { this.props.reduced ? 'Unopened Games' : 'All Games' } </Text>
-                <FlatList
-                    style={styles.list}
-                    contentContainerStyle={styles.list_container}
-                    data={this.state.games.reverse()}
-                    extraData={this.state}
-                    keyExtractor={(item) => item.getID()}
-                    renderItem={({item}) =>
-                        <TouchableOpacity
-                            style={styles.game_row}
-                            onPress={ () => { RootNavigator.navigateToAnagramInfo(item) } }
-                        >
-                            <View style={styles.game_row_col}>
-                                <Text style={styles.playernames}>
-                                    {
+                <View style={styles.list_title}>
+                    <Text h4>{ this.props.reduced ? 'Unopened Games' : 'All Games'}</Text>
+                </View>
+                <View style={styles.list}>
+                    <FlatList
+                        contentContainerStyle={styles.list_container}
+                        data={this.state.games.reverse()}
+                        extraData={this.state}
+                        keyExtractor={(item) => item.getID()}
+                        renderItem={({item}) => {
+                            const finished = item.getLocalState().stage === 'FINISHED';
+
+                            const highlighted = !finished || !item.hasBeenViewed();
+
+                            return (
+                                <ListItem
+                                    containerStyle={{backgroundColor: highlighted ? 'white' : 'gray'}}
+                                    onPress={ () => { RootNavigator.navigateToAnagramInfo(item) } }
+                                    title={
                                         item.getPlayers().map((user: User, iidx: number) =>
                                             user.username + (item.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
-                                        )
+                                        ).join('')
                                     }
-                                </Text>
-                                <Text>Anagram Game</Text>
-                                <Text>{ item.getDateString() }</Text>
-                            </View>
-                            <View style={styles.game_row_col}>
-                                {
-                                    item.getLocalState().stage === 'FINISHED' ?
-                                        item.getPlayers().filter(user => user.user_id !== ServerStore.getUserID()).map((user: User, iidx: number) => {
-                                            const finished: boolean = item.getState(user.user_id).stage === 'FINISHED';
-                                            return (
-                                                <View
-                                                    key={iidx}
-                                                    style={styles.game_row_user_status}>
-                                                    <Text>{ user.username + ' ' }</Text>
-                                                    <Badge
-                                                        status={ finished ? 'success' : 'warning' }
-                                                        value={
-                                                            <Text>
-                                                                {
-                                                                    finished ? 'Finished' : 'Waiting...'
-                                                                }
-                                                            </Text>
-                                                        }/>
-                                                </View>
-                                            )
+                                    bottomDivider
+                                    chevron
+                                    subtitle={
+                                        <Fragment>
+                                            <Text>Anagram Game</Text>
+                                            <Text>{ item.getDateString() }</Text>
+                                        </Fragment>
+                                    }
+                                    badge={{
+                                        status: !finished ? 'success' : item.hasBeenViewed() ? undefined : 'primary'
+                                    }}
+                                />
+                            )
+                        }
 
-                                        })
-                                        :
-                                        <Text>Play!</Text>
-                                }
-                            </View>
-                        </TouchableOpacity>
-                    }
-                />
+                        }
+                    />
+                </View>
             </View>
         )
     }
 }
 
-const height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     view_games: {
         alignItems: 'center',
         justifyContent: 'flex-start',
-        marginVertical: 50,
         flex: 1,
-    },
-
-    game_row: {
-        flex: 1,
-        padding: 5,
-        borderBottomColor: 'gray',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-
-        flexDirection: 'row',
-    },
-
-    game_row_col: {
-        flexDirection: 'column',
-    },
-
-    game_row_user_status: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-
-    title: {
-        flex: 1,
-        marginBottom: 10,
-        fontSize: 20,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-
-    playernames: {
-        fontSize: 20
     },
 
     list: {
         alignSelf: 'stretch',
+        flex: 5,
     },
 
     list_container: {
         borderTopColor: 'gray',
         borderTopWidth: StyleSheet.hairlineWidth,
         flexGrow: 1,
+    },
+
+    list_title: {
+        flex: 1,
     }
 });
 
