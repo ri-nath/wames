@@ -6,6 +6,7 @@ import { AnagramObject } from '../../../../types';
 
 import ServerStore from 'server/ServerStore';
 import RootNavigator from 'state/RootNavigator';
+import LinkHandler from 'state/LinkHandler'
 
 import Anagram from 'lib/Anagram';
 import AnagramStore from 'state/AnagramStore';
@@ -57,7 +58,16 @@ export default class Challenger extends Component<any, State> {
                     </View>
                     <View style={styles.right_box}>
                         <Text style={styles.small_header}> Create a Link </Text>
-                        <Text>Implement me!</Text>
+                        <Button title='Test' onPress={() => ServerStore.createGame([], (game: AnagramObject) => {
+                            // TODO: Improve logic
+                            const wrapped = new Anagram(game, ServerStore.getUserID());
+
+                            AnagramStore.processLoadGame(wrapped, false);
+                            RootNavigator.navigateToAnagramInfo(wrapped);
+
+                            console.log("Hello");
+                            console.log(LinkHandler.createGameURL(wrapped))
+                        })}/>
                     </View>
                 </View>
 

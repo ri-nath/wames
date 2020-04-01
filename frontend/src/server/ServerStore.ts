@@ -4,6 +4,7 @@ import Constants from 'expo-constants';
 import * as PConstants from 'constants';
 import WamesEmitter, {WamesListener} from 'lib/WamesEmitter';
 import { AnagramObject, AnagramState, User } from '../../types';
+import Anagram from 'lib/Anagram';
 
 enum Events {
     ERROR = 'error',
@@ -12,15 +13,19 @@ enum Events {
     CREATE_GAME = 'create-game',
     SET_USERNAME = 'user-id',
     UPDATE_GAME_STATE = 'update-game-state',
-    MARK_AS_VIEWED = 'view'
+    MARK_AS_VIEWED = 'view',
+    JOIN_GAME = 'join',
 }
 
 class ServerStore {
     private socket: SocketIOClient.Socket;
     private user: User | undefined;
+    private connected: boolean;
     private emitter: WamesEmitter;
 
     constructor() {
+        this.connected = false;
+
         this.emitter = new WamesEmitter();
         this.socket = io(PConstants.SERVER_ENDPOINT);
 
@@ -31,6 +36,7 @@ class ServerStore {
                 if (!(res instanceof Error)) {
                     this.user = res;
 
+                    this.connected = true;
                     this.emitter.emit('connect', res);
                 }
             });
@@ -43,6 +49,10 @@ class ServerStore {
         this.socket.on('disconnect', () => {
             console.log('Socket Disconnected!');
         });
+    }
+
+    isConnected(): boolean {
+        return this.connected;
     }
 
     onConnect(handler: (res: User) => void) {
@@ -89,6 +99,10 @@ class ServerStore {
 
     getUserID() {
         return this.user ? this.user.user_id : '';
+    }
+
+    joinGameByID(id: string, handler: (res: AnagramObject | null) => void) {
+        this.socket.emit(Events.JOIN_GAME, id, handler);
     }
 }
 

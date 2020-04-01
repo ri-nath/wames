@@ -16,7 +16,8 @@ enum Events {
     CREATE_GAME = 'create-game',
     SET_USERNAME = 'user-id',
     UPDATE_GAME_STATE = 'update-game-state',
-    MARK_AS_VIEWED = 'view'
+    MARK_AS_VIEWED = 'view',
+    JOIN_GAME = 'join',
 }
 
 interface LooseSocket extends Socket {
@@ -97,6 +98,19 @@ export default class Server {
 
                     callback(db_game);
                 });
+            });
+        });
+
+        socket.on(Events.JOIN_GAME, (id: string, callback: (res: AnagramObject | null) => void) => {
+            console.log('Joining game ', id, ' for user ', socket.user.username);
+
+            DB.joinAnagramGame(id, socket.user, (res: AnagramObject | null) => {
+                if (res) {
+                    // TODO: Not working?
+                    socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                }
+
+                callback(res);
             });
         });
 

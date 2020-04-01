@@ -64,7 +64,7 @@ export default class GameBrowser extends Component<Props, State> {
                 <View style={styles.list}>
                     <FlatList
                         contentContainerStyle={styles.list_container}
-                        data={this.state.games.reverse()}
+                        data={this.state.games}
                         extraData={this.state}
                         keyExtractor={(item) => item.getID()}
                         renderItem={({item}) => {
@@ -95,7 +95,7 @@ export default class GameBrowser extends Component<Props, State> {
                                                 ? 'success'
                                                 : item.hasBeenViewed()
                                                     ? allPlayersFinished
-                                                        ?  undefined
+                                                        ?  'success'
                                                         :  'warning'
                                                     : 'primary',
                                         value:

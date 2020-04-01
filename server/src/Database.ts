@@ -3,6 +3,8 @@ import { AnagramObject, AnagramState, User } from '../types';
 import monk, { IMonkManager, ICollection } from 'monk';
 import { uniqueNamesGenerator, adjectives, animals, Config } from 'unique-names-generator';
 
+import * as AUtil from './util/Anagram';
+
 const name_config: Config = {
     dictionaries: [adjectives, animals],
     separator: '',
@@ -52,6 +54,16 @@ class DB {
             .catch(console.error);
     }
 
+    joinAnagramGame(id: string, user: User, callback: (doc: AnagramObject | null) => void) {
+        this.anagrams.findOneAndUpdate(
+            { _id: id },
+            { $set: { ['states.' + user.user_id]: AUtil.defaultState }, $push: { users: user } },
+        )
+            .then(callback)
+            .catch(console.error);
+    }
+
+    // USER METHODS
     generateUsername(callback: (username: string) => void) {
         let username = uniqueNamesGenerator(name_config);
 
@@ -66,7 +78,6 @@ class DB {
         });
     };
 
-    // USER METHODS
     registerUser(user_id: string, callback: (res: User | Error) => void) {
         this.users.find({
             user_id: user_id
@@ -118,6 +129,8 @@ class DB {
     }
 
     getUsersByName(usernames: string[], callback: (users: User[]) => void) {
+        if (usernames.length === 0) callback([]);
+
         this.users.find({
             $or: usernames.reduce((acc: Partial<User>[], cur: string) => {
                 acc.push({

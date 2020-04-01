@@ -24,23 +24,18 @@ function generateGame(target_users) {
         users: []
     };
     for (const user of target_users) {
-        addUserToGame(game, user);
+        game.states[user.user_id] = exports.defaultState;
+        game.users.push(user);
     }
     return game;
 }
 exports.generateGame = generateGame;
-function addUserToGame(game, user) {
-    const state = {
-        words: [],
-        stage: 'NOT-STARTED',
-        score: 0,
-        viewed: false
-    };
-    game.states[user.user_id] = state;
-    game.users.push(user);
-    return game;
-}
-exports.addUserToGame = addUserToGame;
+exports.defaultState = {
+    words: [],
+    stage: 'NOT-STARTED',
+    score: 0,
+    viewed: false
+};
 // const example_game = {
 //     uuid: 'fwu0e8gtabofubeg8g',
 //     states: {

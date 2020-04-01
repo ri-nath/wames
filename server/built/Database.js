@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const monk_1 = require("monk");
 const unique_names_generator_1 = require("unique-names-generator");
+const AUtil = require("./util/Anagram");
 const name_config = {
     dictionaries: [unique_names_generator_1.adjectives, unique_names_generator_1.animals],
     separator: '',
@@ -36,6 +37,12 @@ class DB {
             .then(callback)
             .catch(console.error);
     }
+    joinAnagramGame(id, user, callback) {
+        this.anagrams.findOneAndUpdate({ _id: id }, { $set: { ['states.' + user.user_id]: AUtil.defaultState }, $push: { users: user } })
+            .then(callback)
+            .catch(console.error);
+    }
+    // USER METHODS
     generateUsername(callback) {
         let username = unique_names_generator_1.uniqueNamesGenerator(name_config);
         this.users.find({
@@ -50,7 +57,6 @@ class DB {
         });
     }
     ;
-    // USER METHODS
     registerUser(user_id, callback) {
         this.users.find({
             user_id: user_id
@@ -98,6 +104,8 @@ class DB {
             .catch(console.error);
     }
     getUsersByName(usernames, callback) {
+        if (usernames.length === 0)
+            callback([]);
         this.users.find({
             $or: usernames.reduce((acc, cur) => {
                 acc.push({

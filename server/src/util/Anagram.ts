@@ -30,26 +30,19 @@ export function generateGame(target_users: User[]): Partial<AnagramObject> {
     };
 
     for (const user of target_users) {
-        addUserToGame(game, user);
+        game.states[user.user_id] = defaultState;
+        game.users.push(user);
     }
 
     return game;
 }
 
-export function addUserToGame(game: Partial<AnagramObject>, user: User): Partial<AnagramObject> {
-    const state: AnagramState = {
-        words: [],
-        stage: 'NOT-STARTED',
-        score: 0,
-        viewed: false
-    };
-
-    game.states[user.user_id] = state;
-
-    game.users.push(user);
-
-    return game;
-}
+export const defaultState: AnagramState = {
+    words: [],
+    stage: 'NOT-STARTED',
+    score: 0,
+    viewed: false
+};
 
 // const example_game = {
 //     uuid: 'fwu0e8gtabofubeg8g',

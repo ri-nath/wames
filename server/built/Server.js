@@ -14,6 +14,7 @@ var Events;
     Events["SET_USERNAME"] = "user-id";
     Events["UPDATE_GAME_STATE"] = "update-game-state";
     Events["MARK_AS_VIEWED"] = "view";
+    Events["JOIN_GAME"] = "join";
 })(Events || (Events = {}));
 class Server {
     constructor() {
@@ -62,6 +63,16 @@ class Server {
                     socket.broadcast.to(room).emit(Events.NEW_GAMES, [db_game]);
                     callback(db_game);
                 });
+            });
+        });
+        socket.on(Events.JOIN_GAME, (id, callback) => {
+            console.log('Joining game ', id, ' for user ', socket.user.username);
+            Database_1.default.joinAnagramGame(id, socket.user, (res) => {
+                if (res) {
+                    // TODO: Not working?
+                    socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                }
+                callback(res);
             });
         });
         socket.on(Events.SET_USERNAME, (username, callback) => {
