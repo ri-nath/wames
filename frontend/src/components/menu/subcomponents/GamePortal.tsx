@@ -33,7 +33,7 @@ export default class GamePortal extends Component<Props, any> {
     render() {
         return (
             <View style={styles.container}>
-                <Text>{ this.game.getDate() } </Text>
+                <Text>{ this.game.getDateString() } </Text>
                 <Text> Anagram Game </Text>
                 {
                     this.game.getLocalState().stage === 'NOT-STARTED' ?

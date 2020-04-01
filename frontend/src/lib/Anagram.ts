@@ -66,7 +66,7 @@ export default class Anagram {
         this.getLocalState().viewed = true;
     }
 
-    getDate(): string {
+    getDateString(): string {
         return this.date_string;
     }
 }
