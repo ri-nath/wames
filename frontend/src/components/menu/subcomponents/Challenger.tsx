@@ -7,6 +7,7 @@ import ServerStore from 'server/ServerStore';
 import RootNavigator from 'state/RootNavigator';
 
 import Anagram from 'lib/Anagram';
+import AnagramStore from 'state/AnagramStore';
 
 type State = {
     value: string
@@ -41,7 +42,11 @@ export default class Challenger extends Component<any, State> {
                     disabled={this.state.value.length < 1}
                     title='Challenge User'
                     onPress={() => ServerStore.createGame([this.state.value], (game: AnagramObject) => {
-                        RootNavigator.navigateToAnagramInfo(new Anagram(game, ServerStore.getUserID()));
+                        // TODO: Improve logic
+                        const wrapped = new Anagram(game, ServerStore.getUserID());
+
+                        AnagramStore.processLoadGame(wrapped, false);
+                        RootNavigator.navigateToAnagramInfo(wrapped);
                     })}
                 />
             </View>

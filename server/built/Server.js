@@ -85,7 +85,7 @@ class Server {
         });
         socket.on(Events.MARK_AS_VIEWED, (_id) => {
             console.log('Marking game id ', _id, ' as viewed for ', socket.user.username);
-            Database_1.default.markAnagramGameAsViewed(socket.user, _id, { viewed: true });
+            Database_1.default.markAnagramGameAsViewed(socket.user, _id);
         });
         socket.on('disconnect', () => {
             console.log('A user disconnected!');

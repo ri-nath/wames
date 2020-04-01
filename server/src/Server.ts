@@ -128,7 +128,7 @@ export default class Server {
         socket.on(Events.MARK_AS_VIEWED, (_id: string) => {
             console.log('Marking game id ', _id, ' as viewed for ', socket.user.username);
 
-            DB.markAnagramGameAsViewed(socket.user, _id, { viewed: true })
+            DB.markAnagramGameAsViewed(socket.user, _id);
         });
 
         socket.on('disconnect', () => {

@@ -1,8 +1,8 @@
 import io from 'socket.io-client';
 import Constants from 'expo-constants';
-import MicroEmitter from 'micro-emitter';
 
 import * as PConstants from 'constants';
+import WamesEmitter, {WamesListener} from 'lib/WamesEmitter';
 import { AnagramObject, AnagramState, User } from '../../types';
 
 enum Events {
@@ -18,10 +18,10 @@ enum Events {
 class ServerStore {
     private socket: SocketIOClient.Socket;
     private user: User | undefined;
-    private emitter: MicroEmitter;
+    private emitter: WamesEmitter;
 
     constructor() {
-        this.emitter = new MicroEmitter();
+        this.emitter = new WamesEmitter();
         this.socket = io(PConstants.SERVER_ENDPOINT);
 
         this.socket.on('connect', () => {
@@ -79,8 +79,8 @@ class ServerStore {
         });
     }
 
-    onSetUsername(handler: (res: string) => void) {
-        this.emitter.on(Events.SET_USERNAME, handler);
+    onSetUsername(handler: (res: string) => void): WamesListener {
+        return this.emitter.wrappedListen(Events.SET_USERNAME, handler);
     }
 
     getUsername() {

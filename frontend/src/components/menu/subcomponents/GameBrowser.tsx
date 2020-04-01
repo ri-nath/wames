@@ -43,7 +43,7 @@ export default class GameBrowser extends Component<Props, State> {
     handleUpdateGamesList(games: Anagram[]) {
         if (this.props.reduced) {
             this.setState({
-                games: games.filter(game => !game.hasBeenViewed())
+                games: games.filter(game => !game.hasBeenViewed() || game.getLocalState().stage === 'NOT-STARTED')
             });
         } else {
             this.setState({

@@ -41,17 +41,15 @@ class AnagramStore {
             new_games.forEach(game => this.processLoadGame(new Anagram(game, DB.getUserID()), false));
         });
 
-        DB.onNewGameState((game_uuid: string, user: User, state: AnagramState, unview: boolean) => {
+        DB.onNewGameState((game_uuid: string, user: User, state: AnagramState) => {
             let index = this.games.findIndex(game => game.getID() === game_uuid);
 
             if (index > -1) {
                 this.games[index].setState(user.user_id, state);
 
-                if (unview) {
-                    this.games[index].setLocalState({
-                        viewed: unview,
-                    })
-                }
+                this.games[index].setLocalState({
+                        viewed: false,
+                });
 
                 this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
             }
@@ -66,13 +64,15 @@ class AnagramStore {
             this.games[index] = game_object;
         } else {
             this.games.push(game_object);
-
-            this.games.sort((a: Anagram, b: Anagram) => a.getID().localeCompare((b.getID())));
         }
+
+        this.games.sort((a: Anagram, b: Anagram) => a.getID().localeCompare((b.getID())));
 
         if (set_active) {
             this.startNewGame(game_object);
         }
+
+        console.log(this.games, new Date());
 
         this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
     }
@@ -82,9 +82,9 @@ class AnagramStore {
 
         if (index > -1) {
             this.games[index].markAsViewed();
-        }
 
-        DB.markGameAsViewed(this.games[index].getID());
+            DB.markGameAsViewed(this.games[index].getID());
+        }
 
         this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
     }
