@@ -71,9 +71,7 @@ class AnagramStore {
         if (set_active) {
             this.startNewGame(game_object);
         }
-
-        console.log(this.games, new Date());
-
+        
         this.emitter.emit(EVENTS.UPDATE_GAMES_LIST, this.games);
     }
 

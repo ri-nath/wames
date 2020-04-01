@@ -11,7 +11,7 @@ export default function Statistics() {
             <View style={styles.container}>
                 <GameBrowser
                     key='reduced'
-                    reduced={true}
+                    reduced={false}
                     style={styles.game_browser}
                 />
             </View>

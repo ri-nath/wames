@@ -31,8 +31,6 @@ export default class GameBrowser extends Component<Props, State> {
         };
 
         this.handleUpdateGamesList = this.handleUpdateGamesList.bind(this);
-
-        if (!this.props.reduced) setInterval(() => console.log(this.state.games.length, this.props.reduced), 1000);
     }
 
     componentDidMount() {
@@ -71,12 +69,12 @@ export default class GameBrowser extends Component<Props, State> {
                         keyExtractor={(item) => item.getID()}
                         renderItem={({item}) => {
                             const finished = item.getLocalState().stage === 'FINISHED';
-
                             const highlighted = !finished || !item.hasBeenViewed();
+                            const allPlayersFinished = item.getPlayers().filter(player => item.getState(player.user_id).stage === 'NOT-STARTED').length === 0;
 
                             return (
                                 <ListItem
-                                    containerStyle={{backgroundColor: highlighted ? 'white' : 'gray'}}
+                                    containerStyle={{backgroundColor: highlighted ? 'white' : '#ededed'}}
                                     onPress={ () => { RootNavigator.navigateToAnagramInfo(item) } }
                                     title={
                                         item.getPlayers().map((user: User, iidx: number) =>
@@ -92,7 +90,22 @@ export default class GameBrowser extends Component<Props, State> {
                                         </Fragment>
                                     }
                                     badge={{
-                                        status: !finished ? 'success' : item.hasBeenViewed() ? undefined : 'primary'
+                                        status:
+                                            !finished
+                                                ? 'success'
+                                                : item.hasBeenViewed()
+                                                    ? allPlayersFinished
+                                                        ?  undefined
+                                                        :  'warning'
+                                                    : 'primary',
+                                        value:
+                                            !finished ?
+                                                'Play Game'
+                                                : item.hasBeenViewed() ?
+                                                    allPlayersFinished ?
+                                                    undefined
+                                                    :  'Challenge Sent...'
+                                                : 'New Results!',
                                     }}
                                 />
                             )
