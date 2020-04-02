@@ -33,6 +33,10 @@
     "react-native-safe-area-context": "0.6.0",
     "react-native-screens": "2.0.0-alpha.12",
     "react-native-web": "~0.11.7",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
     "socket.io-client": "2.1.1",
     "typescript": "^3.8.3",
     "unique-names-generator": "^4.2.0"
