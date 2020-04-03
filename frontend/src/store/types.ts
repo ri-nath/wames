@@ -1,4 +1,9 @@
-import {AnagramConfig, AnagramObject, AnagramState, User} from '../../../types';
+import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
+
+export type Action = {
+    type: string,
+    [key: string]: any
+}
 
 export type State = {
     data: Data,
@@ -17,8 +22,8 @@ export type Data = {
 }
 
 export type MenuState = {
-    state: 'SETTINGS' | 'GAMES_LIST' | 'HOME' | 'ANAGRAM_PORTAL',
-    portal_game: Nullable<AnagramObject>
+    screen: 'SETTINGS' | 'GAMES_LIST' | 'HOME' | 'ANAGRAM_PORTAL',
+    portal_game: Vow<AnagramObject>
 }
 
 export type GameState = {
@@ -34,7 +39,7 @@ export const initialState: State = {
         state: 'LOADING'
     },
     menu: {
-        state: 'HOME',
+        screen: 'HOME',
         portal_game: null,
     },
     anagram: {

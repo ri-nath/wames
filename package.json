@@ -9,5 +9,6 @@
     "heroku": "git subtree push --prefix server origin heroku"
   },
   "dependencies": {
+    "@types/redux-logger": "^3.0.7"
   }
 }

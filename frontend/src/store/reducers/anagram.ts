@@ -1,5 +1,4 @@
-import { Action } from 'store/actions/types';
-import { initialState } from 'store/reducers/types';
+import { Action, initialState } from 'store/types';
 import {lazyEndGame, lazyScoreWord, lazySetState} from 'util/Anagram';
 
 export default function anagram(state = initialState.anagram, action: Action) {

@@ -1,9 +1,7 @@
 import io from 'socket.io-client';
-import Constants from 'expo-constants';
 
 import * as PConstants from 'constants';
-import { AnagramObject, AnagramState, User } from '../../types';
-import Anagram from 'lib/Anagram';
+import { AnagramObject, User } from '../../types';
 
 enum Events {
     ERROR = 'error',
@@ -24,8 +22,6 @@ class Client {
 
         this.socket.on('connect', () => {
             console.log('Socket Connected!');
-
-
         });
 
         this.socket.on('reconnect', () => {
@@ -43,6 +39,10 @@ class Client {
 
     setUsername(username: String, callback: (res: User | Error) => void) {
         this.socket.emit(Events.SET_USERNAME, username, callback);
+    }
+
+    createGame(target_users: string[], callback: (game: AnagramObject) => void) {
+        this.socket.emit(Events.CREATE_GAME, target_users, callback);
     }
 }
 

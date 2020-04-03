@@ -1,5 +1,4 @@
-import { Action } from 'store/actions/types';
-import { initialState } from 'store/reducers/types';
+import { Action, initialState } from 'store/types';
 import { AnagramObject, AnagramState, User } from '../../../types';
 import { getID, setState } from 'util/Anagram';
 
