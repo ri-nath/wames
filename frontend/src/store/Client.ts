@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
 import * as PConstants from 'constants';
-import { AnagramObject, User } from '../../types';
+import { AnagramObject, AnagramState, User } from '../../types';
 
 enum Events {
     ERROR = 'error',
@@ -43,6 +43,26 @@ class Client {
 
     createGame(target_users: string[], callback: (game: AnagramObject) => void) {
         this.socket.emit(Events.CREATE_GAME, target_users, callback);
+    }
+
+    onNewGames(handler: (games: AnagramObject[]) => void) {
+        this.socket.on(Events.NEW_GAMES, handler);
+    }
+
+    updateGameState(game_uuid: string, state: AnagramState) {
+        this.socket.emit(Events.UPDATE_GAME_STATE, game_uuid, state);
+    }
+
+    markGameAsViewed(game_id: string) {
+        this.socket.emit(Events.MARK_AS_VIEWED, game_id);
+    }
+
+    onNewGameState(handler: (game_id: string, updating_user: User, updated_state: AnagramState) => void) {
+        this.socket.on(Events.UPDATE_GAME_STATE, handler);
+    }
+
+    joinGameByID(id: string, handler: (res: AnagramObject | null) => void) {
+        this.socket.emit(Events.JOIN_GAME, id, handler);
     }
 }
 

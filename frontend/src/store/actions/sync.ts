@@ -82,7 +82,7 @@ export function processGames(games: AnagramObject[]) {
     }
 }
 
-export function updateGameState(game_id: string, state: AnagramState, user: User) {
+export function updateGameState(game_id: string, user: User, state: AnagramState) {
     return {
         type: 'UPDATE_GAME_STATE',
         state: state,
