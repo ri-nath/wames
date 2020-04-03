@@ -1,6 +1,6 @@
 import { Action, initialState } from 'store/types';
 import { AnagramObject, AnagramState, User } from '../../../types';
-import {getID, setState, setUser} from 'util/Anagram';
+import {getID, setState, setUser, sortByDate} from 'util/Anagram';
 import {isResolved} from 'util/Vow';
 
 export default function data(state = initialState.data, action: Action) {
@@ -21,10 +21,14 @@ export default function data(state = initialState.data, action: Action) {
             if (!isResolved(anagram_games)) {
                 anagram_games = [];
             }
+
             action.games.forEach((game: AnagramObject) => {
                 // @ts-ignore
                 processLoadGame(game, anagram_games);
             });
+
+            // @ts-ignore
+            anagram_games = sortByDate(anagram_games);
 
             return { ...state, anagram_games: anagram_games };
 

@@ -1,12 +1,11 @@
 import { AnagramObject, AnagramState, User } from '../types';
 
-import DB from './Database';
-
 import * as express from 'express';
-import * as io from 'socket.io';
 import * as http from 'http';
-
+import * as io from 'socket.io';
 import { Socket } from 'socket.io';
+
+import DB from './Database';
 import * as AUtil from './util/Anagram.js';
 
 enum Events {
@@ -26,9 +25,9 @@ interface LooseSocket extends Socket {
 }
 
 export default class Server {
-    private app;
-    private server;
-    private io;
+    private readonly app;
+    private readonly server;
+    private readonly io;
 
     private sockets_list: LooseSocket[] = [];
 
@@ -45,7 +44,7 @@ export default class Server {
 
         const port = process.env.PORT || 3000;
 
-        this.server.listen(port, () => console.log("Listening on port ", port));
+        this.server.listen(port, () => console.log('Server listening on port ', port));
 
         this.io.on('connection', this.setListeners);
     }
@@ -83,8 +82,6 @@ export default class Server {
                 target_users.push(socket.user);
 
                 const game = AUtil.generateGame(target_users);
-
-                console.log(game);
 
                 DB.createAnagramGame(game, (db_game: AnagramObject) => {
                     const room = db_game._id;

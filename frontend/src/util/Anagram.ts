@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
 
-let m_user: User = {
+export let m_user: User = {
     username: '',
     user_id: '',
 };
@@ -36,12 +36,20 @@ export function getPlayers(obj: AnagramObject): User[] {
     return obj.users;
 }
 
-export function getDateString(obj: AnagramObject): string {
-    const timestamp = new Date(
-        parseInt(getID(obj).substring(0, 8), 16) * 1000
-    );
+export function getTimestamp(obj: AnagramObject): number {
+    return parseInt(getID(obj).substring(0, 8), 16);
+}
 
-    return moment(timestamp).format('MMMM Do, h:mm a')
+export function getDateString(obj: AnagramObject): string {
+    const date = new Date(getTimestamp(obj) * 1000);
+
+    return moment(date).format('MMMM Do, h:mm a')
+}
+
+export function sortByDate(objs: AnagramObject[]): AnagramObject[] {
+    objs.sort((a, b) => getTimestamp(b) - getTimestamp(a));
+
+    return objs;
 }
 
 export function lazyGetState(obj: AnagramObject) {
@@ -75,7 +83,7 @@ export function lazyScoreWord(obj: AnagramObject, word: string) {
     words.push(word);
 
     let score = state.score;
-    score += word.length * 10;
+    score += word.length * 100;
 
     lazySetState(obj, {
         words: words,

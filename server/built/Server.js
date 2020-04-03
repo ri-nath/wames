@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Database_1 = require("./Database");
 const express = require("express");
-const io = require("socket.io");
 const http = require("http");
+const io = require("socket.io");
+const Database_1 = require("./Database");
 const AUtil = require("./util/Anagram.js");
 var Events;
 (function (Events) {
@@ -27,7 +27,7 @@ class Server {
             res.sendFile(__dirname + './index.html');
         });
         const port = process.env.PORT || 3000;
-        this.server.listen(port, () => console.log("Listening on port ", port));
+        this.server.listen(port, () => console.log('Server listening on port ', port));
         this.io.on('connection', this.setListeners);
     }
     setListeners(socket) {
@@ -53,7 +53,6 @@ class Server {
                 let target_users = users;
                 target_users.push(socket.user);
                 const game = AUtil.generateGame(target_users);
-                console.log(game);
                 Database_1.default.createAnagramGame(game, (db_game) => {
                     const room = db_game._id;
                     this.sockets_list.filter(list_socket => target_users.map(target_user => target_user.user_id).includes(list_socket.user.user_id))

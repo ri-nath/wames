@@ -11,7 +11,7 @@ function generateLetters(length) {
 }
 exports.generateLetters = generateLetters;
 const length = 8;
-const duration = 5;
+const duration = 45;
 function generateGame(target_users) {
     const uuid = uuid_1.v4();
     const letters = generateLetters(length);

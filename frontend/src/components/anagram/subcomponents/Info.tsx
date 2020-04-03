@@ -42,7 +42,7 @@ class Info extends Component<any, CState> {
         this.removeIntervals();
 
         this.interval_handles.push(
-            setInterval(this.incrementScore, 5), // 5 ms
+            setInterval(this.incrementScore, 5), // 500 ms
             setInterval(this.incrementTimer, 1000) // 1 second
         );
     }

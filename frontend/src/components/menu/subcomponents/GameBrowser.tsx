@@ -35,7 +35,7 @@ class GameBrowser extends Component<Props, any> {
         let games;
 
         if (this.props.reduced) {
-            games = this.props.games.filter(game => lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED')
+            games = this.props.games.filter(game => !lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED')
         } else {
             games = this.props.games;
         }

@@ -5,12 +5,12 @@ import {
     receiveData, receiveUser,
     requestCreatedGame,
     requestData, requestUser,
-    startAnagramGame
+    startAnagramGame, updateGameState
 } from 'store/actions/sync';
 import Client from 'store/Client';
 
 import Constants from 'expo-constants';
-import { getConfig } from 'util/Anagram';
+import {getConfig, getID, lazyGetState, m_user} from 'util/Anagram';
 import { isError } from 'util/Error';
 import { Dispatch } from 'redux';
 
@@ -39,9 +39,11 @@ export function startAnagramGameCycle(game: AnagramObject) {
     return function(dispatch: any) {
         dispatch(startAnagramGame(game));
 
-        const ref = setTimeout(() =>
-            dispatch(endAnagramGame(game)),
-            1000 * getConfig(game).duration);
+
+        const ref = setTimeout(() => {
+            dispatch(endAnagramGame(game));
+            Client.updateGameState(getID(game), lazyGetState(game));
+        }, 1000 * getConfig(game).duration);
     }
 }
 
@@ -55,5 +57,15 @@ export function asyncSetUsername(username: string) {
                 dispatch(receiveUser(res));
             }
         });
+    }
+}
+
+export function markGameAsViewed(game: AnagramObject) {
+    return function(dispatch: any) {
+        dispatch(updateGameState(getID(game), m_user, {
+            viewed: true,
+        }));
+
+        Client.markGameAsViewed(getID(game));
     }
 }

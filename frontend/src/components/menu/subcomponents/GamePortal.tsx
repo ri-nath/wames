@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { AnagramObject, User } from '../../../../types';
 import { getDateString, getPlayers, getState, lazyGetState } from 'util/Anagram';
-import { startAnagramGameCycle } from 'store/actions';
+import {markGameAsViewed, startAnagramGameCycle} from 'store/actions';
 import { State } from 'store/types';
 import { isResolved } from 'util/Vow';
 
@@ -19,7 +19,7 @@ class GamePortal extends Component<Props, any> {
     }
 
     componentDidMount(): void {
-        // VIEW GAME
+        if (isResolved(this.props.game)) this.props.dispatch(markGameAsViewed(this.props.game));
     }
 
     render() {
