@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Linking } from 'expo';
 
 import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
 
@@ -91,4 +92,8 @@ export function lazyScoreWord(obj: AnagramObject, word: string) {
     });
 
     return obj;
+}
+
+export function getLink(obj: AnagramObject) {
+    return Linking.makeUrl('anagrams', { id: getID(obj)})
 }

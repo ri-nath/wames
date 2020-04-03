@@ -24,6 +24,7 @@ export type Data = {
 export type MenuState = {
     screen: 'Settings' | 'Games List' | 'Home' | 'Game Portal' | 'NONE',
     portal_game: Nullable<AnagramObject>
+    link: Nullable<string>
 }
 
 export type GameState = {
@@ -41,6 +42,7 @@ export const initialState: State = {
     menu: {
         screen: 'Home',
         portal_game: null,
+        link: null,
     },
     anagram: {
         active_game: null,

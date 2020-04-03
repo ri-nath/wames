@@ -6,10 +6,12 @@ import { Linking } from 'expo';
 
 import RootReducer from './reducers';
 import Client from 'store/Client';
-import { processGames, receiveCreatedGame, updateGameState } from 'store/actions';
+import {openGamePortal, processGames, receiveCreatedGame, updateGameState} from 'store/actions';
 
 import { Nullable } from 'store/types';
 import { AnagramObject } from '../../types';
+import {isError} from 'util/Error';
+import {getID} from 'util/Anagram';
 
 
 const loggerMiddleware = createLogger();
@@ -46,8 +48,15 @@ const parseURL = (url: string) => {
 
     if (path && queryParams) {
         // @ts-ignore
-        Client.joinGameByID(queryParams.id, (res: AnagramObject | null) => {
-            if (res) {
+        Client.joinGameByID(queryParams.id, (res: AnagramObject | string) => {
+            console.log("RES", res);
+            if (res === 'Already in game!') {
+                // @ts-ignore
+                const game = store.getState().data.anagram_games.find(game => getID(game) === queryParams.id);
+
+                store.dispatch(openGamePortal(game));
+            } else {
+                // @ts-ignore
                 store.dispatch(receiveCreatedGame(res));
             }
         })

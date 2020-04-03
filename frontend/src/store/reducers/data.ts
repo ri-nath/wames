@@ -17,6 +17,15 @@ export default function data(state = initialState.data, action: Action) {
         case 'RECEIVE_USER':
             setUser(action.user);
             return { ...state, user: action.user };
+        case 'RECEIVE_GAME':
+            if (!isResolved(anagram_games)) {
+                anagram_games = [];
+            };
+
+            // @ts-ignore
+            processLoadGame(action.game, anagram_games);
+
+            return { ...state, anagram_games: anagram_games };
         case 'PROCESS_GAMES':
             if (!isResolved(anagram_games)) {
                 anagram_games = [];
@@ -31,7 +40,6 @@ export default function data(state = initialState.data, action: Action) {
             anagram_games = sortByDate(anagram_games);
 
             return { ...state, anagram_games: anagram_games };
-
         case 'UPDATE_GAME_STATE':
             if (!isResolved(anagram_games)) {
                 anagram_games = [];

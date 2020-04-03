@@ -14,7 +14,7 @@ class DB {
         this.db = monk_1.default(process.env.DB_URI);
         this.anagrams = this.db.get('anagram-games');
         this.users = this.db.get('users');
-        if (process.env.PRODUCTION) {
+        if (process.env.MODE === 'PRODUCTION') {
             console.log('Removing all debug games...');
             this.anagrams.remove({
                 ['states.wames-debug']: { $exists: true }
@@ -45,6 +45,11 @@ class DB {
     }
     joinAnagramGame(id, user, callback) {
         this.anagrams.findOneAndUpdate({ _id: id }, { $set: { ['states.' + user.user_id]: AUtil.defaultState }, $push: { users: user } })
+            .then(callback)
+            .catch(console.error);
+    }
+    getAnagramGame(id, callback) {
+        this.anagrams.findOne({ _id: id })
             .then(callback)
             .catch(console.error);
     }
@@ -110,8 +115,10 @@ class DB {
             .catch(console.error);
     }
     getUsersByName(usernames, callback) {
-        if (usernames.length === 0)
+        if (usernames.length === 0) {
+            console.log('getUsersByName called on empty array!');
             callback([]);
+        }
         this.users.find({
             $or: usernames.reduce((acc, cur) => {
                 acc.push({

@@ -12,7 +12,7 @@ import Client from 'store/Client';
 import Constants from 'expo-constants';
 import {getConfig, getID, lazyGetState, m_user} from 'util/Anagram';
 import { isError } from 'util/Error';
-import { Dispatch } from 'redux';
+
 
 export function asyncRequestData() {
     return function(dispatch: any) {

@@ -100,17 +100,24 @@ export default class Server {
             });
         });
 
-        socket.on(Events.JOIN_GAME, (id: string, callback: (res: AnagramObject | null) => void) => {
+        socket.on(Events.JOIN_GAME, (id: string, callback: (res: AnagramObject | string) => void) => {
             console.log('Joining game ', id, ' for user ', socket.user.username);
 
-            DB.joinAnagramGame(id, socket.user, (res: AnagramObject | null) => {
-                if (res) {
-                    // TODO: Not working?
-                    socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
-                }
+            DB.getAnagramGame(id, game => {
+                if (game.users.some(user => user.user_id === socket.user.user_id)) {
+                    callback("Already in game!");
+                } else {
+                    DB.joinAnagramGame(id, socket.user, (res: AnagramObject | null) => {
+                        if (res) {
+                            // TODO: Not working?
+                            socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                        }
 
-                callback(res);
+                        callback(res);
+                    });
+                }
             });
+
         });
 
         socket.on(Events.SET_USERNAME, (username: string, callback: (res: User | Error) => void) => {

@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Clipboard } from 'react-native';
 import { connect } from 'react-redux';
 
 import { AnagramObject, User } from '../../../../types';
-import { getDateString, getPlayers, getState, lazyGetState } from 'util/Anagram';
+import {getDateString, getLink, getPlayers, getState, lazyGetState} from 'util/Anagram';
 import {markGameAsViewed, startAnagramGameCycle} from 'store/actions';
-import { State } from 'store/types';
+import {Nullable, State} from 'store/types';
 import { isResolved } from 'util/Vow';
+import {Button, Icon} from 'react-native-elements';
 
 type Props = {
     game: AnagramObject,
@@ -28,6 +29,12 @@ class GamePortal extends Component<Props, any> {
                 <View style={styles.container}>
                     <Text>{ getDateString(this.props.game) } </Text>
                     <Text> Anagram Game </Text>
+                    <Button
+                        type='clear'
+                        icon={
+                            <Icon name="link"/>
+                        }
+                        onPress={() => Clipboard.setString(getLink(this.props.game))}/>
                     {
                         lazyGetState(this.props.game).stage === 'NOT-STARTED' ?
                             <Fragment>
@@ -96,7 +103,7 @@ class GamePortal extends Component<Props, any> {
 
 function mapStateToProps(state: State) {
     return {
-        game: isResolved(state.menu.portal_game) ? state.menu.portal_game : undefined
+        game: isResolved(state.menu.portal_game) ? state.menu.portal_game : undefined,
     }
 }
 

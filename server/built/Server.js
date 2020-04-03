@@ -67,12 +67,19 @@ class Server {
         });
         socket.on(Events.JOIN_GAME, (id, callback) => {
             console.log('Joining game ', id, ' for user ', socket.user.username);
-            Database_1.default.joinAnagramGame(id, socket.user, (res) => {
-                if (res) {
-                    // TODO: Not working?
-                    socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+            Database_1.default.getAnagramGame(id, game => {
+                if (game.users.some(user => user.user_id === socket.user.user_id)) {
+                    callback("Already in game!");
                 }
-                callback(res);
+                else {
+                    Database_1.default.joinAnagramGame(id, socket.user, (res) => {
+                        if (res) {
+                            // TODO: Not working?
+                            socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                        }
+                        callback(res);
+                    });
+                }
             });
         });
         socket.on(Events.SET_USERNAME, (username, callback) => {

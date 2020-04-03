@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import {StyleSheet, View, TextInput, Button} from 'react-native';
 import { Text } from 'react-native-elements';
+import { connect } from 'react-redux';
 
-import { AnagramObject } from '../../../../types';
-
-import RootNavigator from 'lib/RootNavigator';
-import {asyncCreateGame} from 'store/actions';
-import {connect} from 'react-redux';
+import { asyncCreateGame } from 'store/actions';
 
 type CState = {
     value: string
@@ -54,9 +51,6 @@ class Challenger extends Component<any, CState> {
                             this.props.dispatch(asyncCreateGame())}/>
                     </View>
                 </View>
-
-
-
             </View>
         )
     }
