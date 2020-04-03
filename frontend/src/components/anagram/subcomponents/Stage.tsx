@@ -2,22 +2,20 @@ import React, { Component, Fragment } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
 import Tile from './Tile';
-
-import AnagramStore from 'state/AnagramStore';
-import Anagram from 'lib/Anagram';
-
 import * as PConstants from 'constants';
-import {WamesListener} from 'lib/WamesEmitter';
+import {scoreWordOnActiveAnagramGame} from 'store/actions';
+import {State} from 'store/types';
+import {isResolved} from 'util/Vow';
+import {getConfig, lazyGetState} from 'util/Anagram';
+import {connect} from 'react-redux';
 
-type State = {
+type CState = {
     options: string[],
     picks: string[],
     on_word: boolean,
 }
 
-export default class Stage extends Component<any, State> {
-    private listener: WamesListener | undefined;
-
+class Stage extends Component<any, CState> {
     constructor(props: any) {
         super(props);
 
@@ -32,30 +30,20 @@ export default class Stage extends Component<any, State> {
         this.handleRemoveTile = this.handleRemoveTile.bind(this);
         this.resetTiles = this.resetTiles.bind(this);
         this.handleScoreWord = this.handleScoreWord.bind(this);
-
-        this.setLettersFromGameInstance = this.setLettersFromGameInstance.bind(this);
     }
 
-    componentDidMount() {
-        const game_obj: Anagram = AnagramStore.getActiveGame();
-        this.setLettersFromGameInstance(game_obj);
-
-        this.listener = AnagramStore.onStartNewGame((game_obj: Anagram) => {
-            this.setLettersFromGameInstance(game_obj)
-        });
-    }
-
-    componentWillUnmount(): void {
-        if (this.listener) this.listener.off();
-    }
-
-    setLettersFromGameInstance(game_obj: Anagram) {
-        const options = game_obj.getConfig().letters.map((letter, idx) => letter + idx);
+    setLettersFromProps() {
+        const options = this.props.letters.map((letter: string, idx: number) => letter + idx);
 
         this.setState({
             options: options,
-            picks: options.map(_ => PConstants.DESELECTOR),
+            picks: options.map(() => PConstants.DESELECTOR),
+            on_word: false,
         });
+    }
+
+    componentDidMount() {
+        this.setLettersFromProps()
     }
 
     handleScoreWord() {
@@ -64,7 +52,7 @@ export default class Stage extends Component<any, State> {
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        AnagramStore.scoreWord(current_word);
+        this.props.dispatch(scoreWordOnActiveAnagramGame(current_word));
 
         this.resetTiles();
     }
@@ -96,7 +84,7 @@ export default class Stage extends Component<any, State> {
                 letter => element.includes(letter)
             )).join('').toLowerCase();
 
-        const words: string[] = AnagramStore.getActiveGame().getLocalState().words;
+        const words: string[] = this.props.words;
 
         this.setState({
             picks: picks,
@@ -162,6 +150,24 @@ export default class Stage extends Component<any, State> {
         )
     }
 }
+
+function mapStateToProps(state: State) {
+    if (isResolved(state.anagram.active_game)) {
+        return {
+            // @ts-ignore
+            letters: getConfig(state.anagram.active_game).letters,
+            // @ts-ignore
+            words: lazyGetState(state.anagram.active_game).words
+        }
+    } else {
+        return {
+            letters: [],
+            words: []
+        }
+    }
+}
+
+export default connect(mapStateToProps)(Stage);
 
 const styles = StyleSheet.create({
     letters_area: {

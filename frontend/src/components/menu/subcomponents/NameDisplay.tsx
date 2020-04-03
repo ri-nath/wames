@@ -1,41 +1,32 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import {State} from 'store/types';
+import {User} from '../../../../types';
+import {isResolved} from 'util/Vow';
+import {connect} from 'react-redux';
 
-import ServerStore from 'server/ServerStore';
-
-type State = {
+type Props = {
     name: string
 }
 
-export default class NameDisplay extends Component<any, State> {
-    constructor(props: any) {
-        super(props);
-
-        this.state = {
-            name: 'Anonymous'
-        }
-    }
-
-    componentDidMount() {
-        this.setState({
-            name: ServerStore.getUsername()
-        });
-
-        ServerStore.onSetUsername((new_username: string) => {
-            this.setState({
-                name: new_username
-            });
-        });
-    }
-
+class NameDisplay extends Component<Props, any> {
     render() {
         return (
             <View style={styles.name}>
-                <Text> Playing as: { this.state.name } </Text>
+                <Text> Playing as: { this.props.name } </Text>
             </View>
         )
     }
 }
+
+function mapStateToProps(state: State) {
+    return {
+        // @ts-ignore
+        name: isResolved(state.data.user) ? state.data.user.username : 'undefined',
+    }
+}
+
+export default connect(mapStateToProps)(NameDisplay);
 
 const styles = StyleSheet.create({
     name: {

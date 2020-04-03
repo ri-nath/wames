@@ -9,7 +9,7 @@ const RootReducer = combineReducers({
     data: data,
     app: app,
     menu: menu,
-    state: anagram,
+    anagram: anagram,
 });
 
 export default RootReducer;

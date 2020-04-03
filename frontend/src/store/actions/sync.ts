@@ -1,5 +1,5 @@
 import { AnagramObject, AnagramState, User } from '../../../types';
-import {Action, MenuState, Vow} from 'store/types';
+import { Action, MenuState } from 'store/types';
 
 export function startAnagramGame(game: AnagramObject): Action {
     return {
@@ -8,9 +8,10 @@ export function startAnagramGame(game: AnagramObject): Action {
     }
 }
 
-export function endActiveAnagramGame(): Action {
+export function endAnagramGame(game: AnagramObject): Action {
     return {
         type: 'END_GAME',
+        game: game,
     }
 }
 
@@ -27,9 +28,9 @@ export function requestCreatedGame(): Action {
     }
 }
 
-export function recieveCreatedGame(game: AnagramObject): Action {
+export function receiveCreatedGame(game: AnagramObject): Action {
     return {
-        type: 'RECIEVE_CREATED_GAME',
+        type: 'RECEIVE_CREATED_GAME',
         game: game,
     }
 }
@@ -54,9 +55,9 @@ export function requestData() {
     }
 }
 
-export function recieveData(user: User, games: AnagramObject[]) {
+export function receiveData(user: User, games: AnagramObject[]) {
     return {
-        type: 'RECIEVE_DATA',
+        type: 'RECEIVE_DATA',
         user: user,
         games: games
     }
@@ -68,9 +69,9 @@ export function requestUser() {
     }
 }
 
-export function recieveUser(user: User) {
+export function receiveUser(user: User) {
     return {
-        type: 'RECIEVE_USER',
+        type: 'RECEIVE_USER',
         user: user,
     }
 }

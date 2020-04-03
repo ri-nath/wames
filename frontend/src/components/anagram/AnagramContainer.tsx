@@ -5,8 +5,9 @@ import Stage from './subcomponents/Stage';
 import Info from './subcomponents/Info';
 
 type Props = {
-    style: any
+    style?: any,
 }
+
 
 export default function AnagramContainer(props: Props) {
          return (

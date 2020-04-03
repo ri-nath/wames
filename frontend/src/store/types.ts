@@ -22,8 +22,8 @@ export type Data = {
 }
 
 export type MenuState = {
-    screen: 'SETTINGS' | 'GAMES_LIST' | 'HOME' | 'ANAGRAM_PORTAL',
-    portal_game: Vow<AnagramObject>
+    screen: 'Settings' | 'Games List' | 'Home' | 'Game Portal' | 'NONE',
+    portal_game: Nullable<AnagramObject>
 }
 
 export type GameState = {
@@ -39,7 +39,7 @@ export const initialState: State = {
         state: 'LOADING'
     },
     menu: {
-        screen: 'HOME',
+        screen: 'Home',
         portal_game: null,
     },
     anagram: {

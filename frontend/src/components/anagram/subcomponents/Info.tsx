@@ -1,29 +1,30 @@
 import React, { Component, Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
+import {State} from 'store/types';
+import {isResolved} from 'util/Vow';
+import {getConfig, lazyGetState} from 'util/Anagram';
+import {connect} from 'react-redux';
 
-import AnagramStore from 'state/AnagramStore';
-import Anagram from 'lib/Anagram';
-import {WamesListener} from 'lib/WamesEmitter';
-
-type State = {
-    score: number,
+type Props = {
+    duration: number,
+    words: string[],
     target_score: number,
-    timer: number,
-    words: string[]
 }
 
-export default class Info extends Component<any, State> {
+type CState = {
+    score: number,
+    timer: number,
+}
+
+class Info extends Component<any, CState> {
     private interval_handles: number[];
-    private listener: WamesListener | undefined;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
             score: 0,
-            target_score: 0,
             timer: 0,
-            words: [],
         };
 
         this.incrementScore = this.incrementScore.bind(this);
@@ -31,8 +32,6 @@ export default class Info extends Component<any, State> {
 
         this.resetIntervals = this.resetIntervals.bind(this);
         this.removeIntervals = this.removeIntervals.bind(this);
-
-        this.updateInfoFromGameInstance = this.updateInfoFromGameInstance.bind(this);
 
         this.interval_handles = [];
 
@@ -59,38 +58,20 @@ export default class Info extends Component<any, State> {
     componentDidMount() {
         this.resetIntervals();
 
-        const game_obj: Anagram = AnagramStore.getActiveGame();
-        this.updateInfoFromGameInstance(game_obj);
-
         this.setState({
-            timer: game_obj.getConfig().duration
-        });
-
-        this.listener = AnagramStore.onScoreWord((game_obj: Anagram) => {
-            this.updateInfoFromGameInstance(game_obj);
+            timer: this.props.duration
         });
     }
 
-    updateInfoFromGameInstance(game_obj: Anagram) {
-        // TODO: type
-        const game_state = game_obj.getLocalState();
-
-        this.setState({
-            target_score: game_state.score,
-            words: game_state.words,
-        });
-    }
 
     componentWillUnmount() {
         this.removeIntervals();
-
-        if (this.listener) this.listener.off();
     }
 
     incrementScore() {
-        if (this.state.score !== this.state.target_score) {
+        if (this.state.score !== this.props.target_score) {
             this.setState({
-                score: this.state.score > this.state.target_score ? this.state.score - 10 : this.state.score + 10
+                score: this.state.score > this.props.target_score ? this.state.score - 5 : this.state.score + 5
             });
         }
     }
@@ -114,7 +95,7 @@ export default class Info extends Component<any, State> {
                 </View>
                 <View style={styles.words}>
                     {
-                        this.state.words.map((word: string, idx: number) =>
+                        this.props.words.map((word: string, idx: number) =>
                             <Text style={styles.words_text} key={idx}>{ word.toUpperCase() }</Text>
                         )
                     }
@@ -123,6 +104,27 @@ export default class Info extends Component<any, State> {
         )
     }
 }
+
+function mapStateToProps(state: State) {
+    if (isResolved(state.anagram.active_game)) {
+        return {
+            // @ts-ignore
+            duration: getConfig(state.anagram.active_game).duration,
+            // @ts-ignore
+            words: lazyGetState(state.anagram.active_game).words,
+            // @ts-ignore
+            target_score: lazyGetState(state.anagram.active_game).score
+        }
+    } else {
+        return {
+            duration: 0,
+            words: [],
+            target_score: 0,
+        }
+    }
+}
+
+export default connect(mapStateToProps)(Info);
 
 const styles = StyleSheet.create({
     timer_text: {

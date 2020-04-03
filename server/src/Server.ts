@@ -84,6 +84,8 @@ export default class Server {
 
                 const game = AUtil.generateGame(target_users);
 
+                console.log(game);
+
                 DB.createAnagramGame(game, (db_game: AnagramObject) => {
                     const room = db_game._id;
 

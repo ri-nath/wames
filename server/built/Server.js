@@ -53,6 +53,7 @@ class Server {
                 let target_users = users;
                 target_users.push(socket.user);
                 const game = AUtil.generateGame(target_users);
+                console.log(game);
                 Database_1.default.createAnagramGame(game, (db_game) => {
                     const room = db_game._id;
                     this.sockets_list.filter(list_socket => target_users.map(target_user => target_user.user_id).includes(list_socket.user.user_id))

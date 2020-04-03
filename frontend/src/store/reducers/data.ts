@@ -1,38 +1,42 @@
 import { Action, initialState } from 'store/types';
 import { AnagramObject, AnagramState, User } from '../../../types';
-import { getID, setState } from 'util/Anagram';
+import {getID, setState, setUser} from 'util/Anagram';
+import {isResolved} from 'util/Vow';
 
 export default function data(state = initialState.data, action: Action) {
-    const anagram_games = state.anagram_games;
+    let anagram_games = state.anagram_games;
 
     switch (action.type) {
         case 'REQUEST_DATA':
             return {...state, user: 'FETCHING', anagram_games: 'FETCHING'};
         case 'RECEIVE_DATA':
-            return {...state, user: action.user, anagram_games: action.games}
+            setUser(action.user);
+            return {...state, user: action.user, anagram_games: action.games};
         case 'REQUEST_USER':
             return { ...state, user: 'FETCHING' };
         case 'RECEIVE_USER':
+            setUser(action.user);
             return { ...state, user: action.user };
         case 'PROCESS_GAMES':
-            // TODO: look into https://github.com/rt2zz/redux-action-buffer
-            if (anagram_games instanceof Array) {
-                action.games.forEach((game: AnagramObject) => {
-                    processLoadGame(game, anagram_games);
-                });
-
-                return { ...state, anagram_games: anagram_games };
+            if (!isResolved(anagram_games)) {
+                anagram_games = [];
             }
+            action.games.forEach((game: AnagramObject) => {
+                // @ts-ignore
+                processLoadGame(game, anagram_games);
+            });
 
-            return state;
+            return { ...state, anagram_games: anagram_games };
+
         case 'UPDATE_GAME_STATE':
-            if (anagram_games instanceof Array) {
-                processUpdateGame(action.game_id, anagram_games, action.state, action.user);
-
-                return { ...state, anagram_games: anagram_games }
+            if (!isResolved(anagram_games)) {
+                anagram_games = [];
             }
 
-            return state;
+            // @ts-ignore
+            processUpdateGame(action.game_id, anagram_games, action.state, action.user);
+
+            return { ...state, anagram_games: anagram_games };
         default:
             return state;
     }

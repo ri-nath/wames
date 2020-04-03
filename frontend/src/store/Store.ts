@@ -6,7 +6,7 @@ import { Linking } from 'expo';
 
 import RootReducer from './reducers';
 import Client from 'store/Client';
-import { processGames, recieveCreatedGame, updateGameState } from 'store/actions';
+import { processGames, receiveCreatedGame, updateGameState } from 'store/actions';
 
 import { Nullable } from 'store/types';
 import { AnagramObject } from '../../types';
@@ -48,7 +48,7 @@ const parseURL = (url: string) => {
         // @ts-ignore
         Client.joinGameByID(queryParams.id, (res: AnagramObject | null) => {
             if (res) {
-                store.dispatch(recieveCreatedGame(res));
+                store.dispatch(receiveCreatedGame(res));
             }
         })
     }

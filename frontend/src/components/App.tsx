@@ -1,58 +1,46 @@
 import React, { Component, Fragment } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { connect } from 'react-redux';
 
 import MenuContainer from './menu/MenuContainer';
 import AnagramContainer from './anagram/AnagramContainer';
 
-import SuperStore, { SuperState } from '../state/SuperStore';
-import {WamesListener} from 'lib/WamesEmitter';
+import { AppState, State } from 'store/types';
+import { asyncRequestData } from 'store/actions';
 
-type State = {
-    panel: SuperState;
+type Props = {
+    state: AppState["state"],
+    dispatch: any,
 }
 
-export default class App extends Component<any, State> {
-    private listeners: WamesListener[] = [];
-
-    constructor(props: any) {
+class App extends Component<Props, any> {
+    constructor(props: Props) {
         super(props);
-
-        this.state = {
-            panel: SuperState.LOADING,
-        }
     }
 
-    componentDidMount() {
-        for (const state of Object.values(SuperState)) {
-            this.listeners.push(
-                SuperStore.onSetState(state, () => {
-                    this.setState({
-                        panel: state
-                    });
-                })
-            );
-        }
-    }
-
-    componentWillUnmount() {
-        this.listeners.forEach(listener => {
-            listener.off();
-        });
-
-        this.listeners = [];
+    componentDidMount(): void {
+        this.props.dispatch(asyncRequestData());
     }
 
     render() {
         return (
             <Fragment>
-                { this.state.panel === SuperState.LOADING && <View style={styles.container}><Text>Connecting to Server...</Text></View>}
-                    { this.state.panel === SuperState.MENU && <MenuContainer style={styles.container}/> }
-                    { this.state.panel === SuperState.ANAGRAM_GAME && <AnagramContainer style={styles.container}/> }
+                    { this.props.state === 'LOADING' && <View style={styles.container}><Text>Connecting to Server...</Text></View>}
+                    { this.props.state === 'MENU' && <MenuContainer style={styles.container}/> }
+                    { this.props.state === 'ANAGRAM_GAME' && <AnagramContainer style={styles.container}/> }
             </Fragment>
 
         )
     }
 }
+
+function mapStateToProps(state: State) {
+    return {
+        state: state.app.state,
+    }
+}
+
+export default connect(mapStateToProps)(App)
 
 const styles = StyleSheet.create({
     container: {

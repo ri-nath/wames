@@ -1,52 +1,28 @@
 import React, { Component, Fragment } from 'react';
-import { StyleSheet, View, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 
-import { User } from '../../../../types';
+import {AnagramObject, User} from '../../../../types';
 
-import AnagramStore from 'state/AnagramStore';
-import RootNavigator from 'state/RootNavigator';
-import Anagram  from 'lib/Anagram';
-import {WamesListener} from 'lib/WamesEmitter';
+import RootNavigator from 'lib/RootNavigator';
 import {Badge, Icon, ListItem, Text} from 'react-native-elements';
-import SuperStore from 'state/SuperStore';
-import ServerStore from 'server/ServerStore';
+import {getDateString, getID, getPlayers, getState, lazyGetState, lazyGetViewed} from 'util/Anagram';
+import {openGamePortal} from 'store/actions';
+import {State} from 'store/types';
+import {connect} from 'react-redux';
+import {isResolved} from 'util/Vow';
 
 type Props = {
     style: any,
+    games: AnagramObject[],
+    dispatch: any,
     reduced?: boolean
 }
 
-type State = {
-    games: Anagram[]
-}
-
-export default class GameBrowser extends Component<Props, State> {
-    private listener: WamesListener | undefined;
-
-    constructor(props: Props) {
-        super(props);
-
-        this.state = {
-            games: []
-        };
-
-        this.handleUpdateGamesList = this.handleUpdateGamesList.bind(this);
-    }
-
-    componentDidMount() {
-        this.handleUpdateGamesList(AnagramStore.getGamesList());
-
-        this.listener = AnagramStore.onUpdateGamesList(this.handleUpdateGamesList);
-    }
-
-    componentWillUnmount(): void {
-        if (this.listener) this.listener.off();
-    }
-
-    handleUpdateGamesList(games: Anagram[]) {
+class GameBrowser extends Component<Props, any> {
+    handleUpdateGamesList(games: AnagramObject[]) {
         if (this.props.reduced) {
             this.setState({
-                games: games.filter(game => !game.hasBeenViewed() || game.getLocalState().stage === 'NOT-STARTED')
+                games: games.filter(game => lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED')
             });
         } else {
             this.setState({
@@ -56,6 +32,14 @@ export default class GameBrowser extends Component<Props, State> {
     }
 
     render() {
+        let games;
+
+        if (this.props.reduced) {
+            games = this.props.games.filter(game => lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED')
+        } else {
+            games = this.props.games;
+        }
+
         return (
             <View style={styles.view_games}>
                 <View style={styles.list_title}>
@@ -64,21 +48,21 @@ export default class GameBrowser extends Component<Props, State> {
                 <View style={styles.list}>
                     <FlatList
                         contentContainerStyle={styles.list_container}
-                        data={this.state.games}
-                        extraData={this.state}
-                        keyExtractor={(item) => item.getID()}
+                        data={games}
+                        extraData={this.props}
+                        keyExtractor={(item) => getID(item)}
                         renderItem={({item}) => {
-                            const finished = item.getLocalState().stage === 'FINISHED';
-                            const highlighted = !finished || !item.hasBeenViewed();
-                            const allPlayersFinished = item.getPlayers().filter(player => item.getState(player.user_id).stage === 'NOT-STARTED').length === 0;
+                            const finished = lazyGetState(item).stage === 'FINISHED';
+                            const highlighted = !finished || !lazyGetViewed(item);
+                            const allPlayersFinished = getPlayers(item).filter(player => getState(item, player).stage === 'NOT-STARTED').length === 0;
 
                             return (
                                 <ListItem
                                     containerStyle={{backgroundColor: highlighted ? 'white' : '#ededed'}}
-                                    onPress={ () => { RootNavigator.navigateToAnagramInfo(item) } }
+                                    onPress={ () => { this.props.dispatch(openGamePortal(item)) } }
                                     title={
-                                        item.getPlayers().map((user: User, iidx: number) =>
-                                            user.username + (item.getPlayers().length - 1 !== iidx ? ' vs. ' : ' ')
+                                        getPlayers(item).map((user: User, iidx: number) =>
+                                            user.username + (getPlayers(item).length - 1 !== iidx ? ' vs. ' : ' ')
                                         ).join('')
                                     }
                                     bottomDivider
@@ -86,14 +70,14 @@ export default class GameBrowser extends Component<Props, State> {
                                     subtitle={
                                         <Fragment>
                                             <Text>Anagram Game</Text>
-                                            <Text>{ item.getDateString() }</Text>
+                                            <Text>{ getDateString(item) }</Text>
                                         </Fragment>
                                     }
                                     badge={{
                                         status:
                                             !finished
                                                 ? 'success'
-                                                : item.hasBeenViewed()
+                                                : lazyGetViewed(item)
                                                     ? allPlayersFinished
                                                         ?  'success'
                                                         :  'warning'
@@ -101,7 +85,7 @@ export default class GameBrowser extends Component<Props, State> {
                                         value:
                                             !finished ?
                                                 'Play Game'
-                                                : item.hasBeenViewed() ?
+                                                : lazyGetViewed(item) ?
                                                     allPlayersFinished ?
                                                     undefined
                                                     :  'Challenge Sent...'
@@ -118,6 +102,15 @@ export default class GameBrowser extends Component<Props, State> {
         )
     }
 }
+
+function mapStateToProps(state: State) {
+    return {
+        games: isResolved(state.data.anagram_games) ? state.data.anagram_games : []
+    }
+}
+
+// @ts-ignore
+export default connect(mapStateToProps)(GameBrowser)
 
 
 const styles = StyleSheet.create({

@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { Button, StyleSheet, View, Text } from 'react-native';
 
-
 import NameDisplay from './NameDisplay';
 import Challenger from './Challenger';
 import GameBrowser from './GameBrowser';

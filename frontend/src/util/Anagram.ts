@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
 
-export let m_user: User = {
+let m_user: User = {
     username: '',
     user_id: '',
 };
@@ -24,8 +24,8 @@ export function getState(obj: AnagramObject, user: User): AnagramState {
 }
 
 export function setState(obj: AnagramObject, user: User, state: Partial<AnagramState>) {
-    obj.states[user.username] = {
-        ...obj.states[user.username],
+    obj.states[user.user_id] = {
+        ...obj.states[user.user_id],
         ...state
     };
 

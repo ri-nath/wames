@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TextInput, Button } from 'react-native';
 
-import ServerStore from 'server/ServerStore';
+import { asyncSetUsername } from 'store/actions';
+import {State} from 'store/types';
+import {isResolved} from 'util/Vow';
+import {connect} from 'react-redux';
 
-type State = {
-    username: string,
+type CState = {
     value: string
 }
 
+type Props = {
+    username: string,
+    dispatch: any;
+}
 
-export default class NameChanger extends Component<any, State> {
-    constructor(props: any) {
+
+class NameChanger extends Component<Props, CState> {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
-            username: '',
             value: '',
         };
 
@@ -29,18 +35,13 @@ export default class NameChanger extends Component<any, State> {
     }
 
     handlePress() {
-        ServerStore.setUsername(this.state.value);
+        this.props.dispatch(asyncSetUsername(this.state.value));
     }
 
     componentDidMount() {
-        const username = ServerStore.getUsername();
-
         this.setState({
-            value: username,
-            username: username
+            value: this.props.username
         });
-
-        ServerStore.onSetUsername(this.handleChangeValue);
     }
 
     render() {
@@ -52,7 +53,7 @@ export default class NameChanger extends Component<any, State> {
                     onChangeText={this.handleChangeValue}
                 />
                 <Button
-                    disabled={this.state.value.length < 1 || this.state.value === this.state.username}
+                    disabled={this.state.value.length < 1 || this.state.value === this.props.username}
                     title='Confirm New Username'
                     onPress={this.handlePress}
                 />
@@ -60,6 +61,15 @@ export default class NameChanger extends Component<any, State> {
         )
     }
 }
+
+function mapStateToProps(state: State) {
+    return {
+        // @ts-ignore
+        username: isResolved(state.data.user) ? state.data.user.username : '',
+    }
+}
+
+export default connect(mapStateToProps)(NameChanger);
 
 const styles = StyleSheet.create({
     create_game: {

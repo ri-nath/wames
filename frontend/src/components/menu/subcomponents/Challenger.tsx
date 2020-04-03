@@ -4,18 +4,15 @@ import { Text } from 'react-native-elements';
 
 import { AnagramObject } from '../../../../types';
 
-import ServerStore from 'server/ServerStore';
-import RootNavigator from 'state/RootNavigator';
-import LinkHandler from 'state/LinkHandler'
+import RootNavigator from 'lib/RootNavigator';
+import {asyncCreateGame} from 'store/actions';
+import {connect} from 'react-redux';
 
-import Anagram from 'lib/Anagram';
-import AnagramStore from 'state/AnagramStore';
-
-type State = {
+type CState = {
     value: string
 }
 
-export default class Challenger extends Component<any, State> {
+class Challenger extends Component<any, CState> {
     constructor(props: any) {
         super(props);
 
@@ -47,27 +44,14 @@ export default class Challenger extends Component<any, State> {
                         <Button
                             disabled={this.state.value.length < 1}
                             title='Challenge User'
-                            onPress={() => ServerStore.createGame([this.state.value], (game: AnagramObject) => {
-                                // TODO: Improve logic
-                                const wrapped = new Anagram(game, ServerStore.getUserID());
-
-                                AnagramStore.processLoadGame(wrapped, false);
-                                RootNavigator.navigateToAnagramInfo(wrapped);
-                            })}
+                            onPress={() => this.props.dispatch(asyncCreateGame(this.state.value))}
                         />
                     </View>
                     <View style={styles.right_box}>
                         <Text style={styles.small_header}> Create a Link </Text>
-                        <Button title='Test' onPress={() => ServerStore.createGame([], (game: AnagramObject) => {
-                            // TODO: Improve logic
-                            const wrapped = new Anagram(game, ServerStore.getUserID());
-
-                            AnagramStore.processLoadGame(wrapped, false);
-                            RootNavigator.navigateToAnagramInfo(wrapped);
-
-                            console.log("Hello");
-                            console.log(LinkHandler.createGameURL(wrapped))
-                        })}/>
+                        <Button title='Test' onPress={() =>
+                            // TODO: Re-implement link
+                            this.props.dispatch(asyncCreateGame())}/>
                     </View>
                 </View>
 
@@ -77,6 +61,8 @@ export default class Challenger extends Component<any, State> {
         )
     }
 }
+
+export default connect()(Challenger)
 
 const styles = StyleSheet.create({
     container: {
