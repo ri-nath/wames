@@ -1,9 +1,9 @@
-import { Action, initialState } from 'store/types';
+import {Action, initialState, MenuState} from 'store/types';
 
-export default function menu(state = initialState.menu, action: Action) {
+export default function menu(state = initialState.menu, action: Action): MenuState {
     switch(action.type) {
         case 'START_GAME':
-            return { ...state, screen: 'NONE' };
+            return { ...state, screen: 'Menu' };
         case 'REQUEST_CREATED_GAME':
             return { ...state, screen: 'Game Portal', portal_game: 'FETCHING' };
         case 'END_GAME':

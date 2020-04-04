@@ -1,11 +1,12 @@
 import moment from 'moment';
 import { Linking } from 'expo';
+import Constants from 'expo-constants';
 
 import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
 
 export let m_user: User = {
     username: '',
-    user_id: '',
+    user_id: Constants.installationId,
 };
 
 export function setUser(user: User) {
@@ -25,12 +26,20 @@ export function getState(obj: AnagramObject, user: User): AnagramState {
 }
 
 export function setState(obj: AnagramObject, user: User, state: Partial<AnagramState>) {
-    obj.states[user.user_id] = {
-        ...obj.states[user.user_id],
-        ...state
+    const temp_obj: Partial<AnagramObject> = {
+        states: {
+            ...obj.states,
+            [user.user_id]: {
+                    ...obj.states[user.user_id],
+                    ...state
+                }
+        }
     };
 
-    return obj;
+    return {
+        ...obj,
+        ...temp_obj
+    };
 }
 
 export function getPlayers(obj: AnagramObject): User[] {
@@ -48,9 +57,8 @@ export function getDateString(obj: AnagramObject): string {
 }
 
 export function sortByDate(objs: AnagramObject[]): AnagramObject[] {
-    objs.sort((a, b) => getTimestamp(b) - getTimestamp(a));
 
-    return objs;
+    return [...objs].sort((a, b) => getTimestamp(b) - getTimestamp(a));
 }
 
 export function lazyGetState(obj: AnagramObject) {
@@ -67,8 +75,8 @@ export function lazyEndGame(obj: AnagramObject) {
     })
 }
 
-export function lazySetViewed(obj: AnagramObject): void {
-    lazySetState(obj, {
+export function lazySetViewed(obj: AnagramObject) {
+    return lazySetState(obj, {
         viewed: true,
     })
 }
@@ -86,12 +94,10 @@ export function lazyScoreWord(obj: AnagramObject, word: string) {
     let score = state.score;
     score += word.length * 100;
 
-    lazySetState(obj, {
+    return lazySetState(obj, {
         words: words,
         score: score
     });
-
-    return obj;
 }
 
 export function getLink(obj: AnagramObject) {

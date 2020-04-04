@@ -1,5 +1,5 @@
 import { AnagramObject, AnagramState, User } from '../../../types';
-import { Action, MenuState } from 'store/types';
+import {Action, AppState, MenuState} from 'store/types';
 
 export function startAnagramGame(game: AnagramObject): Action {
     return {
@@ -46,6 +46,13 @@ export function setMenuScreen(screen: MenuState['screen']): Action {
     return {
         type: 'SET_SCREEN',
         screen: screen,
+    }
+}
+
+export function setAppState(state: AppState['state']): Action {
+    return {
+        type: 'SET_APP_STATE',
+        state: state,
     }
 }
 

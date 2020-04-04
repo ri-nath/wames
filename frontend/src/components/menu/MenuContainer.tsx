@@ -53,52 +53,28 @@ const getActiveRouteName = (state: any): MenuState["screen"] => {
 class Menu extends Component<Props, any> {
     constructor(props: Props) {
         super(props);
-
-        this.handleNavigationStateChange = this.handleNavigationStateChange.bind(this);
-    }
-
-    componentDidMount(): void {
-        // Workaround for "Error: The 'navigation' object hasn't been initialized yet."
-        setTimeout(() => RootNavigator.mountNavigator(), 50);
-    }
-
-    componentWillUnmount(): void {
-        RootNavigator.unmountNavigator();
-    }
-
-    handleNavigationStateChange(nav_state: NavigationState | undefined) {
-        const screen = getActiveRouteName(nav_state);
-
-        if (screen !== this.props.screen) {
-            this.props.dispatch(setMenuScreen(screen));
-        }
     }
 
     render() {
         return (
-            <NavigationContainer
-                ref={RootNavigator.navigationRef}
-                onStateChange={this.handleNavigationStateChange}
-            >
-                <Stack.Navigator>
-                    <Stack.Screen
-                        name='Menu'
-                        component={ DrawerWrapper }
-                        options={{
-                            headerLeft: () => (
-                                <Icon
-                                    raised={true}
-                                    name='menu'
-                                    onPress={() => RootNavigator.toggleDrawer()}
-                                />
-                            ),
-                        }}
-                    />
-                    <Stack.Screen
-                        name='Game Portal'
-                        component={GamePortal}/>
-                </Stack.Navigator>
-            </NavigationContainer>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name='Drawer'
+                    component={ DrawerWrapper }
+                    options={{
+                        headerLeft: () => (
+                            <Icon
+                                raised={true}
+                                name='menu'
+                                onPress={() => RootNavigator.toggleDrawer()}
+                            />
+                        ),
+                    }}
+                />
+                <Stack.Screen
+                    name='Game Portal'
+                    component={GamePortal}/>
+            </Stack.Navigator>
         )
     }
 }

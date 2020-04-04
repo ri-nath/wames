@@ -10,8 +10,9 @@ import {
 import Client from 'store/Client';
 
 import Constants from 'expo-constants';
-import {getConfig, getID, lazyGetState, m_user} from 'util/Anagram';
+import {getConfig, getID, lazyEndGame, lazyGetState, m_user} from 'util/Anagram';
 import { isError } from 'util/Error';
+import {State} from 'store/types';
 
 
 export function asyncRequestData() {
@@ -36,13 +37,16 @@ export function asyncCreateGame(...target_usernames: string[]) {
 }
 
 export function startAnagramGameCycle(game: AnagramObject) {
-    return function(dispatch: any) {
+    return function(dispatch: any, getState: () => State) {
         dispatch(startAnagramGame(game));
 
-
         const ref = setTimeout(() => {
-            dispatch(endAnagramGame(game));
-            Client.updateGameState(getID(game), lazyGetState(game));
+            let game = getState().anagram.active_game;
+            if (game) {
+                game = lazyEndGame(game);
+                dispatch(endAnagramGame(game));
+                Client.updateGameState(getID(game), lazyGetState(game));
+            }
         }, 1000 * getConfig(game).duration);
     }
 }

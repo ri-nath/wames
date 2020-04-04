@@ -61,7 +61,7 @@ class Client {
         this.socket.on(Events.UPDATE_GAME_STATE, handler);
     }
 
-    joinGameByID(id: string, handler: (res: AnagramObject | null) => void) {
+    joinGameByID(id: string, handler: (res: AnagramObject | 'Already in game!') => void) {
         this.socket.emit(Events.JOIN_GAME, id, handler);
     }
 }

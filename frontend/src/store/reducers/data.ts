@@ -1,9 +1,9 @@
-import { Action, initialState } from 'store/types';
+import {Action, Data, initialState} from 'store/types';
 import { AnagramObject, AnagramState, User } from '../../../types';
 import {getID, setState, setUser, sortByDate} from 'util/Anagram';
 import {isResolved} from 'util/Vow';
 
-export default function data(state = initialState.data, action: Action) {
+export default function data(state = initialState.data, action: Action): Data {
     let anagram_games = state.anagram_games;
 
     switch (action.type) {

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { AnagramObject, User } from '../../../../types';
 import {getDateString, getLink, getPlayers, getState, lazyGetState} from 'util/Anagram';
 import {markGameAsViewed, startAnagramGameCycle} from 'store/actions';
-import {Nullable, State} from 'store/types';
+import {State} from 'store/types';
 import { isResolved } from 'util/Vow';
 import {Button, Icon} from 'react-native-elements';
 
@@ -24,7 +24,7 @@ class GamePortal extends Component<Props, any> {
     }
 
     render() {
-        if (this.props.game) {
+        if (isResolved(this.props.game)) {
             return (
                 <View style={styles.container}>
                     <Text>{ getDateString(this.props.game) } </Text>
@@ -94,7 +94,7 @@ class GamePortal extends Component<Props, any> {
         } else {
             return (
                 <View style={styles.container}>
-                    <Text>Error! Game is undefined!</Text>
+                    <Text>Spinner here...</Text>
                 </View>
             )
         }
@@ -103,7 +103,7 @@ class GamePortal extends Component<Props, any> {
 
 function mapStateToProps(state: State) {
     return {
-        game: isResolved(state.menu.portal_game) ? state.menu.portal_game : undefined,
+        game: state.menu.portal_game,
     }
 }
 

@@ -1,9 +1,8 @@
 import React from 'react';
-
 import { Provider } from 'react-redux';
 
-import App from 'components/App';
 import store from 'store/Store';
+import App from './App';
 
 export default function Root() {
     return (
