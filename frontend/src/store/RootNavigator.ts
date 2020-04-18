@@ -1,11 +1,10 @@
+import { DrawerActions, NavigationContainerRef } from '@react-navigation/native';
+import Settings from 'components/menu/subcomponents/Settings';
 import * as React from 'react';
-
 import { MutableRefObject, RefObject } from 'react';
-import { NavigationContainerRef, DrawerActions } from '@react-navigation/native';
+import { setAppState, setMenuScreen } from 'store/actions';
 
 import store from 'store/Store';
-import Settings from 'components/menu/subcomponents/Settings';
-import {setAppState, setMenuScreen} from 'store/actions';
 
 /*
  * UTILITY CLASS TO USE REACT-NAVIGATION WITH REDUX!
@@ -28,24 +27,24 @@ class RootNavigator {
         this.current_menu_state = 'Menu';
 
         store.subscribe(() => {
-           const state = store.getState();
+            const state = store.getState();
 
-           if (state.app.state !== this.current_app_state) {
-               this.navigate(state.app.state);
-               this.current_app_state = state.app.state;
-           } else if (state.app.state === 'Menu' && state.menu.screen !== this.current_menu_state) {
-               if (state.menu.screen === 'Game Portal') {
-                   this.navigate('Menu', { screen: 'Game Portal' });
-               } else {
-                   this.navigate('Menu', {
-                       screen: 'Drawer',
-                       params: {
-                           screen: state.menu.screen,
-                       }
-                   });
-               }
-               this.current_menu_state = state.menu.screen;
-           }
+            if (state.app.state !== this.current_app_state) {
+                this.navigate(state.app.state);
+                this.current_app_state = state.app.state;
+            } else if (state.app.state === 'Menu' && state.menu.screen !== this.current_menu_state) {
+                if (state.menu.screen === 'Game Portal') {
+                    this.navigate('Menu', { screen: 'Game Portal' });
+                } else {
+                    this.navigate('Menu', {
+                        screen: 'Drawer',
+                        params: {
+                            screen: state.menu.screen
+                        }
+                    });
+                }
+                this.current_menu_state = state.menu.screen;
+            }
         });
 
         this.onStateChange = this.onStateChange.bind(this);
@@ -77,7 +76,7 @@ class RootNavigator {
             if (store.getState().app.state !== screen) {
                 store.dispatch(setAppState(screen));
             }
-        }
+        };
 
         const route_name = getActiveRouteName(nav_state);
 
@@ -92,7 +91,7 @@ class RootNavigator {
             // @ts-ignore
             updateAppScreen(route_name);
         } else {
-            throw Error("Unknown Navigation Route " + route_name);
+            throw Error('Unknown Navigation Route ' + route_name);
         }
     }
 
@@ -107,7 +106,7 @@ class RootNavigator {
 
         store.subscribe(() => {
 
-        })
+        });
     }
 
     unmountNavigator(): void {

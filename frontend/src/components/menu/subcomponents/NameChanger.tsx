@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TextInput, Button } from 'react-native';
+import { Button, StyleSheet, TextInput, View } from 'react-native';
+
+import { connect } from 'react-redux';
 
 import { asyncSetUsername } from 'store/actions';
-import {State} from 'store/types';
-import {isResolved} from 'util/Vow';
-import {connect} from 'react-redux';
 
 type CState = {
     value: string
@@ -21,7 +20,7 @@ class NameChanger extends Component<Props, CState> {
         super(props);
 
         this.state = {
-            value: '',
+            value: ''
         };
 
         this.handleChangeValue = this.handleChangeValue.bind(this);
@@ -46,27 +45,27 @@ class NameChanger extends Component<Props, CState> {
 
     render() {
         return (
-            <View style={styles.create_game}>
+            <View style={ styles.create_game }>
                 <TextInput
                     placeholder='Username'
-                    value={this.state.value}
-                    onChangeText={this.handleChangeValue}
+                    value={ this.state.value }
+                    onChangeText={ this.handleChangeValue }
                 />
                 <Button
-                    disabled={this.state.value.length < 1 || this.state.value === this.props.username}
+                    disabled={ this.state.value.length < 1 || this.state.value === this.props.username }
                     title='Confirm New Username'
-                    onPress={this.handlePress}
+                    onPress={ this.handlePress }
                 />
             </View>
-        )
+        );
     }
 }
 
 function mapStateToProps(state: State) {
     return {
         // @ts-ignore
-        username: isResolved(state.data.user) ? state.data.user.username : '',
-    }
+        username: isResolved(state.data.user) ? state.data.user.username : ''
+    };
 }
 
 export default connect(mapStateToProps)(NameChanger);
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
     create_game: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     button: {

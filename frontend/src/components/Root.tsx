@@ -6,8 +6,8 @@ import App from './App';
 
 export default function Root() {
     return (
-        <Provider store={store}>
+        <Provider store={ store }>
             <App/>
         </Provider>
-    )
+    );
 }

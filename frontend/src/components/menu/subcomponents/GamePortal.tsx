@@ -1,13 +1,12 @@
+import { getDateString, getLink, getPlayers, getState, isResolved, lazyGetState } from 'api';
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Clipboard } from 'react-native';
+import { Clipboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { Button, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 
-import { AnagramObject, User } from '../../../../types';
-import {getDateString, getLink, getPlayers, getState, lazyGetState} from 'util/Anagram';
-import {markGameAsViewed, startAnagramGameCycle} from 'store/actions';
-import {State} from 'store/types';
-import { isResolved } from 'util/Vow';
-import {Button, Icon} from 'react-native-elements';
+import { markGameAsViewed, startAnagramGameCycle } from 'store/actions';
+import { AnagramObject, State, User } from 'ts';
 
 type Props = {
     game: AnagramObject,
@@ -26,7 +25,7 @@ class GamePortal extends Component<Props, any> {
     render() {
         if (isResolved(this.props.game)) {
             return (
-                <View style={styles.container}>
+                <View style={ styles.container }>
                     <Text>{ getDateString(this.props.game) } </Text>
                     <Text> Anagram Game </Text>
                     <Button
@@ -34,12 +33,12 @@ class GamePortal extends Component<Props, any> {
                         icon={
                             <Icon name="link"/>
                         }
-                        onPress={() => Clipboard.setString(getLink(this.props.game))}/>
+                        onPress={ () => Clipboard.setString(getLink(this.props.game)) }/>
                     {
                         lazyGetState(this.props.game).stage === 'NOT-STARTED' ?
                             <Fragment>
-                                <View style={{flex: 1, justifyContent: "flex-start"}}>
-                                    <Text style={styles.name}>
+                                <View style={ { flex: 1, justifyContent: 'flex-start' } }>
+                                    <Text style={ styles.name }>
                                         {
                                             getPlayers(this.props.game).map((user: User, idx: number) =>
                                                 user.username + (getPlayers(this.props.game).length - 1 !== idx ? ' vs. ' : ' ')
@@ -47,16 +46,16 @@ class GamePortal extends Component<Props, any> {
                                         }
                                     </Text>
                                 </View>
-                                <View style={{flex: 3, justifyContent: "center"}}>
+                                <View style={ { flex: 3, justifyContent: 'center' } }>
                                     <TouchableOpacity
-                                        style={styles.play_button}
-                                        onPress={() => this.props.dispatch(startAnagramGameCycle(this.props.game))}>
-                                        <Text style={styles.play_button_text}>Play</Text>
+                                        style={ styles.play_button }
+                                        onPress={ () => this.props.dispatch(startAnagramGameCycle(this.props.game)) }>
+                                        <Text style={ styles.play_button_text }>Play</Text>
                                     </TouchableOpacity>
                                 </View>
                             </Fragment>
                             :
-                            <View style={styles.user_cols}>
+                            <View style={ styles.user_cols }>
                                 {
                                     getPlayers(this.props.game).map((user: User, idx: number) => {
                                         const state = getState(this.props.game, user);
@@ -64,22 +63,22 @@ class GamePortal extends Component<Props, any> {
                                         if (state.stage === 'NOT-STARTED') {
                                             return (
                                                 <View
-                                                    key={idx}
-                                                    style={styles.user_data}>
-                                                    <Text style={styles.name}> {user.username}</Text>
+                                                    key={ idx }
+                                                    style={ styles.user_data }>
+                                                    <Text style={ styles.name }> { user.username }</Text>
                                                     <Text> Challenge sent... </Text>
                                                 </View>
                                             );
                                         } else if (state.stage === 'FINISHED') {
                                             return (
                                                 <View
-                                                    key={idx}
-                                                    style={styles.user_data}>
-                                                    <Text style={styles.name}> {user.username}</Text>
-                                                    <Text style={styles.score}> {state.score}</Text>
+                                                    key={ idx }
+                                                    style={ styles.user_data }>
+                                                    <Text style={ styles.name }> { user.username }</Text>
+                                                    <Text style={ styles.score }> { state.score }</Text>
                                                     {
                                                         state.words.map((word, iidx) =>
-                                                            <Text key={iidx}> {word.toUpperCase()} </Text>
+                                                            <Text key={ iidx }> { word.toUpperCase() } </Text>
                                                         )
                                                     }
                                                 </View>
@@ -90,48 +89,48 @@ class GamePortal extends Component<Props, any> {
                             </View>
                     }
                 </View>
-            )
+            );
         } else {
             return (
-                <View style={styles.container}>
+                <View style={ styles.container }>
                     <Text>Spinner here...</Text>
                 </View>
-            )
+            );
         }
     }
 }
 
 function mapStateToProps(state: State) {
     return {
-        game: state.menu.portal_game,
-    }
+        game: state.menu.portal_game
+    };
 }
 
 // @ts-ignore
-export default connect(mapStateToProps)(GamePortal)
+export default connect(mapStateToProps)(GamePortal);
 
 const styles = StyleSheet.create({
     user_cols: {
         flex: 1,
-        flexDirection: 'row',
+        flexDirection: 'row'
     },
 
     container: {
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     play_button: {
         backgroundColor: 'lime',
         borderRadius: 10,
-        margin: 0,
+        margin: 0
     },
 
     play_button_text: {
         padding: 30,
-        fontSize: 80,
+        fontSize: 80
     },
 
     user_data: {
@@ -145,7 +144,7 @@ const styles = StyleSheet.create({
 
     // Make this dynamic
     name: {
-        fontSize: 25,
+        fontSize: 25
     },
 
     score: {

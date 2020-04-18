@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux';
 
 import anagram from './anagram';
-import menu from './menu';
 import app from './app';
 import data from './data';
+import menu from './menu';
 
 const RootReducer = combineReducers({
     data: data,
     app: app,
     menu: menu,
-    anagram: anagram,
+    anagram: anagram
 });
 
 export default RootReducer;

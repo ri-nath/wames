@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { connect } from 'react-redux';
-
-import { AppState, State } from 'store/types';
-import { asyncRequestData } from 'store/actions';
-
-import { createStackNavigator } from '@react-navigation/stack';
-import MenuContainer from './menu/MenuContainer';
-import AnagramContainer from './anagram/AnagramContainer';
-import RootNavigator from '../lib/RootNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 
+import { createStackNavigator } from '@react-navigation/stack';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
+
+import { asyncRequestData } from 'store/actions';
+import { AppState, State } from 'ts';
+import RootNavigator from '../store/RootNavigator';
+import AnagramContainer from './anagram/AnagramContainer';
+import MenuContainer from './menu/MenuContainer';
+
 type Props = {
-    state: AppState["state"],
+    state: AppState['state'],
     dispatch: any,
 }
 
@@ -20,8 +20,8 @@ const RootStack = createStackNavigator();
 
 function Loading() {
     return (
-        <View style={styles.container}>
-            <Text>Loading...</Text>
+        <View style={ styles.container }>
+            <Text>Connecting to Server...</Text>
         </View>
     );
 }
@@ -40,16 +40,16 @@ class App extends Component<Props, any> {
     render() {
         return (
             <NavigationContainer
-                ref={RootNavigator.navigationRef}
-                onStateChange={RootNavigator.onStateChange}
+                ref={ RootNavigator.navigationRef }
+                onStateChange={ RootNavigator.onStateChange }
             >
                 <RootStack.Navigator
                     mode="modal"
-                    screenOptions={{ headerShown: false }}
+                    screenOptions={ { headerShown: false } }
                 >
-                    <RootStack.Screen name="Loading" component={Loading}/>
-                    <RootStack.Screen name="Menu" component={MenuContainer}/>
-                    <RootStack.Screen name="Anagram Game" component={AnagramContainer}/>
+                    <RootStack.Screen name="Loading" component={ Loading }/>
+                    <RootStack.Screen name="Menu" component={ MenuContainer }/>
+                    <RootStack.Screen name="Anagram Game" component={ AnagramContainer }/>
                 </RootStack.Navigator>
             </NavigationContainer>
         );
@@ -58,8 +58,8 @@ class App extends Component<Props, any> {
 
 function mapStateToProps(state: State) {
     return {
-        state: state.app.state,
-    }
+        state: state.app.state
+    };
 }
 
 export default connect(mapStateToProps)(App);
@@ -69,6 +69,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
-    },
+        justifyContent: 'center'
+    }
 });

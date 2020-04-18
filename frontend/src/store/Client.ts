@@ -1,7 +1,6 @@
-import io from 'socket.io-client';
-
 import * as PConstants from 'constants';
-import { AnagramObject, AnagramState, User } from '../../types';
+import io from 'socket.io-client';
+import { AnagramObject, AnagramState, User } from 'ts';
 
 enum Events {
     ERROR = 'error',

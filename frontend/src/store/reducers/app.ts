@@ -1,4 +1,4 @@
-import { Action, initialState } from 'store/types';
+import { Action, initialState } from 'ts';
 
 export default function app(state = initialState.app, action: Action) {
     switch (action.type) {

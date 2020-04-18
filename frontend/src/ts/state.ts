@@ -1,4 +1,4 @@
-import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
+import { AnagramObject, User } from '.';
 
 export type Action = {
     type: string,
@@ -34,7 +34,7 @@ export type GameState = {
 export const initialState: State = {
     data: {
         user: null,
-        anagram_games: null,
+        anagram_games: null
     },
     app: {
         state: 'Loading'
@@ -42,12 +42,12 @@ export const initialState: State = {
     menu: {
         screen: 'Menu',
         portal_game: null,
-        link: null,
+        link: null
     },
     anagram: {
-        active_game: null,
+        active_game: null
     }
 };
 
-export type Vow<T> = null | 'FETCHING' | T | Error;
+export type Vow<T> = Nullable<'FETCHING' | T | Error>;
 export type Nullable<T> = null | T;

@@ -1,7 +1,7 @@
-import {Action, initialState, MenuState} from 'store/types';
+import { Action, initialState, MenuState } from 'ts';
 
 export default function menu(state = initialState.menu, action: Action): MenuState {
-    switch(action.type) {
+    switch (action.type) {
         case 'START_GAME':
             return { ...state, screen: 'Menu' };
         case 'REQUEST_CREATED_GAME':

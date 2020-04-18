@@ -1,12 +1,11 @@
-import moment from 'moment';
 import { Linking } from 'expo';
 import Constants from 'expo-constants';
-
-import { AnagramConfig, AnagramObject, AnagramState, User } from '../../types';
+import moment from 'moment';
+import { AnagramConfig, AnagramObject, AnagramState, User } from 'ts';
 
 export let m_user: User = {
     username: '',
-    user_id: Constants.installationId,
+    user_id: Constants.installationId
 };
 
 export function setUser(user: User) {
@@ -25,14 +24,14 @@ export function getState(obj: AnagramObject, user: User): AnagramState {
     return obj.states[user.user_id];
 }
 
-export function setState(obj: AnagramObject, user: User, state: Partial<AnagramState>) {
+export function setState(obj: AnagramObject, user: User, state: Partial<AnagramState>): AnagramObject {
     const temp_obj: Partial<AnagramObject> = {
         states: {
             ...obj.states,
             [user.user_id]: {
-                    ...obj.states[user.user_id],
-                    ...state
-                }
+                ...obj.states[user.user_id],
+                ...state
+            }
         }
     };
 
@@ -53,7 +52,7 @@ export function getTimestamp(obj: AnagramObject): number {
 export function getDateString(obj: AnagramObject): string {
     const date = new Date(getTimestamp(obj) * 1000);
 
-    return moment(date).format('MMMM Do, h:mm a')
+    return moment(date).format('MMMM Do, h:mm a');
 }
 
 export function sortByDate(objs: AnagramObject[]): AnagramObject[] {
@@ -69,19 +68,19 @@ export function lazySetState(obj: AnagramObject, state: Partial<AnagramState>) {
     return setState(obj, m_user, state);
 }
 
-export function lazyEndGame(obj: AnagramObject) {
+export function lazyEndGame(obj: AnagramObject): AnagramObject {
     return setState(obj, m_user, {
-        stage: 'FINISHED',
-    })
+        stage: 'FINISHED'
+    });
 }
 
 export function lazySetViewed(obj: AnagramObject) {
     return lazySetState(obj, {
-        viewed: true,
-    })
+        viewed: true
+    });
 }
 
-export function lazyGetViewed(obj: AnagramObject,): boolean {
+export function lazyGetViewed(obj: AnagramObject): boolean {
     return lazyGetState(obj).viewed;
 }
 
@@ -101,5 +100,5 @@ export function lazyScoreWord(obj: AnagramObject, word: string) {
 }
 
 export function getLink(obj: AnagramObject) {
-    return Linking.makeUrl('anagrams', { id: getID(obj)})
+    return Linking.makeUrl('anagrams', { id: getID(obj) });
 }

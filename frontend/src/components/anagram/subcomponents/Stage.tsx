@@ -1,13 +1,12 @@
+import { getConfig, isResolved, lazyGetState } from 'api';
+import * as PConstants from 'constants';
 import React, { Component, Fragment } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { connect } from 'react-redux';
+import { scoreWordOnActiveAnagramGame } from 'store/actions';
+import { AnagramObject, State } from 'ts';
 
 import Tile from './Tile';
-import * as PConstants from 'constants';
-import {scoreWordOnActiveAnagramGame} from 'store/actions';
-import {State} from 'store/types';
-import {isResolved} from 'util/Vow';
-import {getConfig, lazyGetState} from 'util/Anagram';
-import {connect} from 'react-redux';
 
 type CState = {
     options: string[],
@@ -38,12 +37,12 @@ class Stage extends Component<any, CState> {
         this.setState({
             options: options,
             picks: options.map(() => PConstants.DESELECTOR),
-            on_word: false,
+            on_word: false
         });
     }
 
     componentDidMount() {
-        this.setLettersFromProps()
+        this.setLettersFromProps();
     }
 
     handleScoreWord() {
@@ -94,7 +93,7 @@ class Stage extends Component<any, CState> {
     }
 
     resetTiles() {
-        const options = this.state.options.map(letter => letter.replace(PConstants.DESELECTOR,''));
+        const options = this.state.options.map(letter => letter.replace(PConstants.DESELECTOR, ''));
         const picks = this.state.picks.map(_ => PConstants.DESELECTOR);
 
         this.setState({
@@ -107,38 +106,42 @@ class Stage extends Component<any, CState> {
     render() {
         return (
             <Fragment>
-                <View style={styles.letters_area}>
-                    <View style={styles.options_row}>
+                <View style={ styles.letters_area }>
+                    <View style={ styles.options_row }>
                         {
                             this.state.options.map((letter: string, idx: number) =>
                                 <Tile
                                     key={ idx }
                                     name={ letter }
-                                    onPress= { () => {this.handleAddTile(letter)} }
+                                    onPress={ () => {
+                                        this.handleAddTile(letter);
+                                    } }
                                 />
                             )
                         }
                     </View>
-                    <View style={styles.picks_row}>
+                    <View style={ styles.picks_row }>
                         {
                             this.state.picks.map((letter: string, idx: number) =>
                                 <Tile
                                     key={ idx + this.state.options.length }
                                     name={ letter }
-                                    onPress= { () => {this.handleRemoveTile(letter)} }
+                                    onPress={ () => {
+                                        this.handleRemoveTile(letter);
+                                    } }
                                 />
                             )
                         }
                     </View>
                 </View>
-                <View style={styles.score}>
+                <View style={ styles.score }>
                     <TouchableOpacity
-                        disabled={!this.state.on_word}
+                        disabled={ !this.state.on_word }
                         style={
-                            [styles.score_button, {backgroundColor: this.state.on_word ? '#AD7A99' : '#6F4E62'}]}
-                        onPress={() => this.handleScoreWord()}
+                            [styles.score_button, { backgroundColor: this.state.on_word ? '#AD7A99' : '#6F4E62' }] }
+                        onPress={ () => this.handleScoreWord() }
                     >
-                        <Text style={styles.score_button_text}>{
+                        <Text style={ styles.score_button_text }>{
                             this.state.picks.map(
                                 element => PConstants.ALPHABET.split('').find(
                                     letter => element.includes(letter)
@@ -147,23 +150,21 @@ class Stage extends Component<any, CState> {
                     </TouchableOpacity>
                 </View>
             </Fragment>
-        )
+        );
     }
 }
 
 function mapStateToProps(state: State) {
     if (isResolved(state.anagram.active_game)) {
         return {
-            // @ts-ignore
-            letters: getConfig(state.anagram.active_game).letters,
-            // @ts-ignore
-            words: lazyGetState(state.anagram.active_game).words
-        }
+            letters: getConfig(state.anagram.active_game as unknown as AnagramObject).letters,
+            words: lazyGetState(state.anagram.active_game as unknown as AnagramObject).words
+        };
     } else {
         return {
             letters: [],
             words: []
-        }
+        };
     }
 }
 
@@ -171,7 +172,7 @@ export default connect(mapStateToProps)(Stage);
 
 const styles = StyleSheet.create({
     letters_area: {
-        flex: 1,
+        flex: 1
     },
 
     options_row: {
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
         flex: 2,
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'stretch',
+        alignSelf: 'stretch'
     },
 
     score_button: {
@@ -198,11 +199,11 @@ const styles = StyleSheet.create({
         flex: 1,
 
         margin: 10,
-        borderRadius: 20,
+        borderRadius: 20
     },
 
     score_button_text: {
         fontSize: 75,
-        color: 'white',
+        color: 'white'
     }
 });

@@ -1,9 +1,8 @@
+import { getConfig, isResolved, lazyGetState } from 'api';
 import React, { Component, Fragment } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import {State} from 'store/types';
-import {isResolved} from 'util/Vow';
-import {getConfig, lazyGetState} from 'util/Anagram';
-import {connect} from 'react-redux';
+import { StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
+import { AnagramObject, State } from 'ts';
 
 type Props = {
     duration: number,
@@ -24,7 +23,7 @@ class Info extends Component<any, CState> {
 
         this.state = {
             score: 0,
-            timer: 0,
+            timer: 0
         };
 
         this.incrementScore = this.incrementScore.bind(this);
@@ -87,40 +86,37 @@ class Info extends Component<any, CState> {
     render() {
         return (
             <Fragment>
-                    <View style={styles.timer}>
-                        <Text style={styles.timer_text}> { this.state.timer + 's' } </Text>
-                    </View>
-                <View style={styles.score}>
-                    <Text style={styles.score_text}> { this.state.score } </Text>
+                <View style={ styles.timer }>
+                    <Text style={ styles.timer_text }> { this.state.timer + 's' } </Text>
                 </View>
-                <View style={styles.words}>
+                <View style={ styles.score }>
+                    <Text style={ styles.score_text }> { this.state.score } </Text>
+                </View>
+                <View style={ styles.words }>
                     {
                         this.props.words.map((word: string, idx: number) =>
-                            <Text style={styles.words_text} key={idx}>{ word.toUpperCase() }</Text>
+                            <Text style={ styles.words_text } key={ idx }>{ word.toUpperCase() }</Text>
                         )
                     }
                 </View>
             </Fragment>
-        )
+        );
     }
 }
 
 function mapStateToProps(state: State) {
     if (isResolved(state.anagram.active_game)) {
         return {
-            // @ts-ignore
-            duration: getConfig(state.anagram.active_game).duration,
-            // @ts-ignore
-            words: lazyGetState(state.anagram.active_game).words,
-            // @ts-ignore
-            target_score: lazyGetState(state.anagram.active_game).score
-        }
+            duration: getConfig(state.anagram.active_game as unknown as AnagramObject).duration,
+            words: lazyGetState(state.anagram.active_game as unknown as AnagramObject).words,
+            target_score: lazyGetState(state.anagram.active_game as unknown as AnagramObject).score
+        };
     } else {
         return {
             duration: 0,
             words: [],
-            target_score: 0,
-        }
+            target_score: 0
+        };
     }
 }
 
@@ -128,31 +124,31 @@ export default connect(mapStateToProps)(Info);
 
 const styles = StyleSheet.create({
     timer_text: {
-        fontSize: 30,
+        fontSize: 30
     },
 
     timer: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     score_text: {
-        fontSize: 60,
+        fontSize: 60
     },
 
     score: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     words_text: {
-        fontSize: 10,
+        fontSize: 10
     },
 
     words: {
         flex: 3,
-        alignItems: 'center',
+        alignItems: 'center'
     }
 });

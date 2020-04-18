@@ -1,17 +1,15 @@
-import {Action, Data, initialState} from 'store/types';
-import { AnagramObject, AnagramState, User } from '../../../types';
-import {getID, setState, setUser, sortByDate} from 'util/Anagram';
-import {isResolved} from 'util/Vow';
+import { getID, isResolved, setState, setUser, sortByDate } from 'api';
+import { Action, AnagramObject, AnagramState, Data, initialState, User } from 'ts';
 
 export default function data(state = initialState.data, action: Action): Data {
     let anagram_games = state.anagram_games;
 
     switch (action.type) {
         case 'REQUEST_DATA':
-            return {...state, user: 'FETCHING', anagram_games: 'FETCHING'};
+            return { ...state, user: 'FETCHING', anagram_games: 'FETCHING' };
         case 'RECEIVE_DATA':
             setUser(action.user);
-            return {...state, user: action.user, anagram_games: action.games};
+            return { ...state, user: action.user, anagram_games: action.games };
         case 'REQUEST_USER':
             return { ...state, user: 'FETCHING' };
         case 'RECEIVE_USER':
@@ -20,7 +18,8 @@ export default function data(state = initialState.data, action: Action): Data {
         case 'RECEIVE_GAME':
             if (!isResolved(anagram_games)) {
                 anagram_games = [];
-            };
+            }
+            ;
 
             // @ts-ignore
             processLoadGame(action.game, anagram_games);

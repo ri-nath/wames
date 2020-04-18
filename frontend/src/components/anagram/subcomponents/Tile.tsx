@@ -1,7 +1,6 @@
-import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-
 import * as PConstants from 'constants';
+import React from 'react';
+import { Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type Props = {
     name: string
@@ -19,10 +18,10 @@ export default function Tile(props: Props) {
             disabled={ disabled }
         >
             <Text style={ styles.text }>
-                { disabled ? " " : props.name.charAt(0) }
+                { disabled ? ' ' : props.name.charAt(0) }
             </Text>
         </TouchableOpacity>
-    )
+    );
 }
 
 const length = Dimensions.get('window').width * (1.0 / 8.0);
@@ -41,10 +40,10 @@ const styles = StyleSheet.create({
         padding: 10,
         margin: margin,
         backgroundColor: '#9DBF9E',
-        borderRadius: 5,
+        borderRadius: 5
     },
 
     active: {
-        backgroundColor: '#566957',
-    },
+        backgroundColor: '#566957'
+    }
 });

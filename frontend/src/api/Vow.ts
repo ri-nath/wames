@@ -1,5 +1,5 @@
-import { Vow } from 'store/types';
-import {isError} from 'util/Error';
+import { Vow } from 'ts';
+import { isError } from './Error';
 
 export function isResolved(vow: Vow<any>): boolean {
     return vow && !isError(vow) && vow !== 'FETCHING';
