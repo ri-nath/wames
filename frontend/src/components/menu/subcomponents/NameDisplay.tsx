@@ -1,41 +1,37 @@
+import { lazyDependOnVow } from 'api';
 import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import ServerStore from 'server/ServerStore';
+import { connect } from 'react-redux';
+import { State, User, Vow } from 'ts';
 
-type State = {
-    name: string
+type Props = {
+    user: Vow<User>
 }
 
-export default class NameDisplay extends Component<any, State> {
-    constructor(props: any) {
-        super(props);
-
-        this.state = {
-            name: 'Anonymous'
-        }
-    }
-
-    componentDidMount() {
-        this.setState({
-            name: ServerStore.getUsername()
-        });
-
-        ServerStore.onSetUsername((new_username: string) => {
-            this.setState({
-                name: new_username
-            });
-        });
-    }
-
+class NameDisplay extends Component<Props, any> {
     render() {
         return (
-            <View style={styles.name}>
-                <Text> Playing as: { this.state.name } </Text>
+            <View style={ styles.name }>
+                {
+                    lazyDependOnVow<User>(this.props.user,
+                    () => <ActivityIndicator size='small'/>,
+                    (err) => <Text> { err.toString()} </Text>,
+                        (user: User) => <Text>Playing as: { user.username }</Text>
+                    )
+                }
             </View>
-        )
+        );
     }
 }
+
+function mapStateToProps(state: State) {
+    return {
+        user: state.data.user,
+    };
+}
+
+export default connect(mapStateToProps)(NameDisplay);
 
 const styles = StyleSheet.create({
     name: {
@@ -43,8 +39,8 @@ const styles = StyleSheet.create({
         height: 25,
         backgroundColor: '#4fff86',
         alignItems: 'center',
-        justifyContent: 'center',
-    },
+        justifyContent: 'center'
+    }
 });
 
 

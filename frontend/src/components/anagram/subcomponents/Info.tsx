@@ -1,29 +1,29 @@
+import { getConfig, isResolved, lazyGetState } from 'api';
 import React, { Component, Fragment } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
+import { AnagramObject, State } from 'ts';
 
-import AnagramStore from 'state/AnagramStore';
-import Anagram from 'lib/Anagram';
-import {WamesListener} from 'lib/WamesEmitter';
-
-type State = {
-    score: number,
+type Props = {
+    duration: number,
+    words: string[],
     target_score: number,
-    timer: number,
-    words: string[]
 }
 
-export default class Info extends Component<any, State> {
+type CState = {
+    score: number,
+    timer: number,
+}
+
+class Info extends Component<any, CState> {
     private interval_handles: number[];
-    private listener: WamesListener | undefined;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
             score: 0,
-            target_score: 0,
-            timer: 0,
-            words: [],
+            timer: 0
         };
 
         this.incrementScore = this.incrementScore.bind(this);
@@ -31,8 +31,6 @@ export default class Info extends Component<any, State> {
 
         this.resetIntervals = this.resetIntervals.bind(this);
         this.removeIntervals = this.removeIntervals.bind(this);
-
-        this.updateInfoFromGameInstance = this.updateInfoFromGameInstance.bind(this);
 
         this.interval_handles = [];
 
@@ -43,7 +41,7 @@ export default class Info extends Component<any, State> {
         this.removeIntervals();
 
         this.interval_handles.push(
-            setInterval(this.incrementScore, 5), // 5 ms
+            setInterval(this.incrementScore, 5), // 500 ms
             setInterval(this.incrementTimer, 1000) // 1 second
         );
     }
@@ -59,38 +57,20 @@ export default class Info extends Component<any, State> {
     componentDidMount() {
         this.resetIntervals();
 
-        const game_obj: Anagram = AnagramStore.getActiveGame();
-        this.updateInfoFromGameInstance(game_obj);
-
         this.setState({
-            timer: game_obj.getConfig().duration
-        });
-
-        this.listener = AnagramStore.onScoreWord((game_obj: Anagram) => {
-            this.updateInfoFromGameInstance(game_obj);
+            timer: this.props.duration
         });
     }
 
-    updateInfoFromGameInstance(game_obj: Anagram) {
-        // TODO: type
-        const game_state = game_obj.getLocalState();
-
-        this.setState({
-            target_score: game_state.score,
-            words: game_state.words,
-        });
-    }
 
     componentWillUnmount() {
         this.removeIntervals();
-
-        if (this.listener) this.listener.off();
     }
 
     incrementScore() {
-        if (this.state.score !== this.state.target_score) {
+        if (this.state.score !== this.props.target_score) {
             this.setState({
-                score: this.state.score > this.state.target_score ? this.state.score - 10 : this.state.score + 10
+                score: this.state.score > this.props.target_score ? this.state.score - 5 : this.state.score + 5
             });
         }
     }
@@ -104,53 +84,77 @@ export default class Info extends Component<any, State> {
     }
 
     render() {
-        return (
-            <Fragment>
-                    <View style={styles.timer}>
-                        <Text style={styles.timer_text}> { this.state.timer + 's' } </Text>
+        if (this.props.loaded) {
+            return (
+                <Fragment>
+                    <View style={ styles.timer }>
+                        <Text style={ styles.timer_text }> { this.state.timer + 's' } </Text>
                     </View>
-                <View style={styles.score}>
-                    <Text style={styles.score_text}> { this.state.score } </Text>
-                </View>
-                <View style={styles.words}>
-                    {
-                        this.state.words.map((word: string, idx: number) =>
-                            <Text style={styles.words_text} key={idx}>{ word.toUpperCase() }</Text>
-                        )
-                    }
-                </View>
-            </Fragment>
-        )
+                    <View style={ styles.score }>
+                        <Text style={ styles.score_text }> { this.state.score } </Text>
+                    </View>
+                    <View style={ styles.words }>
+                        {
+                            this.props.words.map((word: string, idx: number) =>
+                                <Text style={ styles.words_text } key={ idx }>{ word.toUpperCase() }</Text>
+                            )
+                        }
+                    </View>
+                </Fragment>
+            );
+        } else {
+            return <ActivityIndicator size='large'/>
+        }
     }
 }
 
+function mapStateToProps(state: State) {
+    if (isResolved(state.anagram.active_game)) {
+        return {
+            duration: getConfig(state.anagram.active_game as unknown as AnagramObject).duration,
+            words: lazyGetState(state.anagram.active_game as unknown as AnagramObject).words,
+            target_score: lazyGetState(state.anagram.active_game as unknown as AnagramObject).score,
+            loaded: true
+        };
+    } else {
+        return {
+            duration: 0,
+            words: [],
+            target_score: 0,
+            loaded: false
+        };
+    }
+}
+
+export default connect(mapStateToProps)(Info);
+
 const styles = StyleSheet.create({
     timer_text: {
-        fontSize: 30,
+        fontSize: 30
     },
 
     timer: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     score_text: {
-        fontSize: 60,
+        fontSize: 60
     },
 
     score: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     words_text: {
-        fontSize: 10,
+        fontSize: 10
     },
 
     words: {
         flex: 3,
-        alignItems: 'center',
+        alignItems: 'center'
     }
 });

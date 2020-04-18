@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Database_1 = require("./Database");
 const express = require("express");
-const io = require("socket.io");
 const http = require("http");
+const io = require("socket.io");
+const Database_1 = require("./Database");
 const AUtil = require("./util/Anagram.js");
 var Events;
 (function (Events) {
@@ -27,7 +27,7 @@ class Server {
             res.sendFile(__dirname + './index.html');
         });
         const port = process.env.PORT || 3000;
-        this.server.listen(port, () => console.log("Listening on port ", port));
+        this.server.listen(port, () => console.log('Server listening on port ', port));
         this.io.on('connection', this.setListeners);
     }
     setListeners(socket) {
@@ -67,12 +67,19 @@ class Server {
         });
         socket.on(Events.JOIN_GAME, (id, callback) => {
             console.log('Joining game ', id, ' for user ', socket.user.username);
-            Database_1.default.joinAnagramGame(id, socket.user, (res) => {
-                if (res) {
-                    // TODO: Not working?
-                    socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+            Database_1.default.getAnagramGame(id, game => {
+                if (game.users.some(user => user.user_id === socket.user.user_id)) {
+                    callback("Already in game!");
                 }
-                callback(res);
+                else {
+                    Database_1.default.joinAnagramGame(id, socket.user, (res) => {
+                        if (res) {
+                            // TODO: Not working?
+                            socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                        }
+                        callback(res);
+                    });
+                }
             });
         });
         socket.on(Events.SET_USERNAME, (username, callback) => {

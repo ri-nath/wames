@@ -20,6 +20,13 @@ class DB {
     constructor() {
         this.anagrams = this.db.get('anagram-games');
         this.users = this.db.get('users');
+
+        if (process.env.MODE === 'PRODUCTION') {
+            console.log('Removing all debug games...');
+            this.anagrams.remove({
+                ['states.wames-debug']: { $exists: true }
+            });
+        }
     }
 
     // ANAGRAM METHODS
@@ -58,6 +65,14 @@ class DB {
         this.anagrams.findOneAndUpdate(
             { _id: id },
             { $set: { ['states.' + user.user_id]: AUtil.defaultState }, $push: { users: user } },
+        )
+            .then(callback)
+            .catch(console.error);
+    }
+
+    getAnagramGame(id: string, callback: (doc: AnagramObject | null) => void) {
+        this.anagrams.findOne(
+            { _id: id }
         )
             .then(callback)
             .catch(console.error);
@@ -129,7 +144,10 @@ class DB {
     }
 
     getUsersByName(usernames: string[], callback: (users: User[]) => void) {
-        if (usernames.length === 0) callback([]);
+        if (usernames.length === 0) {
+            console.log('getUsersByName called on empty array!');
+            callback([]);
+        }
 
         this.users.find({
             $or: usernames.reduce((acc: Partial<User>[], cur: string) => {

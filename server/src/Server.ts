@@ -1,12 +1,11 @@
 import { AnagramObject, AnagramState, User } from '../types';
 
-import DB from './Database';
-
 import * as express from 'express';
-import * as io from 'socket.io';
 import * as http from 'http';
-
+import * as io from 'socket.io';
 import { Socket } from 'socket.io';
+
+import DB from './Database';
 import * as AUtil from './util/Anagram.js';
 
 enum Events {
@@ -26,9 +25,9 @@ interface LooseSocket extends Socket {
 }
 
 export default class Server {
-    private app;
-    private server;
-    private io;
+    private readonly app;
+    private readonly server;
+    private readonly io;
 
     private sockets_list: LooseSocket[] = [];
 
@@ -45,7 +44,7 @@ export default class Server {
 
         const port = process.env.PORT || 3000;
 
-        this.server.listen(port, () => console.log("Listening on port ", port));
+        this.server.listen(port, () => console.log('Server listening on port ', port));
 
         this.io.on('connection', this.setListeners);
     }
@@ -101,17 +100,24 @@ export default class Server {
             });
         });
 
-        socket.on(Events.JOIN_GAME, (id: string, callback: (res: AnagramObject | null) => void) => {
+        socket.on(Events.JOIN_GAME, (id: string, callback: (res: AnagramObject | string) => void) => {
             console.log('Joining game ', id, ' for user ', socket.user.username);
 
-            DB.joinAnagramGame(id, socket.user, (res: AnagramObject | null) => {
-                if (res) {
-                    // TODO: Not working?
-                    socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
-                }
+            DB.getAnagramGame(id, game => {
+                if (game.users.some(user => user.user_id === socket.user.user_id)) {
+                    callback("Already in game!");
+                } else {
+                    DB.joinAnagramGame(id, socket.user, (res: AnagramObject | null) => {
+                        if (res) {
+                            // TODO: Not working?
+                            socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                        }
 
-                callback(res);
+                        callback(res);
+                    });
+                }
             });
+
         });
 
         socket.on(Events.SET_USERNAME, (username: string, callback: (res: User | Error) => void) => {

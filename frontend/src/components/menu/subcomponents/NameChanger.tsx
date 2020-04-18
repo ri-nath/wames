@@ -1,21 +1,27 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, TextInput, Button } from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { ActivityIndicator, Button, StyleSheet, TextInput, View, Text } from 'react-native';
 
-import ServerStore from 'server/ServerStore';
+import { connect } from 'react-redux';
 
-type State = {
-    username: string,
+import { dependOnVow, isResolved, lazyDependOnVow } from 'api';
+import { asyncSetUsername } from 'store/actions';
+import { State, User, Vow } from 'ts';
+
+type CState = {
     value: string
 }
 
+type Props = {
+    user: Vow<User>,
+    dispatch: any;
+}
 
-export default class NameChanger extends Component<any, State> {
-    constructor(props: any) {
+class NameChanger extends Component<Props, CState> {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
-            username: '',
-            value: '',
+            value: ''
         };
 
         this.handleChangeValue = this.handleChangeValue.bind(this);
@@ -29,43 +35,55 @@ export default class NameChanger extends Component<any, State> {
     }
 
     handlePress() {
-        ServerStore.setUsername(this.state.value);
+        this.props.dispatch(asyncSetUsername(this.state.value));
     }
 
     componentDidMount() {
-        const username = ServerStore.getUsername();
-
         this.setState({
-            value: username,
-            username: username
+            value: isResolved(this.props.user) ? (this.props.user as unknown as User).username : ''
         });
-
-        ServerStore.onSetUsername(this.handleChangeValue);
     }
 
     render() {
         return (
-            <View style={styles.create_game}>
-                <TextInput
-                    placeholder='Username'
-                    value={this.state.value}
-                    onChangeText={this.handleChangeValue}
-                />
-                <Button
-                    disabled={this.state.value.length < 1 || this.state.value === this.state.username}
-                    title='Confirm New Username'
-                    onPress={this.handlePress}
-                />
+            <View style={ styles.container }>
+                {
+                    lazyDependOnVow<User>(this.props.user,
+                        () => <ActivityIndicator size='small'/>,
+                        (err) => <Text> { err.toString() }</Text>,
+                        (user: User) =>
+                            <Fragment>
+                                <TextInput
+                                    placeholder='Username'
+                                    value={ this.state.value }
+                                    onChangeText={ this.handleChangeValue }
+                                />
+                                <Button
+                                    disabled={ this.state.value.length < 1 || this.state.value === user.username }
+                                    title='Confirm New Username'
+                                    onPress={ this.handlePress }
+                                />
+                            </Fragment>
+                        )
+                }
             </View>
-        )
+        );
     }
 }
 
+function mapStateToProps(state: State) {
+    return {
+        user: state.data.user,
+    };
+}
+
+export default connect(mapStateToProps)(NameChanger);
+
 const styles = StyleSheet.create({
-    create_game: {
+    container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     button: {

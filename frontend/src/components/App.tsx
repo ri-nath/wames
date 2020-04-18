@@ -1,64 +1,75 @@
-import React, { Component, Fragment } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
-import MenuContainer from './menu/MenuContainer';
+import { createStackNavigator } from '@react-navigation/stack';
+import React, { Component } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
+
+import { asyncRequestData } from 'store/actions';
+import { AppState, State } from 'ts';
+import RootNavigator from '../store/RootNavigator';
 import AnagramContainer from './anagram/AnagramContainer';
+import MenuContainer from './menu/MenuContainer';
 
-import SuperStore, { SuperState } from '../state/SuperStore';
-import {WamesListener} from 'lib/WamesEmitter';
-
-type State = {
-    panel: SuperState;
+type Props = {
+    state: AppState['state'],
+    dispatch: any,
 }
 
-export default class App extends Component<any, State> {
-    private listeners: WamesListener[] = [];
+const RootStack = createStackNavigator();
 
-    constructor(props: any) {
-        super(props);
+function Loading() {
+    return (
+        <View style={ styles.container }>
+            <Text>Connecting to Server...</Text>
+            <ActivityIndicator size='large'/>
+        </View>
+    );
+}
 
-        this.state = {
-            panel: SuperState.LOADING,
-        }
+
+class App extends Component<Props, any> {
+    componentDidMount(): void {
+        RootNavigator.mountNavigator();
+        this.props.dispatch(asyncRequestData());
     }
 
-    componentDidMount() {
-        for (const state of Object.values(SuperState)) {
-            this.listeners.push(
-                SuperStore.onSetState(state, () => {
-                    this.setState({
-                        panel: state
-                    });
-                })
-            );
-        }
-    }
-
-    componentWillUnmount() {
-        this.listeners.forEach(listener => {
-            listener.off();
-        });
-
-        this.listeners = [];
+    componentWillUnmount(): void {
+        RootNavigator.unmountNavigator();
     }
 
     render() {
         return (
-            <Fragment>
-                { this.state.panel === SuperState.LOADING && <View style={styles.container}><Text>Connecting to Server...</Text></View>}
-                    { this.state.panel === SuperState.MENU && <MenuContainer style={styles.container}/> }
-                    { this.state.panel === SuperState.ANAGRAM_GAME && <AnagramContainer style={styles.container}/> }
-            </Fragment>
-
-        )
+            <NavigationContainer
+                ref={ RootNavigator.navigationRef }
+                onStateChange={ RootNavigator.onStateChange }
+            >
+                <RootStack.Navigator
+                    mode="modal"
+                    screenOptions={ { headerShown: false } }
+                >
+                    <RootStack.Screen name="Loading" component={ Loading }/>
+                    <RootStack.Screen name="Menu" component={ MenuContainer }/>
+                    <RootStack.Screen name="Anagram Game" component={ AnagramContainer }/>
+                </RootStack.Navigator>
+            </NavigationContainer>
+        );
     }
 }
+
+function mapStateToProps(state: State) {
+    return {
+        state: state.app.state
+    };
+}
+
+export default connect(mapStateToProps)(App);
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
-    },
+        justifyContent: 'center'
+    }
 });

@@ -1,4 +1,4 @@
-import Words from "an-array-of-english-words";
+import Words from 'an-array-of-english-words';
 
 export const WORDS = Words.filter(word => word.length > 2);
 
