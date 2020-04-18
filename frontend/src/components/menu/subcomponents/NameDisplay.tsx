@@ -1,19 +1,25 @@
-import { isResolved } from 'api';
+import { lazyDependOnVow } from 'api';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { connect } from 'react-redux';
-import { State } from 'ts';
+import { State, User, Vow } from 'ts';
 
 type Props = {
-    name: string
+    user: Vow<User>
 }
 
 class NameDisplay extends Component<Props, any> {
     render() {
         return (
             <View style={ styles.name }>
-                <Text> Playing as: { this.props.name } </Text>
+                {
+                    lazyDependOnVow<User>(this.props.user,
+                    () => <ActivityIndicator size='small'/>,
+                    (err) => <Text> { err.toString()} </Text>,
+                        (user: User) => <Text>Playing as: { user.username }</Text>
+                    )
+                }
             </View>
         );
     }
@@ -21,8 +27,7 @@ class NameDisplay extends Component<Props, any> {
 
 function mapStateToProps(state: State) {
     return {
-        // @ts-ignore
-        name: isResolved(state.data.user) ? state.data.user.username : 'undefined'
+        user: state.data.user,
     };
 }
 
