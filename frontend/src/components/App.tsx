@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 
 import { asyncRequestData } from 'store/actions';
@@ -22,6 +22,7 @@ function Loading() {
     return (
         <View style={ styles.container }>
             <Text>Connecting to Server...</Text>
+            <ActivityIndicator size='large'/>
         </View>
     );
 }

@@ -1,16 +1,16 @@
-import { getDateString, getLink, getPlayers, getState, isResolved, lazyGetState } from 'api';
+import { getDateString, getLink, getPlayers, getState, isResolved, lazyDependOnVow, lazyGetState } from 'api';
 import React, { Component, Fragment } from 'react';
-import { Clipboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Clipboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Button, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 
 import { markGameAsViewed, startAnagramGameCycle } from 'store/actions';
-import { AnagramObject, State, User } from 'ts';
+import { AnagramObject, State, User, Vow } from 'ts';
 
 type Props = {
-    game: AnagramObject,
-    dispatch: any,
+    game: Vow<AnagramObject>,
+    dispatch: Function,
 }
 
 class GamePortal extends Component<Props, any> {
@@ -19,84 +19,81 @@ class GamePortal extends Component<Props, any> {
     }
 
     componentDidMount(): void {
-        if (isResolved(this.props.game)) this.props.dispatch(markGameAsViewed(this.props.game));
+        if (isResolved(this.props.game)) this.props.dispatch(markGameAsViewed(this.props.game as unknown as AnagramObject));
     }
 
     render() {
-        if (isResolved(this.props.game)) {
-            return (
-                <View style={ styles.container }>
-                    <Text>{ getDateString(this.props.game) } </Text>
-                    <Text> Anagram Game </Text>
-                    <Button
-                        type='clear'
-                        icon={
-                            <Icon name="link"/>
-                        }
-                        onPress={ () => Clipboard.setString(getLink(this.props.game)) }/>
-                    {
-                        lazyGetState(this.props.game).stage === 'NOT-STARTED' ?
-                            <Fragment>
-                                <View style={ { flex: 1, justifyContent: 'flex-start' } }>
-                                    <Text style={ styles.name }>
-                                        {
-                                            getPlayers(this.props.game).map((user: User, idx: number) =>
-                                                user.username + (getPlayers(this.props.game).length - 1 !== idx ? ' vs. ' : ' ')
-                                            )
-                                        }
-                                    </Text>
-                                </View>
-                                <View style={ { flex: 3, justifyContent: 'center' } }>
-                                    <TouchableOpacity
-                                        style={ styles.play_button }
-                                        onPress={ () => this.props.dispatch(startAnagramGameCycle(this.props.game)) }>
-                                        <Text style={ styles.play_button_text }>Play</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </Fragment>
-                            :
-                            <View style={ styles.user_cols }>
-                                {
-                                    getPlayers(this.props.game).map((user: User, idx: number) => {
-                                        const state = getState(this.props.game, user);
+        return (
+            lazyDependOnVow<AnagramObject>(this.props.game,
+                () => <ActivityIndicator size='large'/>,
+                (err) => <Text> { err.toString() }</Text>,
+                (game: AnagramObject) =>
+                    <View style={ styles.container }>
+                        <Text>{ getDateString(game) } </Text>
+                        <Text> Anagram Game </Text>
+                        <Button
+                            type='clear'
+                            icon={
+                                <Icon name="link"/>
+                            }
+                            onPress={ () => Clipboard.setString(getLink(game)) }/>
+                        {
+                            lazyGetState(game).stage === 'NOT-STARTED' ?
+                                <Fragment>
+                                    <View style={ { flex: 1, justifyContent: 'flex-start' } }>
+                                        <Text style={ styles.name }>
+                                            {
+                                                getPlayers(game).map((user: User, idx: number) =>
+                                                    user.username + (getPlayers(game).length - 1 !== idx ? ' vs. ' : ' ')
+                                                )
+                                            }
+                                        </Text>
+                                    </View>
+                                    <View style={ { flex: 3, justifyContent: 'center' } }>
+                                        <TouchableOpacity
+                                            style={ styles.play_button }
+                                            onPress={ () => this.props.dispatch(startAnagramGameCycle(game)) }>
+                                            <Text style={ styles.play_button_text }>Play</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Fragment>
+                                :
+                                <View style={ styles.user_cols }>
+                                    {
+                                        getPlayers(game).map((user: User, idx: number) => {
+                                            const state = getState(game, user);
 
-                                        if (state.stage === 'NOT-STARTED') {
-                                            return (
-                                                <View
-                                                    key={ idx }
-                                                    style={ styles.user_data }>
-                                                    <Text style={ styles.name }> { user.username }</Text>
-                                                    <Text> Challenge sent... </Text>
-                                                </View>
-                                            );
-                                        } else if (state.stage === 'FINISHED') {
-                                            return (
-                                                <View
-                                                    key={ idx }
-                                                    style={ styles.user_data }>
-                                                    <Text style={ styles.name }> { user.username }</Text>
-                                                    <Text style={ styles.score }> { state.score }</Text>
-                                                    {
-                                                        state.words.map((word, iidx) =>
-                                                            <Text key={ iidx }> { word.toUpperCase() } </Text>
-                                                        )
-                                                    }
-                                                </View>
-                                            );
-                                        }
-                                    })
-                                }
-                            </View>
-                    }
-                </View>
-            );
-        } else {
-            return (
-                <View style={ styles.container }>
-                    <Text>Spinner here...</Text>
-                </View>
-            );
-        }
+                                            if (state.stage === 'NOT-STARTED') {
+                                                return (
+                                                    <View
+                                                        key={ idx }
+                                                        style={ styles.user_data }>
+                                                        <Text style={ styles.name }> { user.username }</Text>
+                                                        <Text> Challenge sent... </Text>
+                                                    </View>
+                                                );
+                                            } else if (state.stage === 'FINISHED') {
+                                                return (
+                                                    <View
+                                                        key={ idx }
+                                                        style={ styles.user_data }>
+                                                        <Text style={ styles.name }> { user.username }</Text>
+                                                        <Text style={ styles.score }> { state.score }</Text>
+                                                        {
+                                                            state.words.map((word, iidx) =>
+                                                                <Text key={ iidx }> { word.toUpperCase() } </Text>
+                                                            )
+                                                        }
+                                                    </View>
+                                                );
+                                            }
+                                        })
+                                    }
+                                </View>
+                        }
+                    </View>
+            )
+        );
     }
 }
 

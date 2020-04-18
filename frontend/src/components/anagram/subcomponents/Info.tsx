@@ -1,6 +1,6 @@
 import { getConfig, isResolved, lazyGetState } from 'api';
 import React, { Component, Fragment } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { AnagramObject, State } from 'ts';
 
@@ -84,23 +84,27 @@ class Info extends Component<any, CState> {
     }
 
     render() {
-        return (
-            <Fragment>
-                <View style={ styles.timer }>
-                    <Text style={ styles.timer_text }> { this.state.timer + 's' } </Text>
-                </View>
-                <View style={ styles.score }>
-                    <Text style={ styles.score_text }> { this.state.score } </Text>
-                </View>
-                <View style={ styles.words }>
-                    {
-                        this.props.words.map((word: string, idx: number) =>
-                            <Text style={ styles.words_text } key={ idx }>{ word.toUpperCase() }</Text>
-                        )
-                    }
-                </View>
-            </Fragment>
-        );
+        if (this.props.loaded) {
+            return (
+                <Fragment>
+                    <View style={ styles.timer }>
+                        <Text style={ styles.timer_text }> { this.state.timer + 's' } </Text>
+                    </View>
+                    <View style={ styles.score }>
+                        <Text style={ styles.score_text }> { this.state.score } </Text>
+                    </View>
+                    <View style={ styles.words }>
+                        {
+                            this.props.words.map((word: string, idx: number) =>
+                                <Text style={ styles.words_text } key={ idx }>{ word.toUpperCase() }</Text>
+                            )
+                        }
+                    </View>
+                </Fragment>
+            );
+        } else {
+            return <ActivityIndicator size='large'/>
+        }
     }
 }
 
@@ -109,13 +113,15 @@ function mapStateToProps(state: State) {
         return {
             duration: getConfig(state.anagram.active_game as unknown as AnagramObject).duration,
             words: lazyGetState(state.anagram.active_game as unknown as AnagramObject).words,
-            target_score: lazyGetState(state.anagram.active_game as unknown as AnagramObject).score
+            target_score: lazyGetState(state.anagram.active_game as unknown as AnagramObject).score,
+            loaded: true
         };
     } else {
         return {
             duration: 0,
             words: [],
-            target_score: 0
+            target_score: 0,
+            loaded: false
         };
     }
 }

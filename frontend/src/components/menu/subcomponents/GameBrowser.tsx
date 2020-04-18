@@ -1,16 +1,16 @@
-import { getDateString, getID, getPlayers, getState, isResolved, lazyGetState, lazyGetViewed } from 'api';
+import { getDateString, getID, getPlayers, getState, lazyDependOnVow, lazyGetState, lazyGetViewed } from 'api';
 import React, { Component, Fragment } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 
 import { ListItem, Text } from 'react-native-elements';
 import { connect } from 'react-redux';
 
 import { openGamePortal } from 'store/actions';
-import { AnagramObject, State, User } from 'ts';
+import { AnagramObject, State, User, Vow } from 'ts';
 
 type Props = {
     style: any,
-    games: AnagramObject[],
+    games: Vow<AnagramObject[]>,
     dispatch: any,
     reduced?: boolean
 }
@@ -29,73 +29,71 @@ class GameBrowser extends Component<Props, any> {
     }
 
     render() {
-        let games;
-
-        if (this.props.reduced) {
-            games = this.props.games.filter(game => !lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED');
-        } else {
-            games = this.props.games;
-        }
-
         return (
             <View style={ styles.view_games }>
                 <View style={ styles.list_title }>
                     <Text h4>{ this.props.reduced ? 'Unopened Games' : 'All Games' }</Text>
                 </View>
                 <View style={ styles.list }>
-                    <FlatList
-                        contentContainerStyle={ styles.list_container }
-                        data={ games }
-                        extraData={ this.props }
-                        keyExtractor={ (item) => getID(item) }
-                        renderItem={ ({ item }) => {
-                            const finished = lazyGetState(item).stage === 'FINISHED';
-                            const highlighted = !finished || !lazyGetViewed(item);
-                            const allPlayersFinished = getPlayers(item).filter(player => getState(item, player).stage === 'NOT-STARTED').length === 0;
+                    {
+                        lazyDependOnVow<AnagramObject[]>(this.props.games,
+                            () => <ActivityIndicator size='large'/>,
+                            (err) => <Text> { err.toString() }</Text>,
+                            (games: AnagramObject[]) => <FlatList
+                                contentContainerStyle={ styles.list_container }
+                                data={ this.props.reduced ? games.filter(game => !lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED') : games }
+                                extraData={ this.props }
+                                keyExtractor={ (item) => getID(item) }
+                                renderItem={ ({ item }) => {
+                                    const finished = lazyGetState(item).stage === 'FINISHED';
+                                    const highlighted = !finished || !lazyGetViewed(item);
+                                    const allPlayersFinished = getPlayers(item).filter(player => getState(item, player).stage === 'NOT-STARTED').length === 0;
 
-                            return (
-                                <ListItem
-                                    containerStyle={ { backgroundColor: highlighted ? 'white' : '#ededed' } }
-                                    onPress={ () => {
-                                        this.props.dispatch(openGamePortal(item));
-                                    } }
-                                    title={
-                                        getPlayers(item).map((user: User, iidx: number) =>
-                                            user.username + (getPlayers(item).length - 1 !== iidx ? ' vs. ' : ' ')
-                                        ).join('')
-                                    }
-                                    bottomDivider
-                                    chevron
-                                    subtitle={
-                                        <Fragment>
-                                            <Text>Anagram Game</Text>
-                                            <Text>{ getDateString(item) }</Text>
-                                        </Fragment>
-                                    }
-                                    badge={ {
-                                        status:
-                                            !finished
-                                                ? 'success'
-                                                : lazyGetViewed(item)
-                                                ? allPlayersFinished
-                                                    ? 'success'
-                                                    : 'warning'
-                                                : 'primary',
-                                        value:
-                                            !finished ?
-                                                'Play Game'
-                                                : lazyGetViewed(item) ?
-                                                allPlayersFinished ?
-                                                    undefined
-                                                    : 'Challenge Sent...'
-                                                : 'New Results!'
-                                    } }
-                                />
-                            );
-                        }
+                                    return (
+                                        <ListItem
+                                            containerStyle={ { backgroundColor: highlighted ? 'white' : '#ededed' } }
+                                            onPress={ () => {
+                                                this.props.dispatch(openGamePortal(item));
+                                            } }
+                                            title={
+                                                getPlayers(item).map((user: User, iidx: number) =>
+                                                    user.username + (getPlayers(item).length - 1 !== iidx ? ' vs. ' : ' ')
+                                                ).join('')
+                                            }
+                                            bottomDivider
+                                            chevron
+                                            subtitle={
+                                                <Fragment>
+                                                    <Text>Anagram Game</Text>
+                                                    <Text>{ getDateString(item) }</Text>
+                                                </Fragment>
+                                            }
+                                            badge={ {
+                                                status:
+                                                    !finished
+                                                        ? 'success'
+                                                        : lazyGetViewed(item)
+                                                        ? allPlayersFinished
+                                                            ? 'success'
+                                                            : 'warning'
+                                                        : 'primary',
+                                                value:
+                                                    !finished ?
+                                                        'Play Game'
+                                                        : lazyGetViewed(item) ?
+                                                        allPlayersFinished ?
+                                                            undefined
+                                                            : 'Challenge Sent...'
+                                                        : 'New Results!'
+                                            } }
+                                        />
+                                    );
+                                }
 
-                        }
-                    />
+                                }
+                            />
+                        )
+                    }
                 </View>
             </View>
         );
@@ -104,11 +102,10 @@ class GameBrowser extends Component<Props, any> {
 
 function mapStateToProps(state: State) {
     return {
-        games: isResolved(state.data.anagram_games) ? state.data.anagram_games : []
+        games: state.data.anagram_games
     };
 }
 
-// @ts-ignore
 export default connect(mapStateToProps)(GameBrowser);
 
 
