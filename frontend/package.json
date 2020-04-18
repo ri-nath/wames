@@ -22,6 +22,7 @@
     "an-array-of-english-words": "^2.0.0",
     "clipboardy": "^2.2.0",
     "expo": "~36.0.0",
+    "expo-cli": "3.13.1",
     "expo-keep-awake": "latest",
     "micro-emitter": "^1.2.2",
     "moment": "^2.24.0",

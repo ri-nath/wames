@@ -14,7 +14,7 @@ export function generateLetters(length: number): string[] {
 }
 
 const length = 8;
-const duration = 5;
+const duration = parseInt(process.env.DURATION);
 
 export function generateGame(target_users: User[]): Partial<AnagramObject> {
     const uuid: string = v4();
