@@ -1,4 +1,4 @@
-import * as PConstants from 'constants';
+import * as PConstants from 'constants.js';
 import io from 'socket.io-client';
 import { AnagramObject, AnagramState, User } from 'ts';
 

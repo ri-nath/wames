@@ -20,7 +20,7 @@ export function asyncRequestData() {
     return function (dispatch: any) {
         dispatch(requestData());
 
-        Client.registerUser(Constants.installationId, (res_user: User, res_games: AnagramObject[]) => {
+        Client.registerUser(Constants.installationId ? Constants.installationId : 'random' + Math.random().toString(36).substring(2, 15), (res_user: User, res_games: AnagramObject[]) => {
             dispatch(receiveData(res_user, res_games));
         });
     };
