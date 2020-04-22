@@ -15,4 +15,4 @@ class DB {
     }
 }
 exports.default = new DB();
-//# sourceMappingURL=db.js.map
+//# sourceMappingURL=DB.js.map
