@@ -13,7 +13,6 @@ import MenuContainer from './menu/MenuContainer';
 
 type Props = {
     state: AppState['state'],
-    dispatch: any,
 }
 
 const RootStack = createStackNavigator();
@@ -31,7 +30,6 @@ function Loading() {
 class App extends Component<Props, any> {
     componentDidMount(): void {
         RootNavigator.mountNavigator();
-        this.props.dispatch(asyncRequestData());
     }
 
     componentWillUnmount(): void {

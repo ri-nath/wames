@@ -1,30 +1,18 @@
 import { getConfig, getID, isError, lazyEndGame, lazyGetState, m_user } from 'api';
 
 import Constants from 'expo-constants';
+import { Alert } from 'react-native';
 import {
     endAnagramGame,
     receiveCreatedGame,
-    receiveData,
     receiveUser,
     requestCreatedGame,
-    requestData,
     requestUser,
     startAnagramGame,
     updateGameState
 } from 'store/actions/sync';
 import Client from 'store/Client';
 import { AnagramObject, State, User } from 'ts';
-
-
-export function asyncRequestData() {
-    return function (dispatch: any) {
-        dispatch(requestData());
-
-        Client.registerUser(Constants.installationId ? Constants.installationId : 'random' + Math.random().toString(36).substring(2, 15), (res_user: User, res_games: AnagramObject[]) => {
-            dispatch(receiveData(res_user, res_games));
-        });
-    };
-}
 
 export function asyncCreateGame(...target_usernames: string[]) {
     return function (dispatch: any) {
@@ -46,7 +34,7 @@ export function startAnagramGameCycle(game: AnagramObject) {
             if (game) {
                 game = lazyEndGame(game);
                 dispatch(endAnagramGame(game));
-                Client.updateGameState(getID(game), lazyGetState(game));
+                Client.updateGameState(getID(game), lazyGetState(game), (res) => isError(res) ? Alert.alert('Error', res.toString()) : null);
             }
         }, 1000 * getConfig(game).duration);
     };
@@ -70,6 +58,6 @@ export function markGameAsViewed(game: AnagramObject) {
             viewed: true
         }));
 
-        Client.markGameAsViewed(getID(game));
+        Client.markGameAsViewed(getID(game), (res) => isError(res) ? Alert.alert('Error', res.toString()) : null);
     };
 }

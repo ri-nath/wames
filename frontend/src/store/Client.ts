@@ -1,10 +1,17 @@
-import * as PConstants from 'constants.js';
 import io from 'socket.io-client';
+
 import { AnagramObject, AnagramState, User } from 'ts';
+import { receiveData, requestData } from './actions';
+import * as PConstants from 'constants.js';
+import store from './Store';
+
+import Constants from 'expo-constants';
 
 enum Events {
     ERROR = 'error',
+    REQUEST_IDENTIFIER = 'req-id',
     REGISTER_USER = 'register-user',
+    DATA='data',
     NEW_GAMES = 'new-games',
     CREATE_GAME = 'create-game',
     SET_USERNAME = 'user-id',
@@ -17,7 +24,9 @@ class Client {
     public socket: SocketIOClient.Socket;
 
     constructor() {
-        this.socket = io(PConstants.SERVER_ENDPOINT);
+        this.socket = io.connect(PConstants.SERVER_ENDPOINT, {
+            query: 'deviceid=' + Constants.installationId
+        });
 
         this.socket.on('connect', () => {
             console.log('Socket Connected!');
@@ -30,10 +39,10 @@ class Client {
         this.socket.on('disconnect', () => {
             console.log('Socket Disconnected!');
         });
-    }
 
-    registerUser(user_id: string, callback: (user: User, games: AnagramObject[]) => void) {
-        this.socket.emit(Events.REGISTER_USER, user_id, callback);
+        this.socket.on(Events.DATA, (user: User, games: AnagramObject[]) => {
+            store.dispatch(receiveData(user, games));
+        });
     }
 
     setUsername(username: String, callback: (res: User | Error) => void) {
@@ -48,19 +57,19 @@ class Client {
         this.socket.on(Events.NEW_GAMES, handler);
     }
 
-    updateGameState(game_uuid: string, state: AnagramState) {
-        this.socket.emit(Events.UPDATE_GAME_STATE, game_uuid, state);
+    updateGameState(game_uuid: string, state: AnagramState, callback: (res: boolean | Error) => void) {
+        this.socket.emit(Events.UPDATE_GAME_STATE, game_uuid, state, callback);
     }
 
-    markGameAsViewed(game_id: string) {
-        this.socket.emit(Events.MARK_AS_VIEWED, game_id);
+    markGameAsViewed(game_id: string, callback: (res: boolean | Error) => void) {
+        this.socket.emit(Events.MARK_AS_VIEWED, game_id, callback);
     }
 
     onNewGameState(handler: (game_id: string, updating_user: User, updated_state: AnagramState) => void) {
         this.socket.on(Events.UPDATE_GAME_STATE, handler);
     }
 
-    joinGameByID(id: string, handler: (res: AnagramObject | 'Already in game!') => void) {
+    joinGameByID(id: string, handler: (res: AnagramObject | Error) => void) {
         this.socket.emit(Events.JOIN_GAME, id, handler);
     }
 }

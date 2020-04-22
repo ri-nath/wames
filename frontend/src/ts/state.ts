@@ -33,8 +33,8 @@ export type GameState = {
 
 export const initialState: State = {
     data: {
-        user: null,
-        anagram_games: null
+        user: 'FETCHING',
+        anagram_games: 'FETCHING'
     },
     app: {
         state: 'Loading'

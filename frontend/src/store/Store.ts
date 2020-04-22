@@ -1,3 +1,4 @@
+import { isError } from 'api';
 import { Linking } from 'expo';
 import { applyMiddleware, createStore, Store } from 'redux';
 import { createLogger } from 'redux-logger';
@@ -43,15 +44,15 @@ const parseURL = (url: string) => {
     console.log(`Linked to app with path: ${ path } and data: ${ JSON.stringify(queryParams) }`);
 
     if (path && queryParams && queryParams.id) {
-        Client.joinGameByID(queryParams.id, (res: AnagramObject | 'Already in game!') => {
+        Client.joinGameByID(queryParams.id, (res: AnagramObject | Error) => {
             console.log('RES', res);
-            if (res === 'Already in game!') {
+            if (res.toString() === 'Already in game!') {
                 // @ts-ignore
                 const game = store.getState().data.anagram_games.find((game: AnagramObject) => getID(game) === queryParams.id);
 
                 store.dispatch(openGamePortal(game));
             } else {
-                store.dispatch(receiveCreatedGame(res));
+                if (!isError(res)) store.dispatch(receiveCreatedGame(res as AnagramObject));
             }
         });
     }

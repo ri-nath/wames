@@ -1,0 +1,1 @@
+{"version":3,"file":"server.js","sourceRoot":"","sources":["../../src/ts/server.ts"],"names":[],"mappings":"","sourcesContent":["import { Socket } from 'socket.io';\r\n\r\nimport { User } from './data';\r\n\r\nexport interface DecoratedSocket extends Socket {\r\n    user: User\r\n}\r\n\r\nexport type Acknowledgement<T> = (args: T | Error) => void;\r\n\r\n"]}

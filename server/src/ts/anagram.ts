@@ -1,3 +1,5 @@
+import { User } from './data';
+
 export type AnagramStage = 'NOT-STARTED' | 'RUNNING' | 'FINISHED';
 
 export interface AnagramState {
@@ -21,9 +23,5 @@ export interface AnagramObject {
     config: AnagramConfig
 }
 
-export interface User {
-    user_id: string,
-    username: string
-}
 
 
