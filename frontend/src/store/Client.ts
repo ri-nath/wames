@@ -25,7 +25,7 @@ class Client {
 
     constructor() {
         this.socket = io.connect(PConstants.SERVER_ENDPOINT, {
-            query: 'deviceid=' + Constants.installationId
+            query: 'deviceid=' + Constants.installationId ? Constants.installationId : Math.random().toString(36).substring(2, 15)
         });
 
         this.socket.on('connect', () => {
