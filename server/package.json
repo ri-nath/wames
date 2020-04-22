@@ -19,6 +19,6 @@
     "uuid": "^7.0.2"
   },
   "scripts": {
-    "start": "tsc && node -r dotenv/config built/index.js",
+    "start": "tsc && node -r dotenv/config built/index.js"
   }
 }
