@@ -75,26 +75,36 @@ io.on('connection', (socket) => {
     });
     socket.on(Events.JOIN_GAME, (id, callback) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(api_1.createError('REJECTED', 'User not registered!'));
         }
         else {
             api_1.log('Joining game ', id, ' for user ', socket.user.username);
-            db_1.getAnagramGame(id, game => {
-                if (game.users.some(user => user.user_id === socket.user.user_id)) {
-                    callback(new Error('Already in game!'));
+            db_1.getAnagramGame(id, res => {
+                if (api_1.isAnyError(res)) {
+                    callback(api_1.pipeToWamesError(res));
                 }
                 else {
-                    db_1.joinAnagramGame(id, socket.user, api_1.isError ? callback : (res) => {
-                        socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
-                        callback(res);
-                    });
+                    if (res.users.some(user => user.user_id === socket.user.user_id)) {
+                        callback(api_1.createError('REJECTED', 'Already in game!'));
+                    }
+                    else {
+                        db_1.joinAnagramGame(id, socket.user, (res) => {
+                            if (api_1.isAnyError(res)) {
+                                callback(api_1.pipeToWamesError(res));
+                            }
+                            else {
+                                socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                                callback(res);
+                            }
+                        });
+                    }
                 }
             });
         }
     });
     socket.on(Events.SET_USERNAME, (username, callback) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(api_1.createError('REJECTED', 'User not registered!'));
         }
         else {
             api_1.log('Setting username for: ', socket.user.username, ' to: ', username);
@@ -103,33 +113,40 @@ io.on('connection', (socket) => {
                 username: username
             };
             db_1.setUsername(new_user, (res) => {
-                if (!(res instanceof Error)) {
-                    socket.user = new_user;
+                console.log(res);
+                if (api_1.isAnyError(res)) {
+                    callback(api_1.pipeToWamesError(res));
                 }
-                callback(res);
+                else {
+                    socket.user = res;
+                    callback(res);
+                }
             });
         }
     });
     socket.on(Events.UPDATE_GAME_STATE, (_id, new_state, callback) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(api_1.createError('REJECTED', 'User not registered!'));
         }
         else {
             api_1.log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
-            db_1.updateAnagramGame(socket.user, _id, new_state, () => {
-                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state);
+            db_1.updateAnagramGame(socket.user, _id, new_state, (res) => {
+                if (api_1.isAnyError(res)) {
+                    callback(api_1.pipeToWamesError(res));
+                }
+                else {
+                    socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state);
+                }
             });
-            callback(true);
         }
     });
     socket.on(Events.MARK_AS_VIEWED, (_id, callback) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(api_1.createError('REJECTED', 'User not registered!'));
         }
         else {
             api_1.log('Marking game id ', _id, ' as viewed for ', socket.user.username);
-            db_1.markAnagramGameAsViewed(socket.user, _id);
-            callback(true);
+            db_1.markAnagramGameAsViewed(socket.user, _id, callback);
         }
     });
     socket.on('disconnect', () => {
