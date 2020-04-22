@@ -1,4 +1,4 @@
-import { isError } from 'api';
+import { isAnyError } from 'api';
 import { Linking } from 'expo';
 import { applyMiddleware, createStore, Store } from 'redux';
 import { createLogger } from 'redux-logger';
@@ -9,7 +9,6 @@ import Client from 'store/Client';
 import { AnagramObject, Nullable, State } from 'ts';
 
 import RootReducer from './reducers';
-
 
 const loggerMiddleware = createLogger();
 
@@ -52,7 +51,7 @@ const parseURL = (url: string) => {
 
                 store.dispatch(openGamePortal(game));
             } else {
-                if (!isError(res)) store.dispatch(receiveCreatedGame(res as AnagramObject));
+                if (!isAnyError(res)) store.dispatch(receiveCreatedGame(res as AnagramObject));
             }
         });
     }

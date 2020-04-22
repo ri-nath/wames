@@ -1,4 +1,4 @@
-import { AnagramObject, User } from '.';
+import { AnagramObject, User, WamesError } from '.';
 
 export type Action = {
     type: string,
@@ -49,5 +49,5 @@ export const initialState: State = {
     }
 };
 
-export type Vow<T> = Nullable<'FETCHING' | T | Error>;
+export type Vow<T> = Nullable<'FETCHING' | T | WamesError>;
 export type Nullable<T> = null | T;

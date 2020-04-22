@@ -1,9 +1,16 @@
-import { adjectives, animals, Config, uniqueNamesGenerator } from 'unique-names-generator';
+import { adjectives, animals, uniqueNamesGenerator } from 'unique-names-generator';
 
-import { User } from '../ts';
+import { createError } from '../api';
+import { Acknowledgement, Hesitant, User } from '../ts';
 import DB from './DB';
 
-export function generateUsername(callback: (username: string) => void) {
+function handle_error(error: Error, callback: Hesitant<any>) {
+    console.error(error);
+
+    callback(createError('FAILED', error.name + ': ' + error.message));
+}
+
+export function generateUsername(callback: (res: string) => void) {
     let username = uniqueNamesGenerator({
         dictionaries: [adjectives, animals],
         separator: '',
@@ -22,7 +29,7 @@ export function generateUsername(callback: (username: string) => void) {
     });
 };
 
-export function registerUser(user_id: string, callback: (res: User | Error) => void) {
+export function registerUser(user_id: string, callback: Acknowledgement<User>) {
     DB.users.find({
         user_id: user_id
     })
@@ -36,43 +43,50 @@ export function registerUser(user_id: string, callback: (res: User | Error) => v
                         username: username,
                     })
                         .then(callback)
-                        .catch(console.error);
+                        .catch(e => handle_error(e, callback));
+
                 });
             }
         })
-        .catch(console.error);
+        .catch(e => handle_error(e, callback));
+
 }
 
-export function setUsername(user: User, callback: (res: User | Error) => void) {
-    if (user.username === '') callback(Error("Username cannot be empty!"));
-
-    DB.users.find({
-        username: user.username
-    })
-        .then((docs: User[]) => {
-            if (docs.length > 0) {
-                callback(Error("Username is taken! " + docs[0].username))
-            } else {
-                DB.users.findOneAndUpdate(
-                    {user_id: user.user_id},
-                    {$set: {username: user.username}}
-                )
-                    .then(callback)
-                    .catch(console.error);
-            }
+export function setUsername(user: User, callback: Acknowledgement<User>) {
+    if (user.username === '') {
+        callback(createError('REJECTED', 'Username cannot be empty!'));
+    } else {
+        DB.users.find({
+            username: user.username
         })
-        .catch(console.error);
+            .then((docs: User[]) => {
+                if (docs.length > 0) {
+                    callback(createError('REJECTED', "Username is taken! " + docs[0].username))
+                } else {
+                    DB.users.findOneAndUpdate(
+                        {user_id: user.user_id},
+                        {$set: {username: user.username}}
+                    )
+                        .then(callback)
+                        .catch(e => handle_error(e, callback));
+
+                }
+            })
+            .catch(e => handle_error(e, callback));
+    }
+
 }
 
-export function getUserByName(username: string, callback: (user: User) => void) {
+export function getUserByName(username: string, callback: Acknowledgement<User>) {
     DB.users.findOne({
         username: username
     })
         .then(callback)
-        .catch(console.error);
+        .catch(e => handle_error(e, callback));
+
 }
 
-export function getUsersByName(usernames: string[], callback: (users: User[]) => void) {
+export function getUsersByName(usernames: string[], callback: Acknowledgement<User[]>) {
     if (usernames.length === 0) {
         console.log('getUsersByName called on empty array!');
         callback([]);
@@ -88,5 +102,6 @@ export function getUsersByName(usernames: string[], callback: (users: User[]) =>
         }, [])
     })
         .then(callback)
-        .catch(console.error);
+        .catch(e => handle_error(e, callback));
+
 }

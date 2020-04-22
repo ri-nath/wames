@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/api/index.ts"],"names":[],"mappings":";;;;;AAAA,+BAA0B;AAC1B,4BAAuB","sourcesContent":["export * from './anagram';\r\nexport * from './misc';"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/api/index.ts"],"names":[],"mappings":";;;;;AAAA,+BAA0B;AAC1B,4BAAuB;AACvB,6BAAwB","sourcesContent":["export * from './anagram';\r\nexport * from './misc';\r\nexport * from './error';"]}

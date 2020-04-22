@@ -1,7 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const unique_names_generator_1 = require("unique-names-generator");
+const api_1 = require("../api");
 const DB_1 = require("./DB");
+function handle_error(error, callback) {
+    console.error(error);
+    callback(api_1.createError('FAILED', error.name + ': ' + error.message));
+}
 function generateUsername(callback) {
     let username = unique_names_generator_1.uniqueNamesGenerator({
         dictionaries: [unique_names_generator_1.adjectives, unique_names_generator_1.animals],
@@ -37,30 +42,33 @@ function registerUser(user_id, callback) {
                     username: username,
                 })
                     .then(callback)
-                    .catch(console.error);
+                    .catch(e => handle_error(e, callback));
             });
         }
     })
-        .catch(console.error);
+        .catch(e => handle_error(e, callback));
 }
 exports.registerUser = registerUser;
 function setUsername(user, callback) {
-    if (user.username === '')
-        callback(Error("Username cannot be empty!"));
-    DB_1.default.users.find({
-        username: user.username
-    })
-        .then((docs) => {
-        if (docs.length > 0) {
-            callback(Error("Username is taken! " + docs[0].username));
-        }
-        else {
-            DB_1.default.users.findOneAndUpdate({ user_id: user.user_id }, { $set: { username: user.username } })
-                .then(callback)
-                .catch(console.error);
-        }
-    })
-        .catch(console.error);
+    if (user.username === '') {
+        callback(api_1.createError('REJECTED', 'Username cannot be empty!'));
+    }
+    else {
+        DB_1.default.users.find({
+            username: user.username
+        })
+            .then((docs) => {
+            if (docs.length > 0) {
+                callback(api_1.createError('REJECTED', "Username is taken! " + docs[0].username));
+            }
+            else {
+                DB_1.default.users.findOneAndUpdate({ user_id: user.user_id }, { $set: { username: user.username } })
+                    .then(callback)
+                    .catch(e => handle_error(e, callback));
+            }
+        })
+            .catch(e => handle_error(e, callback));
+    }
 }
 exports.setUsername = setUsername;
 function getUserByName(username, callback) {
@@ -68,7 +76,7 @@ function getUserByName(username, callback) {
         username: username
     })
         .then(callback)
-        .catch(console.error);
+        .catch(e => handle_error(e, callback));
 }
 exports.getUserByName = getUserByName;
 function getUsersByName(usernames, callback) {
@@ -85,7 +93,7 @@ function getUsersByName(usernames, callback) {
         }, [])
     })
         .then(callback)
-        .catch(console.error);
+        .catch(e => handle_error(e, callback));
 }
 exports.getUsersByName = getUsersByName;
 //# sourceMappingURL=data.js.map

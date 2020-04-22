@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 import * as IO from 'socket.io';
 
 import { Acknowledgement, AnagramObject, AnagramState, DecoratedSocket, User } from './ts';
-import { generateGame, isError, log } from './api';
+import { createError, generateGame, isAnyError, isError, log, pipeToWamesError } from './api';
 import {
     createAnagramGame,
     getAnagramGame,
@@ -46,7 +46,7 @@ const register_user = (identifier: string, socket: Socket, next: Function) => {
 
     registerUser(identifier,res => {
         if (isError(res)) {
-            socket.emit(Events.ERROR, res as Error);
+            socket.emit(Events.ERROR, res as unknown as Error);
             return;
         }
 
@@ -62,7 +62,7 @@ const register_user = (identifier: string, socket: Socket, next: Function) => {
 
         next();
     });
-}
+};
 
 io.use((socket: Socket, next) => {
     log('A socket is attempting to connect from ', socket.handshake.address);
@@ -107,19 +107,28 @@ io.on('connection', (socket: DecoratedSocket) => {
 
     socket.on(Events.JOIN_GAME, (id: string, callback: Acknowledgement<AnagramObject>) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(createError('REJECTED', 'User not registered!'));
         } else {
             log('Joining game ', id, ' for user ', socket.user.username);
 
-            getAnagramGame(id, game => {
-                if (game.users.some(user => user.user_id === socket.user.user_id)) {
-                    callback(new Error('Already in game!'));
+            getAnagramGame(id, res => {
+                if (isAnyError(res)) {
+                    callback(pipeToWamesError(res as unknown as Error));
                 } else {
-                    joinAnagramGame(id, socket.user, isError ? callback : (res: AnagramObject | null) => {
-                        socket.broadcast.to(res._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, res.states[socket.user.user_id]);
+                    if ((res as AnagramObject).users.some(user => user.user_id === socket.user.user_id)) {
+                        callback(createError('REJECTED', 'Already in game!'));
+                    } else {
+                        joinAnagramGame(id, socket.user, (res) => {
+                            if (isAnyError(res)) {
+                                callback(pipeToWamesError(res as unknown as Error));
+                            } else {
+                                socket.broadcast.to((res as AnagramObject)._id).emit(Events.UPDATE_GAME_STATE, id, socket.user, (res as AnagramObject).states[socket.user.user_id]);
 
-                        callback(res);
-                    });
+                                callback(res);
+                            }
+
+                        });
+                    }
                 }
             });
         }
@@ -127,7 +136,7 @@ io.on('connection', (socket: DecoratedSocket) => {
 
     socket.on(Events.SET_USERNAME, (username: string, callback: Acknowledgement<User>) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(createError('REJECTED', 'User not registered!'));
         } else {
             log('Setting username for: ', socket.user.username, ' to: ', username);
 
@@ -136,39 +145,41 @@ io.on('connection', (socket: DecoratedSocket) => {
                 username: username
             };
 
-            setUsername(new_user, (res: User | Error) => {
-                if (!(res instanceof Error)) {
-                    socket.user = new_user;
+            setUsername(new_user, (res) => {
+                console.log(res);
+                if (isAnyError(res)) {
+                    callback(pipeToWamesError(res as unknown as Error));
+                } else {
+                    socket.user = res as User;
+                    callback(res as User);
                 }
-
-                callback(res as User);
             });
         }
     });
 
-    socket.on(Events.UPDATE_GAME_STATE, (_id: string, new_state: AnagramState, callback: Acknowledgement<boolean>) => {
+    socket.on(Events.UPDATE_GAME_STATE, (_id: string, new_state: AnagramState, callback: Acknowledgement<void>) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(createError('REJECTED', 'User not registered!'));
         } else {
             log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
 
-            updateAnagramGame(socket.user, _id, new_state, () => {
-                socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state);
+            updateAnagramGame(socket.user, _id, new_state, (res) => {
+                if (isAnyError(res)) {
+                    callback(pipeToWamesError(res as unknown as Error));
+                } else {
+                    socket.broadcast.to(_id).emit(Events.UPDATE_GAME_STATE, _id, socket.user, new_state);
+                }
             });
-
-            callback(true);
         }
     });
 
-    socket.on(Events.MARK_AS_VIEWED, (_id: string, callback: Acknowledgement<boolean>) => {
+    socket.on(Events.MARK_AS_VIEWED, (_id: string, callback: Acknowledgement<void>) => {
         if (!socket['user']) {
-            callback(new Error('User not registered!'));
+            callback(createError('REJECTED', 'User not registered!'));
         } else {
             log('Marking game id ', _id, ' as viewed for ', socket.user.username);
 
-            markAnagramGameAsViewed(socket.user, _id);
-
-            callback(true);
+            markAnagramGameAsViewed(socket.user, _id, callback);
         }
     });
 
