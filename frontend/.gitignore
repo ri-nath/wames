@@ -1,0 +1,10 @@
+.expo/*
+.expo-shared/*
+.assets/*
+node_modules/*
+server/*
+web-build/*
+
+.idea/*
+
+*.log

@@ -1,0 +1,1 @@
+{"version":3,"file":"data.js","sourceRoot":"","sources":["../../src/ts/data.ts"],"names":[],"mappings":"","sourcesContent":["export interface User {\r\n    user_id: string,\r\n    username: string\r\n}\r\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/db/index.ts"],"names":[],"mappings":";;;;;AAAA,0BAAqB;AACrB,+BAA0B;AAC1B,4BAAuB","sourcesContent":["export * from './DB';\r\nexport * from './anagram';\r\nexport * from './data';"]}
