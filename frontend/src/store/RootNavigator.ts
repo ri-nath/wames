@@ -88,8 +88,7 @@ class RootNavigator {
         } else if (route_name === 'Game Portal') {
             updateMenuScreen('Game Portal');
         } else if (AppScreens.includes(route_name)) {
-            // @ts-ignore
-            updateAppScreen(route_name);
+            updateAppScreen(route_name as 'Loading' | 'Menu' | 'Anagram Game');
         } else {
             throw Error('Unknown Navigation Route ' + route_name);
         }

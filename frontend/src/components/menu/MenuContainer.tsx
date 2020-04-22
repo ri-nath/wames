@@ -65,7 +65,8 @@ class Menu extends Component<Props, any> {
                                 name='menu'
                                 onPress={ () => RootNavigator.toggleDrawer() }
                             />
-                        )
+                        ),
+                        title: 'Menu'
                     } }
                 />
                 <Stack.Screen
