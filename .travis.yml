@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - node
+  - lts/*
+cache:
+  directories:
+    - ~/.npm
+before_cache:
+  - npm install -g npm@latest
+script:
+  - cd frontend && npm install && npm ci
+  - cd ../server && npm install npm ci
