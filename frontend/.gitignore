@@ -8,3 +8,5 @@ web-build/*
 .idea/*
 
 *.log
+
+app.json

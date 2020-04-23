@@ -19,10 +19,8 @@ export default function data(state = initialState.data, action: Action): Data {
             if (!isResolved(anagram_games)) {
                 anagram_games = [];
             }
-            ;
 
-            // @ts-ignore
-            processLoadGame(action.game, anagram_games);
+            anagram_games = processLoadGame(action.game, anagram_games as AnagramObject[]);
 
             return { ...state, anagram_games: anagram_games };
         case 'PROCESS_GAMES':
@@ -31,12 +29,10 @@ export default function data(state = initialState.data, action: Action): Data {
             }
 
             action.games.forEach((game: AnagramObject) => {
-                // @ts-ignore
-                processLoadGame(game, anagram_games);
+                anagram_games = processLoadGame(game, anagram_games as AnagramObject[]);
             });
 
-            // @ts-ignore
-            anagram_games = sortByDate(anagram_games);
+            anagram_games = sortByDate(anagram_games as AnagramObject[]);
 
             return { ...state, anagram_games: anagram_games };
         case 'UPDATE_GAME_STATE':
@@ -44,8 +40,7 @@ export default function data(state = initialState.data, action: Action): Data {
                 anagram_games = [];
             }
 
-            // @ts-ignore
-            processUpdateGame(action.game_id, anagram_games, action.state, action.user);
+            anagram_games = processUpdateGame(action.game_id, anagram_games as AnagramObject[], action.state, action.user);
 
             return { ...state, anagram_games: anagram_games };
         default:
@@ -55,22 +50,30 @@ export default function data(state = initialState.data, action: Action): Data {
 
 const processLoadGame = (game_object: AnagramObject,
                          game_array: AnagramObject[]) => {
-    let index = game_array.findIndex(game => getID(game) === getID(game_object));
+    let ret_array = [...game_array];
+
+    let index = ret_array.findIndex(game => getID(game) === getID(game_object));
 
     if (index > -1) {
-        game_array[index] = game_object;
+        ret_array[index] = game_object;
     } else {
-        game_array.push(game_object);
+        ret_array.push(game_object);
     }
+
+    return ret_array;
 };
 
 const processUpdateGame = (game_id: string,
                            game_array: AnagramObject[],
                            updated_state: Partial<AnagramState>,
                            updating_user: User) => {
-    let index = game_array.findIndex(game => getID(game) === game_id);
+    let ret_array = [...game_array];
+
+    let index = ret_array.findIndex(game => getID(game) === game_id);
 
     if (index > -1) {
-        setState(game_array[index], updating_user, updated_state);
+        ret_array[index] = setState(ret_array[index], updating_user, updated_state);
     }
+
+    return ret_array;
 };
