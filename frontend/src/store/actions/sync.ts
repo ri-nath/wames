@@ -89,10 +89,11 @@ export function processGames(games: AnagramObject[]) {
     };
 }
 
-export function updateGameState(game_id: string, user: User, state: Partial<AnagramState>) {
+export function updateGameState(game_id: string, user: User, state: Partial<AnagramState>,) {
     return {
         type: 'UPDATE_GAME_STATE',
         state: state,
-        user: user
+        user: user,
+        game_id: game_id
     };
 }

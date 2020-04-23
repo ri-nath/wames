@@ -16,19 +16,10 @@ type Props = {
 }
 
 class GameBrowser extends Component<Props, any> {
-    handleUpdateGamesList(games: AnagramObject[]) {
-        if (this.props.reduced) {
-            this.setState({
-                games: games.filter(game => lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED')
-            });
-        } else {
-            this.setState({
-                games: games
-            });
-        }
-    }
 
     render() {
+        console.log('Yep!', this.props.games)
+
         return (
             <View style={ styles.view_games }>
                 <View style={ styles.list_title }>
@@ -39,7 +30,8 @@ class GameBrowser extends Component<Props, any> {
                         lazyDependOnVow<AnagramObject[]>(this.props.games,
                             () => <ActivityIndicator size='large'/>,
                             (err) => <Text> { err.toString() }</Text>,
-                            (games: AnagramObject[]) => <FlatList
+                            (games: AnagramObject[]) =>
+                                <FlatList
                                 contentContainerStyle={ styles.list_container }
                                 data={ this.props.reduced ? games.filter(game => !lazyGetViewed(game) || lazyGetState(game).stage === 'NOT-STARTED') : games }
                                 extraData={ this.props }

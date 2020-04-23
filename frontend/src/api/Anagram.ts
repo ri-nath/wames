@@ -56,8 +56,7 @@ export function getDateString(obj: AnagramObject): string {
 }
 
 export function sortByDate(objs: AnagramObject[]): AnagramObject[] {
-
-    return [...objs].sort((a, b) => getTimestamp(b) - getTimestamp(a));
+    return [...objs].sort((a, b) => getTimestamp(a) - getTimestamp(b));
 }
 
 export function lazyGetState(obj: AnagramObject) {
@@ -70,7 +69,8 @@ export function lazySetState(obj: AnagramObject, state: Partial<AnagramState>) {
 
 export function lazyEndGame(obj: AnagramObject): AnagramObject {
     return setState(obj, m_user, {
-        stage: 'FINISHED'
+        stage: 'FINISHED',
+        viewed: true
     });
 }
 
