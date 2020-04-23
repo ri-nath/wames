@@ -1,9 +1,11 @@
-# word games
-Casual cross platform multiplayer word games.
+# word games [![Build Status](https://travis-ci.org/vayelcrau/wames.svg?branch=master)](https://travis-ci.org/vayelcrau/wames)
+Casual cross platform multiplayer word games. 
 
-To push to the `heroku` branch, use `yarn heroku` from the root directory.
+### Usage 
+`git clone https://github.com/vayelcrau/wames`
+`yarn add global expo-cli@3.18.6`
 
-Using `react-native` `v0.61.4`.
+Using `Expo SDK` `SDK 37` and `react-native` `v0.61.4`.
 
 ## Roadmap
 
