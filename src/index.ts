@@ -164,6 +164,8 @@ io.on('connection', (socket: DecoratedSocket) => {
             log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
 
             updateAnagramGame(socket.user, _id, new_state, (res) => {
+                log(res);
+
                 if (isAnyError(res)) {
                     callback(pipeToWamesError(res as unknown as Error));
                 } else {
