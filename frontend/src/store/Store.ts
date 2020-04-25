@@ -47,6 +47,7 @@ const parseURL = (url: string) => {
 
     console.log(`Linked to app with path: ${ path } and data: ${ JSON.stringify(queryParams) }`);
 
+
     // if (path && queryParams && queryParams.id) {
     //     Client.joinGameByID(queryParams.id, res => {
     //         console.log('RES', res);

@@ -96,7 +96,6 @@ export function getUsersByName(usernames: string[], callback: Acknowledgement<Us
                 acc.push({
                     username: cur
                 });
-
                 return acc;
             }, [])
         })

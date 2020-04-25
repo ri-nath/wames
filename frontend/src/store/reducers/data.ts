@@ -44,15 +44,13 @@ export default function data(state = initialState.data, action: Action): Data {
 
             return { ...state, anagram_games: anagram_games };
         case 'UPDATE_GAME_STATE':
-            let ret = anagram_games;
-
             if (!isResolved(anagram_games)) {
-                ret = [];
+                anagram_games = [];
             }
 
-            ret = processUpdateGame(action.game_id, anagram_games as AnagramObject[], action.state, action.user);
-
-            return { ...state, anagram_games: ret };
+            anagram_games = processUpdateGame(action.game_id, anagram_games as AnagramObject[], action.state, action.user);
+        
+            return { ...state, anagram_games: anagram_games };
         default:
             return state;
     }

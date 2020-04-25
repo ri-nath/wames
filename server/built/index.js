@@ -131,7 +131,6 @@ io.on('connection', (socket) => {
         else {
             api_1.log('Updating game id ', _id, ' from: ', socket.user.username, ' with: ', new_state);
             db_1.updateAnagramGame(socket.user, _id, new_state, (res) => {
-                api_1.log(res);
                 if (api_1.isAnyError(res)) {
                     callback(api_1.pipeToWamesError(res));
                 }

@@ -17,6 +17,8 @@ type Props = {
 
 class GameBrowser extends Component<Props, any> {
     render() {
+        console.log('Yep!', this.props.games)
+
         return (
             <View style={ styles.view_games }>
                 <View style={ styles.list_title }>
