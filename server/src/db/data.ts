@@ -90,18 +90,16 @@ export function getUsersByName(usernames: string[], callback: Acknowledgement<Us
     if (usernames.length === 0) {
         console.log('getUsersByName called on empty array!');
         callback([]);
+    } else {
+        DB.users.find({
+            $or: usernames.reduce((acc: Partial<User>[], cur: string) => {
+                acc.push({
+                    username: cur
+                });
+                return acc;
+            }, [])
+        })
+            .then(callback)
+            .catch(e => handle_error(e, callback));
     }
-
-    DB.users.find({
-        $or: usernames.reduce((acc: Partial<User>[], cur: string) => {
-            acc.push({
-                username: cur
-            });
-
-            return acc;
-        }, [])
-    })
-        .then(callback)
-        .catch(e => handle_error(e, callback));
-
 }

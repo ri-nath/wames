@@ -1,4 +1,4 @@
-import { isAnyError } from 'api';
+import { getID, isAnyError, isResolved, setUser } from 'api';
 import { Linking } from 'expo';
 import { applyMiddleware, createStore, Store } from 'redux';
 import { createLogger } from 'redux-logger';
@@ -6,7 +6,7 @@ import thunkMiddleware from 'redux-thunk';
 import { openGamePortal, processGames, receiveCreatedGame, updateGameState } from 'store/actions';
 import Client from 'store/Client';
 
-import { AnagramObject, Nullable, State } from 'ts';
+import { AnagramObject, Nullable, State, User } from 'ts';
 
 import RootReducer from './reducers';
 
@@ -26,6 +26,7 @@ Client.onNewGames(games => {
 });
 
 Client.onNewGameState((game_id, updating_user, updated_state) => {
+    console.log(updated_state);
     store.dispatch(updateGameState(game_id, updating_user, updated_state));
 });
 
@@ -35,6 +36,10 @@ Linking.getInitialURL().then((res: Nullable<string>) => {
     }
 });
 
+store.subscribe(() => {
+    if (isResolved(store.getState().data.user)) setUser(store.getState().data.user as User);
+})
+
 Linking.addEventListener('url', (event) => parseURL(event.url));
 
 const parseURL = (url: string) => {
@@ -42,19 +47,19 @@ const parseURL = (url: string) => {
 
     console.log(`Linked to app with path: ${ path } and data: ${ JSON.stringify(queryParams) }`);
 
-    if (path && queryParams && queryParams.id) {
-        Client.joinGameByID(queryParams.id, (res: AnagramObject | Error) => {
-            console.log('RES', res);
-            if (res.toString() === 'Already in game!') {
-                // @ts-ignore
-                const game = store.getState().data.anagram_games.find((game: AnagramObject) => getID(game) === queryParams.id);
 
-                store.dispatch(openGamePortal(game));
-            } else {
-                if (!isAnyError(res)) store.dispatch(receiveCreatedGame(res as AnagramObject));
-            }
-        });
-    }
+    // if (path && queryParams && queryParams.id) {
+    //     Client.joinGameByID(queryParams.id, res => {
+    //         console.log('RES', res);
+    //         if (res.toString() === 'Already in game!') {
+    //             const game = store.getState()!.data.anagram_games.find((game: AnagramObject) => getID(game) === queryParams.id);
+    //
+    //             store.dispatch(openGamePortal(game));
+    //         } else {
+    //             if (!isAnyError(res)) store.dispatch(receiveCreatedGame(res as AnagramObject));
+    //         }
+    //     });
+    // }
 };
 
 export default store;

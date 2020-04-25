@@ -84,16 +84,18 @@ function getUsersByName(usernames, callback) {
         console.log('getUsersByName called on empty array!');
         callback([]);
     }
-    DB_1.default.users.find({
-        $or: usernames.reduce((acc, cur) => {
-            acc.push({
-                username: cur
-            });
-            return acc;
-        }, [])
-    })
-        .then(callback)
-        .catch(e => handle_error(e, callback));
+    else {
+        DB_1.default.users.find({
+            $or: usernames.reduce((acc, cur) => {
+                acc.push({
+                    username: cur
+                });
+                return acc;
+            }, [])
+        })
+            .then(callback)
+            .catch(e => handle_error(e, callback));
+    }
 }
 exports.getUsersByName = getUsersByName;
 //# sourceMappingURL=data.js.map

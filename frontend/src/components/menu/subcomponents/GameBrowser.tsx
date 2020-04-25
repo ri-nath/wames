@@ -16,7 +16,6 @@ type Props = {
 }
 
 class GameBrowser extends Component<Props, any> {
-
     render() {
         console.log('Yep!', this.props.games)
 
