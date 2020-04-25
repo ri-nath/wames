@@ -1,4 +1,4 @@
-import { getID, isResolved, setState, setUser, sortByDate } from 'api';
+import { getID, isResolved, lazyEndGame, lazyGetState, lazyUpdateGame, setState, setUser, sortByDate } from 'api';
 import { Action, AnagramObject, AnagramState, Data, initialState, User } from 'ts';
 
 export default function data(state = initialState.data, action: Action): Data {
@@ -23,6 +23,14 @@ export default function data(state = initialState.data, action: Action): Data {
             anagram_games = processLoadGame(action.game, anagram_games as AnagramObject[]);
 
             return { ...state, anagram_games: anagram_games };
+        case 'END_GAME':
+            if (!isResolved(anagram_games)) {
+                anagram_games = [];
+            }
+
+            anagram_games = processUpdateGame(getID(action.game), anagram_games as AnagramObject[], lazyGetState(action.game), state.user as User);
+
+            return { ...state, anagram_games: anagram_games };
         case 'PROCESS_GAMES':
             if (!isResolved(anagram_games)) {
                 anagram_games = [];
@@ -36,13 +44,15 @@ export default function data(state = initialState.data, action: Action): Data {
 
             return { ...state, anagram_games: anagram_games };
         case 'UPDATE_GAME_STATE':
+            let ret = anagram_games;
+
             if (!isResolved(anagram_games)) {
-                anagram_games = [];
+                ret = [];
             }
 
-            anagram_games = processUpdateGame(action.game_id, anagram_games as AnagramObject[], action.state, action.user);
+            ret = processUpdateGame(action.game_id, anagram_games as AnagramObject[], action.state, action.user);
 
-            return { ...state, anagram_games: anagram_games };
+            return { ...state, anagram_games: ret };
         default:
             return state;
     }
@@ -72,7 +82,7 @@ const processUpdateGame = (game_id: string,
     let index = ret_array.findIndex(game => getID(game) === game_id);
 
     if (index > -1) {
-        ret_array[index] = setState(ret_array[index], updating_user, updated_state);
+        ret_array[index] = lazyUpdateGame(ret_array[index], updating_user, updated_state);
     }
 
     return ret_array;

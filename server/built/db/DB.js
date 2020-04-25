@@ -6,6 +6,10 @@ class DB {
         this.db = monk_1.default(process.env.DB_URI);
         this.anagrams = this.db.get('anagram-games');
         this.users = this.db.get('users');
+        // if (process.env.MODE === 'DEV') {
+        //     console.log('Removing all games...');
+        //     this.anagrams.remove({});
+        // }
         if (process.env.MODE === 'PRODUCTION') {
             console.log('Removing all debug games...');
             this.anagrams.remove({

@@ -74,10 +74,14 @@ export function lazyEndGame(obj: AnagramObject): AnagramObject {
     });
 }
 
-export function lazySetViewed(obj: AnagramObject) {
-    return lazySetState(obj, {
-        viewed: true
-    });
+export function lazySetViewed(obj: AnagramObject, viewed = true) {
+    return lazySetState(obj, { viewed });
+}
+
+export function lazyUpdateGame(obj: AnagramObject, user: User, state: Partial<AnagramState>) {
+    let _obj = lazySetViewed(obj, false);
+
+    return setState(_obj, user, state);
 }
 
 export function lazyGetViewed(obj: AnagramObject): boolean {

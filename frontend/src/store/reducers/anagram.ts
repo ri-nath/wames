@@ -9,11 +9,13 @@ export default function anagram(state = initialState.anagram, action: Action) {
             if (state.active_game) {
                 return { ...state, active_game: action.game };
             }
+
             return state;
         case 'SCORE_WORD':
             if (state.active_game) {
                 return { ...state, active_game: lazyScoreWord(state.active_game, action.word) };
             }
+
             return state;
         default:
             return state;
