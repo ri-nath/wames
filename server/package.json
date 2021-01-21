@@ -13,7 +13,7 @@
     "express": "^4.17.1",
     "mongodb": "^3.5.5",
     "monk": "^7.1.2",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "typescript": "^3.8.3",
     "unique-names-generator": "^4.2.0",
     "uuid": "^7.0.2"
